@@ -32,7 +32,7 @@ public class ServiceRepository {
 	/** interfaceClass, "host:port..." */
 	private Map<String, List<String>> interAndUrl = new ConcurrentHashMap<String, List<String>>();
 
-	/** 192.168.1.78:8080|xxx.ccc.XxServic */
+	/** 192.168.1.78:50020|xxx.ccc.XxServic */
 	private Set<String> pausedInterfaces = new CopyOnWriteArraySet<String>();
 
 	public RegisterResponse register(String host, int port, RegisterRequest request) {

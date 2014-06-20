@@ -10,7 +10,7 @@ import org.dxx.rpc.registry.cmd.TelnetServerStartup;
 import org.dxx.rpc.registry.server.RegistryServerStartup;
 
 /**
- * TODO(这里用一句话描述这个类的作用)
+ * 用来启动注册中心
  * 
  * @author   dixingxing
  * @Date	 2014-6-19
@@ -23,12 +23,12 @@ public class Main {
 			@Override
 			public void run() {
 				try {
-					new TelnetServerStartup(8080).run();
+					new TelnetServerStartup(RegistryConstants.DEFUALT_TELNET_PORT).run();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		}).start();
+		}, "registry-telnet").start();
 
 		RegistryServerStartup.startup();
 	}

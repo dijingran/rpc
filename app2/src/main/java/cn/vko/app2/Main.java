@@ -21,7 +21,7 @@ import cn.vko.fz.TeacherRpcService;
  * @Date	 2014-6-18
  */
 
-public class App2 {
+public class Main {
 	public static void main(String[] args) throws InterruptedException {
 		RpcUtils.startupSync();
 
@@ -35,16 +35,18 @@ public class App2 {
 			e.printStackTrace();
 		}
 
-		TeacherService service = Clients.getRpcProxy(TeacherService.class);
 		int i = 0;
 		int timeoutTimes = 0;
 		long s = System.currentTimeMillis();
 		try {
 			for (; i < 100; i++) {
 				try {
+					TeacherService service = Clients.getRpcProxy(TeacherService.class);
 					service.save(t);
 				} catch (RpcTimeoutException e) {
 					timeoutTimes++;
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		} finally {

@@ -9,13 +9,13 @@ package cn.vko.app1;
 import org.dxx.rpc.RpcUtils;
 
 /**
- * TODO(这里用一句话描述这个类的作用)
+ * 启动app1
  * 
  * @author   dixingxing
  * @Date	 2014-6-18
  */
 
-public class App1 {
+public class Main {
 	public static void main(String[] args) {
 		RpcUtils.startup();
 

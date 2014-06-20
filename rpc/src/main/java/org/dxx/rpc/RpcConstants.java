@@ -15,7 +15,7 @@ package org.dxx.rpc;
 
 public interface RpcConstants {
 	/** 当注册中心不可用时，重连的时间间隔 */
-	long REGISTRY_RETRY_TIME = 5000L;
+	long REGISTRY_RETRY_TIME = 10000L;
 
 	/** 从注册中心获取服务端URL的超时时间 */
 	long LOCATE_TIME_OUT = 5000L;

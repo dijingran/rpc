@@ -94,18 +94,20 @@ public class RegistryStartup implements Runnable {
 					ch.pipeline().addLast(new ObjectEncoder(), decoder, new RegistryHandler());
 				}
 			});
-
-			ChannelFuture f = b.connect(host, port).sync();
-			RegistryUtils.setRegistyChannel(f.channel());
+			ChannelFuture f = null;
 			lock.lock();
 			try {
-				done.signal();
+				f = b.connect(host, port).sync();
+				RegistryUtils.setRegistyChannel(f.channel());
 			} finally {
+				done.signal();
 				lock.unlock();
 			}
-			f.channel().closeFuture().sync();
+			if (f != null) {
+				f.channel().closeFuture().sync();
+			}
 		} catch (Exception e) {
-			logger.warn("连接注册中心异常 : " + e.getMessage(), e);
+			logger.warn("连接注册中心异常 : " + e.getMessage());
 			RegistryUtils.scheduleRegistry();
 		} finally {
 			workerGroup.shutdownGracefully();

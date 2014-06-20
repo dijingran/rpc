@@ -39,7 +39,16 @@ public class RegistryUtils {
 		RegistryUtils.registyChannel = null;
 	}
 
+	/**
+	 * 调用注册中心，并返回所有服务端地址
+	 *
+	 * @param intersWithoutUrl
+	 * @return
+	 */
 	public static LocateRpcServerResponse locateServer(List<String> intersWithoutUrl) {
+		if (registyChannel == null) {
+			return null;
+		}
 		logger.debug("locate urls for interfaces : {}", intersWithoutUrl);
 		LocateRpcServerRequest request = new LocateRpcServerRequest();
 		request.setInterfaceClasses(intersWithoutUrl);
@@ -54,6 +63,7 @@ public class RegistryUtils {
 			if (responseHolder.containsKey(KEY)) {
 				return responseHolder.remove(KEY);
 			}
+
 			try {
 				Thread.sleep(30L);
 			} catch (InterruptedException e) {

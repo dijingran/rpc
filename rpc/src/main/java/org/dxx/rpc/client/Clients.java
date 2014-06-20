@@ -2,6 +2,7 @@ package org.dxx.rpc.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
@@ -11,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 public class Clients {
 	static Logger logger = LoggerFactory.getLogger(Clients.class);
+
+	private static AtomicBoolean isFirstTime = new AtomicBoolean(true);
 
 	private static Map<Class<?>, RpcClientConfig> interAndConfigs;
 	private static Map<Class<?>, Object> interAndProxies = new HashMap<Class<?>, Object>();
@@ -28,10 +31,6 @@ public class Clients {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getRpcProxy(Class<T> interfaceClass) {
-		if (!ClientStartup.isInitialized()) {
-			startupClient();
-		}
-
 		T proxy = (T) interAndProxies.get(interfaceClass);
 		if (proxy == null) {
 			proxy = (T) ProxyFactory.get(interfaceClass, getConfig(interfaceClass));
@@ -42,21 +41,35 @@ public class Clients {
 	}
 
 	static void startupClient() {
-		// call registry and init channels for rpc clients
-		ClientStartup.startup();
+		if (isFirstTime.get()) {
+			isFirstTime.set(false);
+			createChannels(500L);
+		} else {
+			new ClientStartupGroup().createChannels();
+		}
+	}
 
-		// block until registry and client done
+	/**
+	 * 
+	 * 开始创建channel，并阻塞一段时间
+	 * <p>
+	 *
+	 * @param wait 毫秒
+	 */
+	static void createChannels(long wait) {
+		logger.warn("Create service channels, wait : {} ms", wait); // TODO notifying instead of waiting
+		long s = System.currentTimeMillis();
+		new ClientStartupGroup().createChannels();
+
 		while (true) {
-			if (ClientStartup.isInitialized()) {
+			if (System.currentTimeMillis() - s > wait) {
 				break;
 			}
 			try {
 				Thread.sleep(30L);
 			} catch (InterruptedException e) {
-				logger.error(e.getMessage(), e);
 			}
 		}
-		logger.debug("client init completed!!!");
 	}
 
 }
