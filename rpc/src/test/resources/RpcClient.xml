@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<client interfaceClass="org.dxx.rpc.share.HelloService" timeout="3000"
+		url="127.0.0.1:8080"/>
+	<client interfaceClass="org.dxx.rpc.share.UserService" timeout="1000"
+		url="127.0.0.1:8080"/>
+</rpc>
