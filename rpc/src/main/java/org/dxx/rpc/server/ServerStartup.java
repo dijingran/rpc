@@ -16,9 +16,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.dxx.rpc.config.loader.Loader;
 import org.dxx.rpc.exception.RpcException;
-import org.dxx.rpc.registry.RegistryStartup;
+import org.dxx.rpc.registry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,12 +56,10 @@ public class ServerStartup implements Runnable {
 
 			// Bind and start to accept incoming connections.
 			ChannelFuture f = b.bind(port).sync();
-			logger.info("rpc server is running on port : {}", port);
+			logger.info("Rpc server is running on port : {}", port);
 			// call registry and init channels for rpc clients
 
-			if (Loader.getRpcConfig().getRegistry() != null) {
-				RegistryStartup.startupSync();
-			}
+			RegistryUtils.createRegistryChannelSync();
 			lock.lock();
 			try {
 				done.signal();

@@ -38,7 +38,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>cn.vko.app2.Main</mainClass>
+							<mainClass>cn.vko.app2.App2Main</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

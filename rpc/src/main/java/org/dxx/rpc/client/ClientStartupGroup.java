@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
@@ -37,11 +38,29 @@ public class ClientStartupGroup {
 	private Map<String, Set<Class<?>>> urlAndInterfaces = new ConcurrentHashMap<String, Set<Class<?>>>();
 	final List<ClientStartup> startups = new ArrayList<ClientStartup>();
 
-	public void createChannels() {
+	AtomicInteger unfinishedCount = new AtomicInteger(0);
+
+	/**
+	 * blocking until all channels finished(include not connected).
+	 */
+	public void createChannelsSync() {
+		long start = System.currentTimeMillis();
 		final List<ClientStartup> startups = calculateChannels();
+		unfinishedCount.set(startups.size());
 		for (ClientStartup s : startups) {
 			s.setInterfaces(urlAndInterfaces.get(s.getUrl()));
+			s.setGroup(this);
 			es.submit(s);
+		}
+		while (true) {
+			if (unfinishedCount.get() == 0) {
+				logger.debug("create channel complete! cost : {} ms.", System.currentTimeMillis() - start);
+				break;
+			}
+			try {
+				Thread.sleep(20L);
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 
@@ -51,7 +70,6 @@ public class ClientStartupGroup {
 	 *
 	 * @return
 	*/
-
 	private List<ClientStartup> calculateChannels() {
 		RpcClientConfigs configs = Loader.getRpcClientConfigs();
 		final List<ClientStartup> startups = new ArrayList<ClientStartup>();

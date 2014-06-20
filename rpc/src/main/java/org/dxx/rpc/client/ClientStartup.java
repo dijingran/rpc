@@ -24,6 +24,8 @@ public class ClientStartup implements Runnable {
 	private String host;
 	private int port;
 
+	private ClientStartupGroup group;
+
 	private Set<Class<?>> interfaces;
 
 	public ClientStartup(String host, int port) {
@@ -32,9 +34,13 @@ public class ClientStartup implements Runnable {
 		this.port = port;
 	}
 
+	public void setGroup(ClientStartupGroup group) {
+		this.group = group;
+	}
+
 	@Override
 	public void run() {
-		logger.debug("try create channel : {}:{}", host, port);
+		logger.debug("Try create channel : {}:{}", host, port);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 		final ObjectDecoder decoder = new ObjectDecoder(ClassResolvers.softCachingConcurrentResolver(Thread
@@ -51,17 +57,25 @@ public class ClientStartup implements Runnable {
 				}
 			});
 
-			ChannelFuture f = b.connect(host, port).sync();
+			Channel c = null;
+			try {
 
-			Channel c = f.channel();
+				ChannelFuture f = b.connect(host, port).sync();
+				c = f.channel();
 
-			// store the relation between interface class and channel
-			for (Class<?> i : this.interfaces) {
-				ChannelContext.add(i, c);
+				// store the relation between interface class and channel
+				for (Class<?> i : this.interfaces) {
+					ChannelContext.add(i, c);
+				}
+				logger.debug("Channel created : {}", c);
+			} finally {
+				group.unfinishedCount.decrementAndGet();
+				if (c != null) {
+					// Wait until the connection is closed.
+					c.closeFuture().sync();
+				}
 			}
-			logger.debug("channel created : {}:{}", host, port);
-			c.closeFuture().sync();
-			// Wait until the connection is closed.
+
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		} finally {

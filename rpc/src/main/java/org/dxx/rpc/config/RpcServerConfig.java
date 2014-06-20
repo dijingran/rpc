@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ public class RpcServerConfig {
 	@XmlAttribute
 	public int getPort() {
 		if (port <= 0) {
-			this.port = getAvailablePort(50050);
+			this.port = getAvailablePort(RpcConstants.DEFAULT_SERVER_PORT);
 		}
 		return port;
 	}

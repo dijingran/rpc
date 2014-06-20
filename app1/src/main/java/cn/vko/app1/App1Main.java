@@ -15,9 +15,9 @@ import org.dxx.rpc.RpcUtils;
  * @Date	 2014-6-18
  */
 
-public class Main {
+public class App1Main {
 	public static void main(String[] args) {
-		RpcUtils.startup();
+		RpcUtils.startupSync();
 
 		//		while (true) {
 		//			try {

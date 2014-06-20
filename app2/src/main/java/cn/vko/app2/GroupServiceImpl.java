@@ -15,10 +15,10 @@ import cn.vko.app.share.Group;
 import cn.vko.app.share.GroupService;
 
 /**
- * TODO(这里用一句话描述这个类的作用)
  * 
- * @author   dixingxing
- * @Date	 2014-6-18
+ * 
+ * @author   dijingran
+ * @Date	 2014年6月20日
  */
 @RpcService
 public class GroupServiceImpl implements GroupService {

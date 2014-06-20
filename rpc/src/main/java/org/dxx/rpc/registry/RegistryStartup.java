@@ -12,9 +12,6 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -26,53 +23,34 @@ import org.slf4j.LoggerFactory;
 
 public class RegistryStartup implements Runnable {
 	static final Logger logger = LoggerFactory.getLogger(RegistryStartup.class);
-	private static ExecutorService es = Executors.newFixedThreadPool(1);
 	private String host;
-
 	private int port;
 
 	public Lock lock = new ReentrantLock();
 	public Condition done = lock.newCondition();
 
-	public RegistryStartup(String host, int port) {
+	public RegistryStartup() {
 		super();
-		if (host == null || host.isEmpty()) {
-			logger.error("host must not be empty");
-			throw new RegistryException("host must not be empty");
+		Registry registry = Loader.getRpcConfig().getRegistry();
+		if (registry == null) {
+			logger.info("<registry../> is not configured !");
+			return;
 		}
-		this.host = host;
-		this.port = port;
-	}
 
-	private static RegistryStartup instance;
-
-	public static synchronized RegistryStartup getInstance() {
-		if (instance == null) {
-			Registry registry = Loader.getRpcConfig().getRegistry();
-			if (registry == null) {
-				logger.info("<registry../> is not configured !");
-				return null;
-			}
-			instance = new RegistryStartup(registry.getHost(), registry.getPort());
+		if (registry.getHost() == null || registry.getHost().isEmpty()) {
+			logger.error("Registry host must not be empty");
+		} else {
+			this.host = registry.getHost();
 		}
-		return instance;
-	}
 
-	public static void startupSync() throws Exception {
-		RegistryStartup startup = getInstance();
-		if (startup != null) {
-			startup.lock.lock();
-			try {
-				es.submit(startup);
-				startup.done.await(8, TimeUnit.SECONDS);
-			} finally {
-				startup.lock.unlock();
-			}
-		}
+		this.port = (registry.getPort() <= 0 ? RegistryConstants.DEFUALT_PORT : registry.getPort());
 	}
 
 	@Override
 	public void run() {
+		if (this.host == null) {
+			return;
+		}
 		if (RegistryUtils.isRegistryInitialized()) {
 			logger.debug("already inited ...");
 			return;

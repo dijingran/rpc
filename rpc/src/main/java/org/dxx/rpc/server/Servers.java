@@ -29,6 +29,9 @@ public class Servers {
 		Object instance = interAndInstance.get(interfaceClass);
 		if (instance == null) {
 			Class<?> implClass = interAndImpl.get(interfaceClass);
+			if (implClass == null) {
+				throw new RpcException("I don't provide the service : " + interfaceClass.getName());
+			}
 			try {
 				if (implClass.isAnnotationPresent(RpcSpringService.class)) {
 					instance = beanFactoy.getSpringBean(implClass);

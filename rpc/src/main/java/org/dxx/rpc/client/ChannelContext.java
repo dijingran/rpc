@@ -18,7 +18,7 @@ public class ChannelContext {
 	public static Channel getChannel(Class<?> interfaceClass) {
 		Channel c = channels.get(interfaceClass);
 		if (c == null) {
-			Clients.startupClient(); // is not blocking here ...
+			new ClientStartupGroup().createChannelsSync();
 			// 没有服务类时，尝试重连 TODO 无须一直重连，缓存？
 			c = channels.get(interfaceClass);
 		}

@@ -2,7 +2,6 @@ package org.dxx.rpc.client;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
@@ -12,8 +11,6 @@ import org.slf4j.LoggerFactory;
 
 public class Clients {
 	static Logger logger = LoggerFactory.getLogger(Clients.class);
-
-	private static AtomicBoolean isFirstTime = new AtomicBoolean(true);
 
 	private static Map<Class<?>, RpcClientConfig> interAndConfigs;
 	private static Map<Class<?>, Object> interAndProxies = new HashMap<Class<?>, Object>();
@@ -38,38 +35,6 @@ public class Clients {
 		}
 		logger.trace("return proxy for interface: {}", interfaceClass);
 		return proxy;
-	}
-
-	static void startupClient() {
-		if (isFirstTime.get()) {
-			isFirstTime.set(false);
-			createChannels(500L);
-		} else {
-			new ClientStartupGroup().createChannels();
-		}
-	}
-
-	/**
-	 * 
-	 * 开始创建channel，并阻塞一段时间
-	 * <p>
-	 *
-	 * @param wait 毫秒
-	 */
-	static void createChannels(long wait) {
-		logger.warn("Create service channels, wait : {} ms", wait); // TODO notifying instead of waiting
-		long s = System.currentTimeMillis();
-		new ClientStartupGroup().createChannels();
-
-		while (true) {
-			if (System.currentTimeMillis() - s > wait) {
-				break;
-			}
-			try {
-				Thread.sleep(30L);
-			} catch (InterruptedException e) {
-			}
-		}
 	}
 
 }

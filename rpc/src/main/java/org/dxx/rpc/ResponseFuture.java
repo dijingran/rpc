@@ -27,7 +27,7 @@ public class ResponseFuture {
 
 	public static void receive(Response response) {
 		responses.remove(response.getId()).doReceived(response);
-		logger.debug("Done : {}", response);
+		logger.trace("Done : {}", response);
 	}
 
 	private void doReceived(Response resp) {
@@ -78,6 +78,9 @@ public class ResponseFuture {
 	}
 
 	private Response returnResponse() {
+		if (response.getError() != null) {
+			throw response.getError();
+		}
 		return response;
 	}
 

@@ -5,11 +5,14 @@ import io.netty.channel.Channel;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.dxx.rpc.RpcConstants;
+import org.dxx.rpc.config.Registry;
+import org.dxx.rpc.config.loader.Loader;
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,7 @@ public class RegistryUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RegistryUtils.class);
 
 	private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private static ExecutorService es = Executors.newCachedThreadPool();
 
 	private static Channel registyChannel;
 	private static final String KEY = "LocateRpcServerResponse_key";
@@ -80,7 +84,29 @@ public class RegistryUtils {
 	}
 
 	public static void scheduleRegistry() {
-		scheduler.schedule(RegistryStartup.getInstance(), RpcConstants.REGISTRY_RETRY_TIME, TimeUnit.MILLISECONDS);
+		scheduler.schedule(new RegistryStartup(), RpcConstants.REGISTRY_RETRY_TIME, TimeUnit.MILLISECONDS);
+	}
+
+	/**
+	 * 创建注册中心的channel，阻塞线程
+	 */
+	public static void createRegistryChannelSync() {
+		Registry registry = Loader.getRpcConfig().getRegistry();
+		if (registry == null) {
+			logger.info("<registry../> is not configured !");
+			return;
+		}
+		RegistryStartup s = new RegistryStartup();
+
+		s.lock.lock();
+		try {
+			es.submit(s);
+			s.done.await(3, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			logger.warn(e.getMessage());
+		} finally {
+			s.lock.unlock();
+		}
 	}
 
 }

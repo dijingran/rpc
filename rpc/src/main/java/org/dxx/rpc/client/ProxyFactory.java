@@ -42,7 +42,7 @@ public class ProxyFactory implements InvocationHandler {
 		r.setArgs(args);
 		r.setRpcClientConfig(rpcClientConfig);
 
-		logger.debug("send : {}", r);
+		logger.trace("Send : {}", r);
 
 		ResponseFuture f = new ResponseFuture(r);
 		try {

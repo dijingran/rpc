@@ -21,7 +21,7 @@ import cn.vko.fz.TeacherRpcService;
  * @Date	 2014-6-18
  */
 
-public class Main {
+public class App2Main {
 	public static void main(String[] args) throws InterruptedException {
 		RpcUtils.startupSync();
 

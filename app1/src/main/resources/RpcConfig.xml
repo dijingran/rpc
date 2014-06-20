@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rpc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<registry url="192.168.1.78:50010" />
+	<registry url="127.0.0.1:50010" />
 <!-- 	<server port="50020" packages="cn.vko" /> -->
 	<server packages="cn.vko" />
 </rpc>

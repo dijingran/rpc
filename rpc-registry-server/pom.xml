@@ -38,7 +38,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.dxx.rpc.registry.Main</mainClass>
+							<mainClass>org.dxx.rpc.registry.RegistryServerMain</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

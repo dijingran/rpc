@@ -22,4 +22,6 @@ public interface RpcConstants {
 
 	/** 调用方法默认的超时时间 */
 	int DEFAULT_RESPONSE_TIMEOUT = 3000;
+	/**默认的服务端端口（暴露服务的端口），使用自动端口时从此值开始，查找可用端口*/
+	int DEFAULT_SERVER_PORT = 50050;
 }

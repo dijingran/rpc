@@ -2,19 +2,21 @@ package org.dxx.rpc;
 
 import java.io.Serializable;
 
+import org.dxx.rpc.exception.RpcException;
+
 @SuppressWarnings("serial")
 public class Response implements Serializable {
 	private long id;
 
 	private Object obj;
-	
-	private Throwable error;
-	
-	public Throwable getError() {
+
+	private RpcException error;
+
+	public RpcException getError() {
 		return error;
 	}
 
-	public void setError(Throwable error) {
+	public void setError(RpcException error) {
 		this.error = error;
 	}
 

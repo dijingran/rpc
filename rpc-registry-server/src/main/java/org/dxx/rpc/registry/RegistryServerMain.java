@@ -16,7 +16,7 @@ import org.dxx.rpc.registry.server.RegistryServerStartup;
  * @Date	 2014-6-19
  */
 
-public class Main {
+public class RegistryServerMain {
 	public static void main(String[] args) throws Exception {
 
 		new Thread(new Runnable() {

@@ -29,21 +29,7 @@ import org.slf4j.LoggerFactory;
 public class RpcUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RpcUtils.class);
 
-	private static ExecutorService es = Executors.newFixedThreadPool(1);
-
-	/**
-	 * 启动（异步）
-	 * <p>
-	 *
-	 * @return
-	 */
-	public static void startup() {
-		logger.info("starting rpc ...");
-
-		RpcConfig rpcConfig = Loader.getRpcConfig();
-		Servers.init(rpcConfig.getRpcServerConfig().getPackages());
-		es.submit(new ServerStartup(rpcConfig.getRpcServerConfig().getPort()));
-	}
+	private static ExecutorService es = Executors.newCachedThreadPool();
 
 	/**
 	 * 启动，阻塞直到启动完成
@@ -52,7 +38,8 @@ public class RpcUtils {
 	 * @return
 	 */
 	public static void startupSync() {
-		logger.info("starting rpc ...");
+		long start = System.currentTimeMillis();
+		logger.info("Starting rpc ...");
 		RpcConfig conf = Loader.getRpcConfig();
 		Servers.init(conf.getRpcServerConfig().getPackages());
 
@@ -65,6 +52,7 @@ public class RpcUtils {
 			throw new RpcException(e);
 		} finally {
 			ss.lock.unlock();
+			logger.info("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
 		}
 	}
 
@@ -78,4 +66,5 @@ public class RpcUtils {
 	public static <T> T get(Class<T> interfaceClass) {
 		return Clients.getRpcProxy(interfaceClass);
 	}
+
 }
