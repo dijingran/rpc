@@ -88,7 +88,7 @@ public class RegistryUtils {
 	}
 
 	/**
-	 * 创建注册中心的channel，阻塞线程
+	 * 创建注册中心的channel
 	 */
 	public static void createRegistryChannelSync() {
 		Registry registry = Loader.getRpcConfig().getRegistry();
