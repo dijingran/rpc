@@ -9,7 +9,7 @@ package cn.vko.app.share;
 import java.util.List;
 
 /**
- * TODO(这里用一句话描述这个类的作用)
+ * 
  * 
  * @author   dixingxing
  * @Date	 2014-6-18

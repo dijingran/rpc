@@ -30,7 +30,7 @@ public class RpcUtils {
 	 *
 	 * @return
 	 */
-	public static void startupSync() {
+	public static void startup() {
 		long start = System.currentTimeMillis();
 		logger.info("Starting rpc ...");
 		RpcConfig conf = Loader.getRpcConfig();

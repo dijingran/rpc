@@ -22,14 +22,9 @@ import cn.vko.app.share.TeacherService;
 public class TeacherServiceImpl implements TeacherService {
 	private static final Logger logger = LoggerFactory.getLogger(TeacherServiceImpl.class);
 
-	/**
-	 * (non-Javadoc)
-	 * @see cn.vko.app.share.TeacherService#save(cn.vko.app.share.Teacher)
-	 */
 	@Override
 	public int save(Teacher t) {
 		logger.debug("saveing : " + t.getName());
 		return 0;
 	}
-
 }

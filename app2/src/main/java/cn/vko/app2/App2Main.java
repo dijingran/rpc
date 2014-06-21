@@ -23,7 +23,7 @@ import cn.vko.fz.TeacherRpcService;
 
 public class App2Main {
 	public static void main(String[] args) throws InterruptedException {
-		RpcUtils.startupSync();
+		RpcUtils.startup();
 
 		Teacher t = new Teacher();
 		t.setName("袁腾飞");

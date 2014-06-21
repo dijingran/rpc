@@ -15,7 +15,7 @@ public class RpcTest {
 
 	@Test
 	public void test() throws Exception {
-		RpcUtils.startupSync();
+		RpcUtils.startup();
 
 		final CyclicBarrier barrier = new CyclicBarrier(5);
 

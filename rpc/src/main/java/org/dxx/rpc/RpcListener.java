@@ -15,7 +15,7 @@ public class RpcListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent sce) {
 		WebUtils.setSc(sce.getServletContext());
 
-		RpcUtils.startupSync();
+		RpcUtils.startup();
 	}
 
 	@Override

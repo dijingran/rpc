@@ -9,7 +9,7 @@ package cn.vko.app.share;
 import java.io.Serializable;
 
 /**
- * TODO(这里用一句话描述这个类的作用)
+ * 
  * 
  * @author   dixingxing
  * @Date	 2014-6-18
@@ -26,5 +26,4 @@ public class Teacher implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 }

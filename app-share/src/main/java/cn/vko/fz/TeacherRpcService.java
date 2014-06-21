@@ -7,7 +7,7 @@
 package cn.vko.fz;
 
 /**
- * TODO(这里用一句话描述这个类的作用)
+ * 
  * 
  * @author   dixingxing
  * @Date	 2014-6-18

@@ -51,7 +51,6 @@ public class ServerStartup extends Awakeable {
 			ChannelFuture f = b.bind(port).sync();
 			logger.info("Rpc server is running on port : {}", port);
 			// call registry and init channels for rpc clients
-
 			RegistryUtils.createRegistryChannelSync();
 			awake();
 

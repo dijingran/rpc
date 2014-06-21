@@ -17,7 +17,7 @@ import org.dxx.rpc.RpcUtils;
 
 public class App1Main {
 	public static void main(String[] args) {
-		RpcUtils.startupSync();
+		RpcUtils.startup();
 
 		//		while (true) {
 		//			try {

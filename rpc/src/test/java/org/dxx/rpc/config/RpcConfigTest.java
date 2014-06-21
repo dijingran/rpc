@@ -11,7 +11,7 @@ public class RpcConfigTest {
 	@Test
 	public void test() {
 		RpcConfig conf = JaxbMapper.fromClasspathXmlFile("RpcConfig.xml", RpcConfig.class);
-		assertEquals("127.0.0.1", conf.getRegistry().getHost());
+		//		assertEquals("127.0.0.1", conf.getRegistry().getHost());
 		assertEquals(RegistryConstants.DEFUALT_TELNET_PORT, conf.getRpcServerConfig().getPort());
 	}
 
