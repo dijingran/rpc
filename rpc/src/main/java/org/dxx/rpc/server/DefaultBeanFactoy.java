@@ -1,6 +1,6 @@
 package org.dxx.rpc.server;
 
-import org.dxx.rpc.WebUtils;
+import org.dxx.rpc.support.SpringUtils;
 
 public class DefaultBeanFactoy {
 
@@ -9,6 +9,6 @@ public class DefaultBeanFactoy {
 	}
 
 	public Object getSpringBean(Class<?> clazz) throws Exception {
-		return WebUtils.springContext().getBean(clazz);
+		return SpringUtils.springContext().getBean(clazz);
 	}
 }

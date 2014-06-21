@@ -2,8 +2,11 @@ package org.dxx.rpc.config.loader;
 
 import java.util.Set;
 
+import org.dxx.rpc.RpcConstants;
+import org.dxx.rpc.WebUtils;
 import org.dxx.rpc.config.RpcClientConfigs;
 import org.dxx.rpc.config.RpcConfig;
+import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +17,14 @@ public class Loader {
 	private static RpcClientConfigs rpcClientConfigs;
 
 	public static Set<Class<?>> getRpcServices(String packages) {
-		return new ScanUtils().getPackageAllClasses(packages, true);
+		String r = RpcConstants.class.getName().replace('.', '/') + ".class";
+		if (Thread.currentThread().getContextClassLoader().getResource(r) != null) {
+			return new ScanUtils().getPackageAllClasses(packages, true);
+		}
+		if (WebUtils.getSc() == null) {
+			throw new RpcException("Can not resolve servlet context, please use RpcListener!");
+		}
+		return new WebClassDetector(WebUtils.getWebroot()).getClasses(packages);
 	}
 
 	public static RpcConfig getRpcConfig() {

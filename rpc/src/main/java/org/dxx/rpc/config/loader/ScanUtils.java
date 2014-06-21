@@ -17,13 +17,11 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 /**
- * 扫描指定包（包括jar）下的class文件 <br>
- * <a href="http://sjsky.iteye.com">http://sjsky.iteye.com</a>
- * 
- * @author michael
+ * 从指定包下查找class，使用 classloader.getResources方式
+ * @author   dixingxing
+ * @Date	 2014-6-21
  */
 public final class ScanUtils {
-
 	/**
 	 * logger
 	 */
@@ -126,17 +124,14 @@ public final class ScanUtils {
 					continue;
 				}
 
-				// 判断是否递归搜索子包
 				if (!recursive && name.lastIndexOf('/') != package2Path.length()) {
 					continue;
 				}
-				// 判断是否过滤 inner class
 				if (this.excludeInner && name.indexOf('$') != -1) {
 					LOG.debug("exclude inner class with name:" + name);
 					continue;
 				}
 				String classSimpleName = name.substring(name.lastIndexOf('/') + 1);
-				// 判定是否符合过滤条件
 				if (this.filterClassName(classSimpleName)) {
 					String className = name.replace('/', '.');
 					className = className.substring(0, className.length() - LENGTH_FOR_CLASS);
@@ -168,7 +163,6 @@ public final class ScanUtils {
 		}
 		final boolean fileRecursive = recursive;
 		File[] dirfiles = dir.listFiles(new FileFilter() {
-			// 自定义文件过滤规则
 			@Override
 			public boolean accept(File file) {
 				if (file.isDirectory()) {
