@@ -11,8 +11,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 
 import org.dxx.rpc.registry.RegistryConstants;
 import org.slf4j.Logger;
@@ -31,14 +29,6 @@ public class RegistryServerStartup {
 		this.port = port;
 	}
 
-	/**
-	 * 启动服务端
-	 * @throws Exception
-	 */
-	public static void startup() throws Exception {
-		new RegistryServerStartup().run();
-	}
-
 	public void run() throws Exception {
 		ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() { // (4)
 			@Override
@@ -47,8 +37,6 @@ public class RegistryServerStartup {
 						ClassResolvers.softCachingConcurrentResolver(Thread.currentThread().getContextClassLoader()));
 				ch.pipeline().addLast("encoder", new ObjectEncoder());
 				ch.pipeline().addLast("decoder", decoder);
-				ch.pipeline().addLast(new StringDecoder());
-				ch.pipeline().addLast(new StringEncoder());
 				ch.pipeline().addLast(new ObjectServerHandler());
 			}
 		};
@@ -62,7 +50,7 @@ public class RegistryServerStartup {
 					.option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
 
 			ChannelFuture f = b.bind(port).sync();
-			logger.info("Registy is running !");
+			logger.info("Registy is running on port {}!", port);
 			f.channel().closeFuture().sync();
 		} finally {
 			workerGroup.shutdownGracefully();

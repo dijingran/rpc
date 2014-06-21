@@ -6,14 +6,9 @@
 
 package org.dxx.rpc;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import org.dxx.rpc.client.Clients;
 import org.dxx.rpc.config.RpcConfig;
 import org.dxx.rpc.config.loader.Loader;
-import org.dxx.rpc.exception.RpcException;
 import org.dxx.rpc.server.ServerStartup;
 import org.dxx.rpc.server.Servers;
 import org.slf4j.Logger;
@@ -29,8 +24,6 @@ import org.slf4j.LoggerFactory;
 public class RpcUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RpcUtils.class);
 
-	private static ExecutorService es = Executors.newCachedThreadPool();
-
 	/**
 	 * 启动，阻塞直到启动完成
 	 * <p>
@@ -43,17 +36,8 @@ public class RpcUtils {
 		RpcConfig conf = Loader.getRpcConfig();
 		Servers.init(conf.getRpcServerConfig().getPackages());
 
-		ServerStartup ss = new ServerStartup(conf.getRpcServerConfig().getPort());
-		ss.lock.lock();
-		try {
-			es.submit(ss);
-			ss.done.await(10, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			throw new RpcException(e);
-		} finally {
-			ss.lock.unlock();
-			logger.info("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
-		}
+		new ServerStartup(conf.getRpcServerConfig().getPort()).submitAndWait(8000);
+		logger.info("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
 	}
 
 	/**

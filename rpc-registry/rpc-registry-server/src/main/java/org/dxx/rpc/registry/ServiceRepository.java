@@ -12,7 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author dijingran
+ * 管理所有服务
+ * @author   dixingxing
+ * @Date	 2014-6-21
  */
 public class ServiceRepository {
 	Logger logger = LoggerFactory.getLogger(ServiceRepository.class);
@@ -36,13 +38,12 @@ public class ServiceRepository {
 	private Set<String> pausedInterfaces = new CopyOnWriteArraySet<String>();
 
 	public RegisterResponse register(String host, int port, RegisterRequest request) {
-		logger.debug("registry : {}:{}", host, port);
+		String url = host + ":" + port;
+		logger.debug("Registering : {}", url);
 		try {
-			String url = host + ":" + port;
 			if (services.containsKey(url)) {
 				return new RegisterResponse("URL : " + url + " can be only registered one time!");
 			}
-
 			synchronized (interAndUrl) {
 				for (RegisterRequest.Service s : request.getServices()) {
 					List<String> urls = interAndUrl.get(s.getInterfaceClass());
@@ -51,11 +52,11 @@ public class ServiceRepository {
 						interAndUrl.put(s.getInterfaceClass(), urls);
 					}
 					urls.add(url);
-					logger.debug("register : {}", s);
+					logger.debug("Register : {}", s);
 				}
 			}
-
 			services.put(url, request.getServices());
+			logger.debug("Registered : {}", url);
 			return new RegisterResponse();
 		} catch (Throwable e) {
 			logger.error(e.getMessage(), e);
@@ -68,12 +69,10 @@ public class ServiceRepository {
 			LocateRpcServerResponse response = new LocateRpcServerResponse();
 			List<Service> list = new ArrayList<LocateRpcServerResponse.Service>(request.getInterfaceClasses().size());
 			for (String interfaceClass : request.getInterfaceClasses()) {
-
 				Service s = locateOne(interfaceClass);
 				if (s != null) {
 					list.add(s);
 				}
-
 			}
 			response.setServices(list);
 			return response;
@@ -90,7 +89,7 @@ public class ServiceRepository {
 			urls = interAndUrl.get(interfaceClass);
 		}
 		if (urls == null || urls.isEmpty()) {
-			logger.warn("service [{}] not found!", interfaceClass);
+			logger.warn("Service [{}] not found!", interfaceClass);
 			return null;
 		}
 		for (String url : urls) {// TODO load balance here
@@ -98,11 +97,13 @@ public class ServiceRepository {
 				return new Service(interfaceClass, url.split(":")[0], Integer.valueOf(url.split(":")[1]));
 			}
 		}
-		logger.warn("service [{}] not found !!", interfaceClass);
+		logger.warn("Service [{}] not found !! May be paused!", interfaceClass);
 		return null;
-		//		throw new RegistryException("service [" + interfaceClass + "] is paused!");
 	}
 
+	/**
+	 * channel中断后，移除此channel下的所有服务
+	 */
 	public void unregister(String url) {
 		if (url == null) {
 			return;
@@ -148,9 +149,12 @@ public class ServiceRepository {
 			}
 		}
 
-		logger.debug("pausedInterfaces (after pause) : {}", pausedInterfaces);
+		logger.debug("Paused interfaces (after pause) : {}", pausedInterfaces);
 	}
 
+	/**
+	 * 
+	 */
 	public void resume(Map<String, List<String>> interfaces) {
 		for (String url : interfaces.keySet()) {
 			for (String inter : interfaces.get(url)) {
@@ -158,7 +162,7 @@ public class ServiceRepository {
 			}
 		}
 
-		logger.debug("pausedInterfaces (after resume) : {}", pausedInterfaces);
+		logger.debug("Paused interfaces (after resume) : {}", pausedInterfaces);
 	}
 
 	public static boolean isPaused(String url, String interfaceClass) {

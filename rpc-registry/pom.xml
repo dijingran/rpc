@@ -9,6 +9,12 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.dxx</groupId>
+				<artifactId>rpc-common</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.dxx</groupId>
 				<artifactId>rpc-registry-api</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -50,8 +56,8 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-	
+
+
 	<!-- 项目发布管理 -->
 	<distributionManagement>
 		<repository>
@@ -65,7 +71,7 @@
 			<url>http://192.168.1.5:8081/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 	<modules>
 		<module>rpc-registry-api</module>
 		<module>rpc-registry-server</module>

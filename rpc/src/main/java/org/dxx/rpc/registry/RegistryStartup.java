@@ -12,22 +12,16 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
+import org.dxx.rpc.common.Awakeable;
 import org.dxx.rpc.config.Registry;
 import org.dxx.rpc.config.loader.Loader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegistryStartup implements Runnable {
+public class RegistryStartup extends Awakeable {
 	static final Logger logger = LoggerFactory.getLogger(RegistryStartup.class);
 	private String host;
 	private int port;
-
-	public Lock lock = new ReentrantLock();
-	public Condition done = lock.newCondition();
 
 	public RegistryStartup() {
 		super();
@@ -72,21 +66,14 @@ public class RegistryStartup implements Runnable {
 					ch.pipeline().addLast(new ObjectEncoder(), decoder, new RegistryHandler());
 				}
 			});
-			ChannelFuture f = null;
-			lock.lock();
-			try {
-				f = b.connect(host, port).sync();
-				RegistryUtils.setRegistyChannel(f.channel());
-			} finally {
-				done.signal();
-				lock.unlock();
-			}
-			if (f != null) {
-				f.channel().closeFuture().sync();
-			}
+			ChannelFuture f = b.connect(host, port).sync();
+			RegistryUtils.setRegistyChannel(f.channel());
+			awake();
+			f.channel().closeFuture().sync();
 		} catch (Exception e) {
 			logger.warn("连接注册中心异常 : " + e.getMessage());
 			RegistryUtils.scheduleRegistry();
+			awake();
 		} finally {
 			workerGroup.shutdownGracefully();
 		}

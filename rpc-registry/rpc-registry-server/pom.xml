@@ -12,6 +12,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.dxx</groupId>
+			<artifactId>rpc-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.dxx</groupId>
 			<artifactId>rpc-registry-api</artifactId>
 		</dependency>
 		<dependency>

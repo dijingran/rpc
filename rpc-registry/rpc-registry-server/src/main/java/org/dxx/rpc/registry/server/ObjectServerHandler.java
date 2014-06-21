@@ -31,11 +31,12 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		logger.debug("received request : {}", msg);
+		logger.debug("Received : {}", msg);
 		if (msg instanceof LocateRpcServerRequest) {
 			ctx.channel().writeAndFlush(repository.locateRpcServer((LocateRpcServerRequest) msg));
 		} else if (msg instanceof RegisterRequest) {
 			RegisterRequest request = (RegisterRequest) msg;
+			// remote address
 			InetSocketAddress sa = (InetSocketAddress) ctx.channel().remoteAddress();
 			if (!channelAndUrl.containsKey(ctx.channel())) {
 				channelAndUrl.put(ctx.channel(), sa.getAddress().getHostAddress() + ":" + request.getPort());

@@ -18,18 +18,7 @@ import org.dxx.rpc.registry.server.RegistryServerStartup;
 
 public class RegistryServerMain {
 	public static void main(String[] args) throws Exception {
-
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					new TelnetServerStartup(RegistryConstants.DEFUALT_TELNET_PORT).run();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}, "registry-telnet").start();
-
-		RegistryServerStartup.startup();
+		new TelnetServerStartup(RegistryConstants.DEFUALT_TELNET_PORT).submitAndWait();
+		new RegistryServerStartup().run();
 	}
 }

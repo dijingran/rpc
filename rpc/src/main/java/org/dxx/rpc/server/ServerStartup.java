@@ -12,21 +12,14 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.dxx.rpc.exception.RpcException;
+import org.dxx.rpc.common.Awakeable;
 import org.dxx.rpc.registry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServerStartup implements Runnable {
+public class ServerStartup extends Awakeable {
 	static final Logger logger = LoggerFactory.getLogger(ServerStartup.class);
 	private int port;
-
-	public Lock lock = new ReentrantLock();
-	public Condition done = lock.newCondition();
 
 	public ServerStartup(int port) {
 		super();
@@ -60,18 +53,13 @@ public class ServerStartup implements Runnable {
 			// call registry and init channels for rpc clients
 
 			RegistryUtils.createRegistryChannelSync();
-			lock.lock();
-			try {
-				done.signal();
-			} finally {
-				lock.unlock();
-			}
+			awake();
 
 			f.channel().closeFuture().sync();
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			throw new RpcException(e);
+			awake();
 		} finally {
 			workerGroup.shutdownGracefully();
 			bossGroup.shutdownGracefully();
