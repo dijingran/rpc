@@ -26,7 +26,7 @@ public class CmdHelp extends AbstractCommand {
 		sb.append(">************************** HELP ********************\r\n");
 		sb.append("1.list\r\n");
 		sb.append("    Show all available services \r\n");
-		sb.append("        filtrate by URL(host or port) ：list -u .78\r\n");
+		sb.append("        filtrate by URL(host:port) ：list -u .78\r\n");
 		sb.append("        filtrate by interface name ：list -n UserService\r\n");
 		sb.append("        show paused services ：list -p\r\n");
 

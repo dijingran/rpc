@@ -15,7 +15,6 @@ import org.dxx.rpc.registry.cmd.ConfirmRequired;
  * @author   dixingxing
  * @Date	 2014-6-17
  */
-
 public class CmdResume extends CmdList implements ConfirmRequired {
 
 	public CmdResume(String cmd) {
@@ -31,7 +30,7 @@ public class CmdResume extends CmdList implements ConfirmRequired {
 	public void exec() {
 		StringBuilder sb = buildResponse();
 		if (super.isEmpty()) {
-			channel.writeAndFlush(">----------------- No services can be resumed!\r\n");
+			channel.writeAndFlush("> No services can be resumed!\r\n");
 			return;
 		}
 		sb.append("-------You are resuming the services, [Confirm] \"y\" / [Cancel] other keys：");

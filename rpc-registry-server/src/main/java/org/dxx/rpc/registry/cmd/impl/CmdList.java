@@ -34,19 +34,11 @@ public class CmdList extends AbstractConditionCommand {
 	protected Map<String, List<String>> filtratedResult = new HashMap<String, List<String>>();
 	private boolean empty = true;
 
-	//	public static void main(String[] args) {
-	//		new CmdList("list -u .78 -n User");
-	//		new CmdList("list -u .78 sdfds -n User sdfsdf");
-	//		new CmdList("list  -n User sdfsdf   ");
-	//		new CmdList("list  -n User sdfsdf    -u .78 sdfds");
-	//	}
-
 	public CmdList(String cmd) {
 		super(cmd);
 	}
 
 	/**
-	 * (non-Javadoc)
 	 * @see org.dxx.rpc.registry.cmd.AbstractCommand#exec()
 	 */
 	@Override
@@ -106,7 +98,7 @@ public class CmdList extends AbstractConditionCommand {
 	}
 
 	private StringBuilder conditionTip() {
-		StringBuilder sb = new StringBuilder(">----------------- All ");
+		StringBuilder sb = new StringBuilder("> All ");
 		sb.append("[");
 		sb.append(pause ? "paused" : "available");
 		sb.append("]  services ");

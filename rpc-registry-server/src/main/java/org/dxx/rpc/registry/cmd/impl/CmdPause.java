@@ -31,7 +31,7 @@ public class CmdPause extends CmdList implements ConfirmRequired {
 	public void exec() {
 		StringBuilder sb = buildResponse();
 		if (super.isEmpty()) {
-			channel.writeAndFlush(">----------------- No services can be paused!\r\n");
+			channel.writeAndFlush("> No services can be paused!\r\n");
 			return;
 		}
 		sb.append("-------You are pausing the services, [Confirm] \"y\" / [Cancel] other keys：");
