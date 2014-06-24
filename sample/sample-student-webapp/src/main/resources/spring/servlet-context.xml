@@ -11,8 +11,6 @@
 
 	<context:component-scan base-package="org.dxx.student.web" />
 
-<!-- 	<bean class="org.dxx.rpc.support.SpringContextHolder"></bean> -->
-
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/views/" />

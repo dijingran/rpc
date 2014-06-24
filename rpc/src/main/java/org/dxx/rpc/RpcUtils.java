@@ -41,7 +41,7 @@ public class RpcUtils {
 	}
 
 	/**
-	 * 获取接口的代理类
+	 * 获取接口的代理类，由代理类负责远程调用并返回结果。
 	 * <p>
 	 *
 	 * @param interfaceClass

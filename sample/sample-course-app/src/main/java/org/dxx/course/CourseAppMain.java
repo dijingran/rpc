@@ -8,6 +8,8 @@ package org.dxx.course;
 
 import org.dxx.rpc.RpcUtils;
 import org.dxx.rpc.student.StudentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -16,19 +18,23 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @Date	 2014-6-23
  */
 public class CourseAppMain {
+	static final Logger logger = LoggerFactory.getLogger(CourseAppMain.class);
+
 	public static void main(String[] args) throws InterruptedException {
+		// 初始化spring 上下文（SpringContextHolder会持有spring的 ApplicationContext实例）
 		new ClassPathXmlApplicationContext("classpath:spring/applicationContext.xml");
 
+		// 初始化rpc服务，作为服务端：对外暴露CourseService服务（CourseServiceImpl标注了@RpcSpringService）。
 		RpcUtils.startup();
 
+		// 作为客户端，调用其它应用提供的StudentService服务，见RpcClient.xml
 		while (true) {
 			try {
-				System.out.println(RpcUtils.get(StudentService.class).getStudent(1L));
+				logger.debug("student-webapp 返回的结果：{}", RpcUtils.get(StudentService.class).getStudent(1L));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
-			Thread.sleep(1000L);
+			Thread.sleep(2000L);
 		}
 	}
 }

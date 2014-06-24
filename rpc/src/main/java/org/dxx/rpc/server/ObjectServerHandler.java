@@ -29,20 +29,19 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter { // (1)
 	@Override
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 		super.channelRegistered(ctx);
-		logger.debug("channelRegistered");
+		logger.debug("channelRegistered : {}", ctx.channel());
 	}
 
-	
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		super.channelUnregistered(ctx);
 		ctx.channel().close();
-		logger.debug("channelUnregistered");
+		logger.debug("channelUnregistered : {}", ctx.channel());
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
-		logger.warn(cause.getMessage());
+		logger.debug(cause.getMessage());
 		ctx.close();
 	}
 }
