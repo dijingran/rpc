@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- 使用注册中心时可以不配置url -->
+	<client interfaceClass="org.dxx.rpc.course.CourseService"
+		timeout="3000" url="127.0.0.1:50050" />
+</rpc>
