@@ -9,7 +9,7 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.dxx</groupId>
+				<groupId>org.dxx.rpc</groupId>
 				<artifactId>sample-interfaces</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
