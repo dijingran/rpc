@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rpc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<client interfaceClass="cn.vko.app.share.TeacherService" timeout="3000" url="127.0.0.1:50050" />
-	<client interfaceClass="cn.vko.fz.TeacherRpcService" timeout="3000" />
-</rpc>
