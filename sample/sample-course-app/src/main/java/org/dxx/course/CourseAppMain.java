@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * 
+ * 启动服务
  * @author   dixingxing
  * @Date	 2014-6-23
  */
