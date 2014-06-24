@@ -7,11 +7,11 @@
 package org.dxx.rpc.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,23 +35,31 @@ public class ClientStartupGroup {
 	static Logger logger = LoggerFactory.getLogger(ClientStartupGroup.class);
 	private static ExecutorService es = Executors.newCachedThreadPool();
 
-	private Map<String, Set<Class<?>>> urlAndInterfaces = new ConcurrentHashMap<String, Set<Class<?>>>();
+	private Map<String, Set<Class<?>>> urlAndInterfaces = new HashMap<String, Set<Class<?>>>();
 	final List<ClientStartup> startups = new ArrayList<ClientStartup>();
 
 	AtomicInteger unfinishedCount = new AtomicInteger(0);
 
 	/**
-	 * blocking until all channels finished(include not connected).
+	 * <p>
+	 * Create channels, blocking until all channels finished(include not connected).
+	 * </p>
+	 * <li>Synchronized, avoid same channel be created multi times.
 	 */
-	public void createChannelsSync() {
+	public synchronized void createChannelsSync() {
 		long start = System.currentTimeMillis();
 		final List<ClientStartup> startups = calculateChannels();
+		if (startups.isEmpty()) {
+			logger.trace("No need to create channels.");
+			return;
+		}
 		unfinishedCount.set(startups.size());
 		for (ClientStartup s : startups) {
 			s.setInterfaces(urlAndInterfaces.get(s.getUrl()));
 			s.setGroup(this);
 			es.submit(s);
 		}
+
 		while (true) {
 			if (unfinishedCount.get() == 0) {
 				logger.debug("create channel complete! cost : {} ms.", System.currentTimeMillis() - start);
@@ -75,7 +83,7 @@ public class ClientStartupGroup {
 		final List<ClientStartup> startups = new ArrayList<ClientStartup>();
 
 		List<String> intersWithoutUrl = new ArrayList<String>();
-		// 指定了host 和 port，不用经过注册中心
+		// 指定了URL，不用经过注册中心
 		for (RpcClientConfig c : configs.getClients()) {
 			if (ChannelContext.exists(c.getInterfaceClass())) {
 				continue;

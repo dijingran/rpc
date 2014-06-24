@@ -2,6 +2,7 @@ package org.dxx.rpc.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
@@ -13,7 +14,7 @@ public class Clients {
 	static Logger logger = LoggerFactory.getLogger(Clients.class);
 
 	private static Map<Class<?>, RpcClientConfig> interAndConfigs;
-	private static Map<Class<?>, Object> interAndProxies = new HashMap<Class<?>, Object>();
+	private static Map<Class<?>, Object> interAndProxies = new ConcurrentHashMap<Class<?>, Object>();
 
 	private static RpcClientConfig getConfig(Class<?> interfaceClass) {
 		if (interAndConfigs == null) {

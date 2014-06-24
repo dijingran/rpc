@@ -1,4 +1,4 @@
-package org.dxx.rpc.server;
+package org.dxx.rpc.service;
 
 import org.dxx.rpc.config.annotation.RpcService;
 import org.dxx.rpc.share.HelloService;

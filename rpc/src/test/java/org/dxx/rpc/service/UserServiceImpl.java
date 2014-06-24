@@ -1,4 +1,4 @@
-package org.dxx.rpc.server;
+package org.dxx.rpc.service;
 
 import java.util.Random;
 

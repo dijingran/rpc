@@ -15,11 +15,16 @@ public class ChannelContext {
 	static Map<Class<?>, Channel> channels = new ConcurrentHashMap<Class<?>, Channel>();
 	static Map<String, Channel> interNameAndchannels = new ConcurrentHashMap<String, Channel>();
 
+	static ClientStartupGroup clientStartupGroup = new ClientStartupGroup();
+
+	/**
+	 * 根据接口名获得channel。
+	 */
 	public static Channel getChannel(Class<?> interfaceClass) {
 		Channel c = channels.get(interfaceClass);
 		if (c == null) {
-			new ClientStartupGroup().createChannelsSync();
-			// 没有服务类时，尝试重连 TODO 无须一直重连，缓存？
+			// TODO 多次为空时，将接口放到失败列表中，避免每次都尝试创建连接
+			clientStartupGroup.createChannelsSync();
 			c = channels.get(interfaceClass);
 		}
 		if (c == null) {

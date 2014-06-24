@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rpc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <!-- 	<registry url="127.0.0.1:50010" /> -->
-	<server port="50011" packages="org.dxx.rpc.server" />
+	<server port="50011" packages="org.dxx.rpc.service" />
 </rpc>

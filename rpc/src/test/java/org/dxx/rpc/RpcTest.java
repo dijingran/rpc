@@ -38,7 +38,7 @@ public class RpcTest {
 		int timeoutTimes = 0;
 		long s = System.currentTimeMillis();
 		try {
-			for (; i < 10000; i++) {
+			for (; i < 1000; i++) {
 				try {
 					RpcUtils.get(HelloService.class).sayHello("" + i);
 				} catch (RpcTimeoutException e) {
@@ -56,6 +56,5 @@ public class RpcTest {
 
 		RpcUtils.get(UserService.class).add("dixingxing");
 
-		Thread.sleep(1000L);
 	}
 }
