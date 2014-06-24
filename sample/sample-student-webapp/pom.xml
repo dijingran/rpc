@@ -98,4 +98,8 @@
 		</dependency>
 		
 	</dependencies>
+	
+	<build>
+		<finalName>sample-student-webapp</finalName>
+	</build>
 </project>

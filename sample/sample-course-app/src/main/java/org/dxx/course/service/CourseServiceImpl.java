@@ -29,7 +29,7 @@ public class CourseServiceImpl implements CourseService {
 	@Override
 	public List<Course> getCoursesForStudent(long studentId) {
 		List<Course> list = new ArrayList<Course>();
-		list.add(new Course(1L, "数学22"));
+		list.add(new Course(1L, "数学"));
 		list.add(new Course(2L, "语文"));
 		list.add(new Course(3L, "计算机"));
 		return list;
