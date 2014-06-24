@@ -28,9 +28,10 @@ public class CourseAppMain {
 		RpcUtils.startup();
 
 		// 作为客户端，调用其它应用提供的StudentService服务，见RpcClient.xml
+		long i = 1L;
 		while (true) {
 			try {
-				logger.debug("student-webapp 返回的结果：{}", RpcUtils.get(StudentService.class).getStudent(1L));
+				logger.debug("student-webapp 返回的结果：{}", RpcUtils.get(StudentService.class).getStudent(i++));
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}

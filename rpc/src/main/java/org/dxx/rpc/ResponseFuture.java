@@ -106,7 +106,6 @@ public class ResponseFuture {
 	 * 清空此次请求，避免内存泄漏
 	 * <p>
 	*/
-
 	public void release() {
 		responses.remove(this.request.getId());
 

@@ -23,13 +23,12 @@ public class ChannelContext {
 			c = channels.get(interfaceClass);
 		}
 		if (c == null) {
-			throw new RpcException("no channel found for interface : " + interfaceClass.getName());
+			throw new RpcException("No channel found for interface : " + interfaceClass.getName());
 		}
 		return c;
 	}
 
 	public static void add(Class<?> interfaceClass, Channel channel) {
-		logger.debug("save channel for interface : {}", interfaceClass.getName());
 		channels.put(interfaceClass, channel);
 		interNameAndchannels.put(interfaceClass.getName(), channel);
 	}
@@ -37,7 +36,7 @@ public class ChannelContext {
 	public static void remove(Channel c) {
 		for (Class<?> inter : channels.keySet()) {
 			if (c == channels.get(inter)) {
-				logger.debug("remove channel for interface  : {}", inter.getName());
+				logger.debug("Remove channel for interface  : {}", inter.getName());
 				channels.remove(inter);
 			}
 		}

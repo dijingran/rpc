@@ -90,7 +90,7 @@ public class RegistryUtils {
 	public static void createRegistryChannelSync() {
 		Registry registry = Loader.getRpcConfig().getRegistry();
 		if (registry == null) {
-			logger.info("<registry../> is not configured !");
+			logger.debug("<registry../> is not configured !");
 			return;
 		}
 		new RegistryStartup().submitAndWait();

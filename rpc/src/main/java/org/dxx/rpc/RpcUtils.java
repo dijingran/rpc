@@ -32,12 +32,11 @@ public class RpcUtils {
 	 */
 	public static void startup() {
 		long start = System.currentTimeMillis();
-		logger.info("Starting rpc ...");
 		RpcConfig conf = Loader.getRpcConfig();
 		Servers.init(conf.getRpcServerConfig().getPackages());
 
 		new ServerStartup(conf.getRpcServerConfig().getPort()).submitAndWait(8000);
-		logger.info("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
+		logger.debug("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
 	}
 
 	/**

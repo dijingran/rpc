@@ -8,9 +8,9 @@ package org.dxx.student.web;
 
 import java.util.List;
 
+import org.dxx.rpc.RpcUtils;
 import org.dxx.rpc.course.Course;
-import org.dxx.student.service.StudentServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dxx.rpc.course.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class StudentController {
 
-	@Autowired
-	private StudentServiceImpl service;
-
 	@RequestMapping("/")
 	public String index(Model model) {
-		List<Course> courses = service.getCourses(1L);
+		List<Course> courses = RpcUtils.get(CourseService.class).getCoursesForStudent(1L);
 		model.addAttribute("courses", courses);
 		return "index";
 	}

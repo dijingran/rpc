@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 管理所有服务
+ * 
  * @author   dixingxing
  * @Date	 2014-6-21
  */

@@ -6,12 +6,7 @@
 
 package org.dxx.student.service;
 
-import java.util.List;
-
-import org.dxx.rpc.RpcUtils;
 import org.dxx.rpc.config.annotation.RpcSpringService;
-import org.dxx.rpc.course.Course;
-import org.dxx.rpc.course.CourseService;
 import org.dxx.rpc.student.Student;
 import org.dxx.rpc.student.StudentService;
 import org.springframework.stereotype.Service;
@@ -33,10 +28,6 @@ public class StudentServiceImpl implements StudentService {
 		student.setId(id);
 		student.setName("name" + id);
 		return student;
-	}
-
-	public List<Course> getCourses(long studentId) {
-		return RpcUtils.get(CourseService.class).getCoursesForStudent(studentId);
 	}
 
 }

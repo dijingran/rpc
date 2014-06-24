@@ -30,7 +30,7 @@ public class ObjectClientHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		cause.printStackTrace();
+		logger.debug(cause.getMessage());
 		ctx.close();
 	}
 }

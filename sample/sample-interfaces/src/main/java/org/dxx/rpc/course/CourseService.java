@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface CourseService {
 	/**
-	 * 查询学生所修课程
+	 * 查询学生所修课程(示例中返回固定结果)
 	 */
 	List<Course> getCoursesForStudent(long studentId);
 }
