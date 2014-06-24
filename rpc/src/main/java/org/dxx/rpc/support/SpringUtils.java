@@ -28,11 +28,20 @@ public class SpringUtils {
 			return ctx;
 		}
 
+		if (SpringContextHolder.getApplicationContext() != null) {
+			ctx = SpringContextHolder.getApplicationContext();
+			return ctx;
+		}
+
 		if (WebUtils.getSc() == null) {
 			throw new RpcException("ServletContext has not been initialized!");
 		}
 
-		WebApplicationContext c = WebApplicationContextUtils.getRequiredWebApplicationContext(WebUtils.getSc());
+		WebApplicationContext c = null;
+		try {
+			c = WebApplicationContextUtils.getRequiredWebApplicationContext(WebUtils.getSc());
+		} catch (Exception e) {
+		}
 		if (c == null) {
 			Enumeration<String> attrNames = WebUtils.getSc().getAttributeNames();
 			for (; attrNames.hasMoreElements();) {
