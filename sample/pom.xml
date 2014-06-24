@@ -20,8 +20,8 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
-	
+
+
 	<build>
 		<plugins>
 			<plugin>
@@ -35,10 +35,23 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<modules>
-	<module>sample-interfaces</module>
-	<module>sample-student-webapp</module>
-	<module>sample-course-app</module>
+		<module>sample-interfaces</module>
+		<module>sample-student-webapp</module>
+		<module>sample-course-app</module>
 	</modules>
+
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>Internal Releases</name>
+			<url>http://192.168.1.5:8081/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Nexus Snapshot Repository</name>
+			<url>http://192.168.1.5:8081/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
