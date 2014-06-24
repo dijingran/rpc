@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<dependencyManagement>
-		<dependencies> 
+		<dependencies>
 			<dependency>
 				<groupId>org.dxx.rpc</groupId>
 				<artifactId>sample-interfaces</artifactId>
