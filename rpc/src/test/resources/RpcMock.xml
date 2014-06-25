@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<mock interfaceClass="org.dxx.rpc.share.UserService" mockClass="org.dxx.rpc.mock.UserServiceMock" />
+</rpc>

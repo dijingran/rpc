@@ -6,6 +6,7 @@ import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.WebUtils;
 import org.dxx.rpc.config.RpcClientConfigs;
 import org.dxx.rpc.config.RpcConfig;
+import org.dxx.rpc.config.RpcMockConfigs;
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ public class Loader {
 
 	private static RpcConfig rpcConfig;
 	private static RpcClientConfigs rpcClientConfigs;
+	private static RpcMockConfigs rpcMockConfigs;
 
 	public static Set<Class<?>> getRpcServices(String packages) {
 		String r = RpcConstants.class.getName().replace('.', '/') + ".class";
@@ -44,6 +46,17 @@ public class Loader {
 			logger.debug("RpcClientConfigs : {}", rpcClientConfigs);
 		}
 		return rpcClientConfigs;
+	}
+
+	public static RpcMockConfigs getMockConfigs() {
+		if (Thread.currentThread().getContextClassLoader().getResource("RpcMock.xml") == null) {
+			return new RpcMockConfigs();
+		}
+		if (rpcMockConfigs == null) {
+			rpcMockConfigs = JaxbMapper.fromClasspathXmlFile("RpcMock.xml", RpcMockConfigs.class);
+			logger.debug("RpcMockConfigs : {}", rpcMockConfigs);
+		}
+		return rpcMockConfigs;
 	}
 
 }

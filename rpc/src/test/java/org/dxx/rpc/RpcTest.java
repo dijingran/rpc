@@ -4,7 +4,6 @@ import java.util.concurrent.CyclicBarrier;
 
 import org.dxx.rpc.exception.RpcTimeoutException;
 import org.dxx.rpc.share.HelloService;
-import org.dxx.rpc.share.UserService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -53,8 +52,5 @@ public class RpcTest {
 						+ "  total cost : " + cost + ", average cost : " + (cost / (i * 1.0)));
 			}
 		}
-
-		RpcUtils.get(UserService.class).add("dixingxing");
-
 	}
 }

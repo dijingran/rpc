@@ -34,6 +34,10 @@ public class ProxyFactory implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		if (MockUtils.isMock(interfaceClass)) {
+			return MockUtils.invokeMockClass(interfaceClass, method, args);
+		}
+
 		Request r = new Request();
 		r.setId(sequence.incrementAndGet());
 		r.setInterfaceClass(interfaceClass);
@@ -53,5 +57,4 @@ public class ProxyFactory implements InvocationHandler {
 		}
 		return f.get().getObj();
 	}
-
 }
