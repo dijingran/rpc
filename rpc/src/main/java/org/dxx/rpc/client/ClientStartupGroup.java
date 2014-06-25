@@ -47,6 +47,9 @@ public class ClientStartupGroup {
 	 * <li>Synchronized, avoid same channel be created multi times.
 	 */
 	public synchronized void createChannelsSync() {
+		urlAndInterfaces.clear();
+		startups.clear();
+
 		long start = System.currentTimeMillis();
 		final List<ClientStartup> startups = calculateChannels();
 		if (startups.isEmpty()) {
