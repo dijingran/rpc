@@ -66,8 +66,9 @@ public class ServiceRepository {
 	}
 
 	public LocateRpcServerResponse locateRpcServer(LocateRpcServerRequest request) {
+		LocateRpcServerResponse response = new LocateRpcServerResponse();
+		response.setRequestId(request.getId());
 		try {
-			LocateRpcServerResponse response = new LocateRpcServerResponse();
 			List<Service> list = new ArrayList<LocateRpcServerResponse.Service>(request.getInterfaceClasses().size());
 			for (String interfaceClass : request.getInterfaceClasses()) {
 				Service s = locateOne(interfaceClass);
@@ -76,11 +77,11 @@ public class ServiceRepository {
 				}
 			}
 			response.setServices(list);
-			return response;
 		} catch (Throwable e) {
 			logger.error(e.getMessage(), e);
-			return new LocateRpcServerResponse(e.getMessage());
+			response.setErrorMessage(e.getMessage());
 		}
+		return response;
 
 	}
 

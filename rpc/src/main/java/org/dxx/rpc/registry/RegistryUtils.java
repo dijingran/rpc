@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.config.Registry;
@@ -20,16 +21,16 @@ public class RegistryUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RegistryUtils.class);
 	private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+	private static AtomicLong sequence = new AtomicLong(0);
 	private static Channel registyChannel;
-	private static final String KEY = "LocateRpcServerResponse_key";
-	private static Map<String, LocateRpcServerResponse> responseHolder = new ConcurrentHashMap<String, LocateRpcServerResponse>();
+	private static Map<Long, LocateRpcServerResponse> responses = new ConcurrentHashMap<Long, LocateRpcServerResponse>();
 
 	public static boolean isRegistryInitialized() {
 		return registyChannel != null;
 	}
 
 	public static void setResponse(LocateRpcServerResponse response) {
-		RegistryUtils.responseHolder.put(KEY, response);
+		RegistryUtils.responses.put(response.getRequestId(), response);
 	}
 
 	public static void setRegistyChannel(Channel registyChannel) {
@@ -50,8 +51,9 @@ public class RegistryUtils {
 		if (registyChannel == null) {
 			return null;
 		}
-		logger.debug("locate urls for interfaces : {}", intersWithoutUrl);
+		logger.debug("Locate urls for interfaces : {}", intersWithoutUrl);
 		LocateRpcServerRequest request = new LocateRpcServerRequest();
+		request.setId(sequence.incrementAndGet());
 		request.setInterfaceClasses(intersWithoutUrl);
 		registyChannel.writeAndFlush(request);
 
@@ -60,13 +62,12 @@ public class RegistryUtils {
 			if (System.currentTimeMillis() - s > RpcConstants.LOCATE_TIME_OUT) {
 				throw new RegistryException("调用注册中心获取server地址超时 ： " + RpcConstants.LOCATE_TIME_OUT);
 			}
-
-			if (responseHolder.containsKey(KEY)) {
-				return responseHolder.remove(KEY);
+			if (responses.containsKey(request.getId())) {
+				return responses.remove(request.getId());
 			}
 
 			try {
-				Thread.sleep(30L);
+				Thread.sleep(10L);
 			} catch (InterruptedException e) {
 			}
 		}

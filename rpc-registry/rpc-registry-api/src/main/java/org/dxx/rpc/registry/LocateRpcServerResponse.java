@@ -6,15 +6,21 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public class LocateRpcServerResponse implements Serializable {
+	private Long requestId;
+
 	private String errorMessage;
-	
+
 	private List<Service> services = new ArrayList<LocateRpcServerResponse.Service>();
-	
-	public LocateRpcServerResponse() {}
-	
-	public LocateRpcServerResponse(String errorMessage) {
-		super();
-		this.errorMessage = errorMessage;
+
+	public LocateRpcServerResponse() {
+	}
+
+	public Long getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(Long requestId) {
+		this.requestId = requestId;
 	}
 
 	public List<Service> getServices() {
@@ -25,18 +31,15 @@ public class LocateRpcServerResponse implements Serializable {
 		this.services = services;
 	}
 
-
-
-	public static class Service implements Serializable{
+	public static class Service implements Serializable {
 		private String interfaceClass;
 		private String host;
 		private int port;
-		
-		
+
 		public Service() {
 			super();
 		}
-		
+
 		public Service(String interfaceClass, String host, int port) {
 			super();
 			this.interfaceClass = interfaceClass;
@@ -44,34 +47,36 @@ public class LocateRpcServerResponse implements Serializable {
 			this.port = port;
 		}
 
-
 		public String getInterfaceClass() {
 			return interfaceClass;
 		}
+
 		public void setInterfaceClass(String interfaceClass) {
 			this.interfaceClass = interfaceClass;
 		}
+
 		public String getHost() {
 			return host;
 		}
+
 		public void setHost(String host) {
 			this.host = host;
 		}
+
 		public int getPort() {
 			return port;
 		}
+
 		public void setPort(int port) {
 			this.port = port;
 		}
 
 		@Override
 		public String toString() {
-			return "Service [interfaceClass=" + interfaceClass + ", host="
-					+ host + ", port=" + port + "]";
+			return "Service [interfaceClass=" + interfaceClass + ", host=" + host + ", port=" + port + "]";
 		}
-		
-	}
 
+	}
 
 	public String getErrorMessage() {
 		return errorMessage;
@@ -87,7 +92,6 @@ public class LocateRpcServerResponse implements Serializable {
 
 	@Override
 	public String toString() {
-		return "LocateRpcServerResponse [errorMessage=" + errorMessage
-				+ ", services=" + services + "]";
+		return "LocateRpcServerResponse [errorMessage=" + errorMessage + ", services=" + services + "]";
 	}
 }

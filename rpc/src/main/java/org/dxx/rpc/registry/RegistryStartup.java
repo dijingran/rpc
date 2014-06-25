@@ -18,6 +18,12 @@ import org.dxx.rpc.config.loader.Loader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 用于创建和注册中心的连接
+ * 
+ * @author   dixingxing
+ * @Date	 2014-6-25
+ */
 public class RegistryStartup extends Awakeable {
 	static final Logger logger = LoggerFactory.getLogger(RegistryStartup.class);
 	private String host;
@@ -46,11 +52,9 @@ public class RegistryStartup extends Awakeable {
 			return;
 		}
 		if (RegistryUtils.isRegistryInitialized()) {
-			logger.debug("already inited ...");
+			logger.debug("Already inited ...");
 			return;
 		}
-		Registry registry = Loader.getRpcConfig().getRegistry();
-		logger.debug("Registering rpc services to Registry : {}:{}", registry.getHost(), registry.getPort());
 
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		final ObjectDecoder decoder = new ObjectDecoder(ClassResolvers.softCachingConcurrentResolver(Thread

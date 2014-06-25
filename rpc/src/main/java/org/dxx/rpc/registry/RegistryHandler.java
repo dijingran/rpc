@@ -12,22 +12,25 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dxx.rpc.config.Registry;
 import org.dxx.rpc.config.loader.Loader;
 import org.dxx.rpc.server.Servers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ * 向注册中心发布服务，注册中心断开后，尝试重连
  * @author   dixingxing
  * @Date	 2014-6-19
  */
-
 public class RegistryHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(RegistryHandler.class);
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		Registry registry = Loader.getRpcConfig().getRegistry();
+		logger.debug("Registering rpc services to Registry : {}:{}", registry.getHost(), registry.getPort());
+
 		RegisterRequest request = new RegisterRequest();
 		request.setPort(Loader.getRpcConfig().getRpcServerConfig().getPort());
 
