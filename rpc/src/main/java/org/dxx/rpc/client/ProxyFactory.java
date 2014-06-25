@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 public class ProxyFactory implements InvocationHandler {
 	private static final Logger logger = LoggerFactory.getLogger(ProxyFactory.class);
 
-	private static final AtomicLong idSeq = new AtomicLong(0);
+	private static final AtomicLong sequence = new AtomicLong(0);
 
 	private Class<?> interfaceClass;
 
@@ -34,13 +34,12 @@ public class ProxyFactory implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		Request r = new Request();
-		r.setId(idSeq.incrementAndGet());
+		r.setId(sequence.incrementAndGet());
 		r.setInterfaceClass(interfaceClass);
 		r.setRpcClientConfig(rpcClientConfig);
 		r.setMethodName(method.getName());
 		r.setArgTypes(method.getParameterTypes());
 		r.setArgs(args);
-		r.setRpcClientConfig(rpcClientConfig);
 
 		logger.trace("Send : {}", r);
 
