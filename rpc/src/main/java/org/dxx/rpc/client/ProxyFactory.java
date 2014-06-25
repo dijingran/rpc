@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.dxx.rpc.EchoService;
 import org.dxx.rpc.Request;
 import org.dxx.rpc.ResponseFuture;
 import org.dxx.rpc.config.RpcClientConfig;
@@ -27,8 +28,8 @@ public class ProxyFactory implements InvocationHandler {
 	}
 
 	public static Object get(Class<?> interfaceClass, RpcClientConfig rpcClientConfig) {
-		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
-				new ProxyFactory(interfaceClass, rpcClientConfig));
+		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass,
+				EchoService.class }, new ProxyFactory(interfaceClass, rpcClientConfig));
 	}
 
 	@Override

@@ -29,6 +29,13 @@ public class RpcRunnable implements Runnable {
 		logger.trace("Receive : {}", request);
 		Response r = new Response();
 		r.setId(request.getId());
+
+		if ("echoes$$$".equals(request.getMethodName())) {
+			r.setObj(request.getArgs()[0]);
+			channel.writeAndFlush(r);
+			return;
+		}
+
 		try {
 			Object service = Servers.getRpcService(request.getInterfaceClass());
 			if (service == null) {

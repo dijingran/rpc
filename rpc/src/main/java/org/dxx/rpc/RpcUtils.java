@@ -11,6 +11,7 @@ import org.dxx.rpc.config.RpcConfig;
 import org.dxx.rpc.config.loader.Loader;
 import org.dxx.rpc.server.ServerStartup;
 import org.dxx.rpc.server.Servers;
+import org.dxx.rpc.share.HelloService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public class RpcUtils {
 	}
 
 	/**
-	 * 获取接口的代理类，由代理类负责远程调用并返回结果。
+	 * 获取接口的代理类。调用代理类的方法会相应的调用远程服务类的方法。
 	 * <p>
 	 *
 	 * @param interfaceClass
@@ -48,6 +49,17 @@ public class RpcUtils {
 	 */
 	public static <T> T get(Class<T> interfaceClass) {
 		return Clients.getRpcProxy(interfaceClass);
+	}
+
+	/**
+	 * 回声，用于检测客户端与服务端的通信是否正常
+	 *
+	 * @param interfaceClass 需要测试的接口类
+	 * @param src 原始字符串
+	 * @return 如果与服务端的通信正常，那么会返回原始字符串（src）。
+	 */
+	public static String echo(Class<?> interfaceClass, String src) {
+		return ((EchoService) get(HelloService.class)).echoes$$$(src);
 	}
 
 }
