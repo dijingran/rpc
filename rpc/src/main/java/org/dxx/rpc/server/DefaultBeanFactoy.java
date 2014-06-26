@@ -9,6 +9,6 @@ public class DefaultBeanFactoy {
 	}
 
 	public Object getSpringBean(Class<?> clazz) throws Exception {
-		return SpringUtils.springContext().getBean(clazz);
+		return SpringUtils.getBean(clazz);
 	}
 }

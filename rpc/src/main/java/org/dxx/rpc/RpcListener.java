@@ -3,12 +3,11 @@ package org.dxx.rpc;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.dxx.rpc.support.RpcApplicationListener;
+
 /**
- * 启动服务。
- * <li>与spring集成时，在web.xml中请确保放在监听器{@link org.springframework.web.context.ContextLoaderListener} 的后面，
- * 以保证能够从spring context中获取正确的实例。
- * </li>
- * Put this after the other listeners.
+ * 在web项目中启动rpc服务（请尽量配置在其他Listener后面）。
+ * <li>与spring集成时，可在spring 配置文件中 配置 {@link RpcApplicationListener} 代替本监听器。
  * 
  * @author   dixingxing
  * @Date	 2014-6-18

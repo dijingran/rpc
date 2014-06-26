@@ -44,8 +44,10 @@ public class ProxyFactory implements InvocationHandler {
 			throw new RpcException("method not implement : " + method);
 		}
 
-		if (MockUtils.isMock(interfaceClass)) {
-			return MockUtils.invokeMockClass(interfaceClass, method, args);
+		if (!EchoService.ECHO_METHOD_NAME.equals(method.getName())) {
+			if (MockUtils.isMock(interfaceClass)) {
+				return MockUtils.invokeMockClass(interfaceClass, args, method.getName(), method.getParameterTypes());
+			}
 		}
 
 		Request r = new Request();

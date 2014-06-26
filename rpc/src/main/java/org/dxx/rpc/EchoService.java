@@ -12,11 +12,13 @@ package org.dxx.rpc;
  * @Date	 2014-6-25
  */
 public interface EchoService {
+	String ECHO_METHOD_NAME = "echo$$$";
+
 	/**
 	 * 若得到返回值，且返回值与参数值相同，说明通信成功
 	 * 
 	 * @param src
 	 * @return
 	 */
-	String echoes$$$(String src);
+	String echo$$$(String src);
 }

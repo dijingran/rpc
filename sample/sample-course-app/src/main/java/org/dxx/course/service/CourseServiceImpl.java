@@ -12,6 +12,8 @@ import java.util.List;
 import org.dxx.rpc.config.annotation.RpcSpringService;
 import org.dxx.rpc.course.Course;
 import org.dxx.rpc.course.CourseService;
+import org.dxx.rpc.student.StudentService;
+import org.dxx.rpc.support.RpcBean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,6 +24,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RpcSpringService
 public class CourseServiceImpl implements CourseService {
+
+	/** 注入远程服务接口的代理类  */
+	@RpcBean
+	public StudentService studentService;
 
 	/**
 	 * @see org.dxx.rpc.course.CourseService#getCoursesForStudent(long)

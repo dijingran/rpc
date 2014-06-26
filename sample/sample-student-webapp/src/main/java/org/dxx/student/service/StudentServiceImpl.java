@@ -7,8 +7,11 @@
 package org.dxx.student.service;
 
 import org.dxx.rpc.config.annotation.RpcSpringService;
+import org.dxx.rpc.course.CourseService;
 import org.dxx.rpc.student.Student;
 import org.dxx.rpc.student.StudentService;
+import org.dxx.rpc.support.RpcBean;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,6 +22,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RpcSpringService
 public class StudentServiceImpl implements StudentService {
+
+	@RpcBean
+	public CourseService courseService;
+
 	/**
 	 * @see org.dxx.rpc.student.StudentService#getStudent(long)
 	 */
@@ -28,6 +35,12 @@ public class StudentServiceImpl implements StudentService {
 		student.setId(id);
 		student.setName("name" + id);
 		return student;
+	}
+
+	public static void main(String[] args) {
+		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+				"classpath:spring/applicationContext.xml");
+		System.out.println(ctx.getBean(StudentServiceImpl.class).courseService);
 	}
 
 }

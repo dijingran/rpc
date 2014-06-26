@@ -6,7 +6,7 @@
 
 package org.dxx.rpc;
 
-import org.dxx.rpc.share.HelloService;
+import org.dxx.rpc.share.UserService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class EchoTest {
 	@Test
 	public void test() throws Exception {
 		RpcUtils.startup();
-		Assert.assertEquals("sssssss", RpcUtils.echo(HelloService.class, "sssssss"));
+		Assert.assertEquals("sssssss", RpcUtils.echo(UserService.class, "sssssss"));
 	}
 
 }

@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 
 import java.lang.reflect.Method;
 
+import org.dxx.rpc.EchoService;
 import org.dxx.rpc.Request;
 import org.dxx.rpc.Response;
 import org.dxx.rpc.exception.RpcException;
@@ -30,7 +31,7 @@ public class RpcRunnable implements Runnable {
 		Response r = new Response();
 		r.setId(request.getId());
 
-		if ("echoes$$$".equals(request.getMethodName())) {
+		if (EchoService.ECHO_METHOD_NAME.equals(request.getMethodName())) {
 			r.setObj(request.getArgs()[0]);
 			channel.writeAndFlush(r);
 			return;

@@ -6,7 +6,6 @@
 
 package org.dxx.rpc.client;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,11 +44,16 @@ public class MockUtils {
 				} catch (Exception e) {
 					throw new RpcException(e);
 				}
-				if (!interfaceClass.isAssignableFrom(target.getClass())) {
-					throw new RpcException("mockClass " + c.getMockClass() + " not implement the interface : "
-							+ c.getInterfaceClass());
+				try {
+					Class<?> tmp = Class.forName(c.getInterfaceClass());
+					if (!tmp.isAssignableFrom(target.getClass())) {
+						throw new RpcException("mockClass " + c.getMockClass() + " not implement the interface : "
+								+ c.getInterfaceClass());
+					}
+					mocks.put(c.getInterfaceClass(), target);
+				} catch (ClassNotFoundException e) {
+					throw new RpcException("Mock error : " + e.getMessage(), e);
 				}
-				mocks.put(c.getInterfaceClass(), target);
 			}
 		}
 		return mocks.containsKey(interfaceClass.getName());
@@ -58,15 +62,16 @@ public class MockUtils {
 	/**
 	 *
 	 * @param interfaceClass
-	 * @param method
 	 * @param args
+	 * @param methodName
+	 * @param parameterTypes
 	 * @return
 	 */
-	static Object invokeMockClass(Class<?> interfaceClass, Method method, Object[] args) {
+	static Object invokeMockClass(Class<?> interfaceClass, Object[] args, String methodName, Class<?>... parameterTypes) {
 		Object target = mocks.get(interfaceClass.getName());
-		logger.warn("Invoking method [{}] with mock class : {}", method.getName(), target.getClass().getName());
+		logger.warn("Invoking method [{}] with mock class : {}", methodName, target.getClass().getName());
 		try {
-			return method.invoke(target, args);
+			return target.getClass().getMethod(methodName, parameterTypes).invoke(target, args);
 		} catch (Exception e) {
 			throw new RpcException(e);
 		}

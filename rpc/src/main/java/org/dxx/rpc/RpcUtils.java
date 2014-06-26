@@ -11,7 +11,6 @@ import org.dxx.rpc.config.RpcConfig;
 import org.dxx.rpc.config.loader.Loader;
 import org.dxx.rpc.server.ServerStartup;
 import org.dxx.rpc.server.Servers;
-import org.dxx.rpc.share.HelloService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +24,8 @@ import org.slf4j.LoggerFactory;
 public class RpcUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RpcUtils.class);
 
+	private static boolean running = false;
+
 	/**
 	 * 启动，阻塞直到启动完成
 	 * <p>
@@ -32,6 +33,11 @@ public class RpcUtils {
 	 * @return
 	 */
 	public static void startup() {
+		if (running) {
+			logger.debug("Rpc is already running!");
+			return;
+		}
+		running = true;
 		long start = System.currentTimeMillis();
 		RpcConfig conf = Loader.getRpcConfig();
 		Servers.init(conf.getRpcServerConfig().getPackages());
@@ -59,7 +65,7 @@ public class RpcUtils {
 	 * @return 如果与服务端的通信正常，那么会返回原始字符串（src）。
 	 */
 	public static String echo(Class<?> interfaceClass, String src) {
-		return ((EchoService) get(HelloService.class)).echoes$$$(src);
+		return ((EchoService) get(interfaceClass)).echo$$$(src);
 	}
 
 }
