@@ -12,9 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
@@ -38,7 +38,7 @@ public class ClientStartupGroup {
 	private Map<String, Set<Class<?>>> urlAndInterfaces = new HashMap<String, Set<Class<?>>>();
 	final List<ClientStartup> startups = new ArrayList<ClientStartup>();
 
-	AtomicInteger unfinishedCount = new AtomicInteger(0);
+	CountDownLatch latch = new CountDownLatch(0);
 
 	/**
 	 * <p>
@@ -56,22 +56,19 @@ public class ClientStartupGroup {
 			logger.trace("No need to create channels.");
 			return;
 		}
-		unfinishedCount.set(startups.size());
+
+		latch = new CountDownLatch(startups.size());
 		for (ClientStartup s : startups) {
 			s.setInterfaces(urlAndInterfaces.get(s.getUrl()));
 			s.setGroup(this);
 			es.submit(s);
 		}
 
-		while (true) {
-			if (unfinishedCount.get() == 0) {
-				logger.debug("create channel complete! cost : {} ms.", System.currentTimeMillis() - start);
-				break;
-			}
-			try {
-				Thread.sleep(20L);
-			} catch (InterruptedException e) {
-			}
+		try {
+			latch.await();
+			logger.debug("create channel complete! cost : {} ms.", System.currentTimeMillis() - start);
+		} catch (InterruptedException e1) {
+			logger.error(e1.getMessage(), e1);
 		}
 	}
 

@@ -21,6 +21,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class CourseAppMain {
 	static final Logger logger = LoggerFactory.getLogger(CourseAppMain.class);
 
+	@SuppressWarnings("resource")
 	public static void main(String[] args) throws InterruptedException {
 		// 1. 初始化spring 上下文（SpringContextHolder会持有spring的 ApplicationContext实例）
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(

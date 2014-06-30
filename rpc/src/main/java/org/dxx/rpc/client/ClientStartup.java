@@ -69,7 +69,7 @@ public class ClientStartup implements Runnable {
 				}
 				logger.debug("Channel created : {}", c);
 			} finally {
-				group.unfinishedCount.decrementAndGet();
+				group.latch.countDown();
 				if (c != null) {
 					// Wait until the connection is closed.
 					c.closeFuture().sync();
