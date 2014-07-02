@@ -6,12 +6,10 @@
 
 package org.dxx.rpc.common;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +28,7 @@ public abstract class Awakeable implements Runnable {
 	private static final long TIME_OUT = 3000L;
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private Lock lock = new ReentrantLock();
-	private Condition done = lock.newCondition();
+	private CountDownLatch latch = new CountDownLatch(1);
 
 	/**
 	 * Submit "this" to {@link ExecutorService} , blocking current thread until {@link #awake()} is invoked.
@@ -48,19 +45,15 @@ public abstract class Awakeable implements Runnable {
 	 * @param timeout cause current thread wait such long time
 	 */
 	public void submitAndWait(long timeout) {
-		lock.lock();
+		es.submit(this);
+		long start = System.currentTimeMillis();
 		try {
-			es.submit(this);
-			long start = System.currentTimeMillis();
-			done.await(timeout, TimeUnit.MILLISECONDS);
-
-			if (System.currentTimeMillis() - start > timeout) {
-				logger.warn("Time out : {}", timeout);
-			}
+			latch.await(timeout, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			logger.warn(e.getMessage());
-		} finally {
-			lock.unlock();
+		}
+		if (System.currentTimeMillis() - start > timeout) {
+			logger.warn("Time out : {}", timeout);
 		}
 	}
 
@@ -75,13 +68,8 @@ public abstract class Awakeable implements Runnable {
 	 * Signal to awake the caller thread.
 	 */
 	protected void awake() {
-		lock.lock();
-		try {
-		} finally {
-			logger.debug("Signal to awake.");
-			done.signal();
-			lock.unlock();
-		}
+		latch.countDown();
+		logger.debug("Signal to awake.");
 	}
 
 }
