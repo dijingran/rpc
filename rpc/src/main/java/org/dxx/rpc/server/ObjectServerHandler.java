@@ -41,7 +41,7 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter { // (1)
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
-		logger.debug(cause.getMessage());
+		logger.debug(cause.getMessage(), cause);
 		ctx.close();
 	}
 }

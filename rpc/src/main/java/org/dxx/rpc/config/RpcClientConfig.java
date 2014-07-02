@@ -5,21 +5,18 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.dxx.rpc.exception.RpcException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
-public class RpcClientConfig implements Serializable{
-	Logger logger = LoggerFactory.getLogger(RpcClientConfig.class);
+public class RpcClientConfig implements Serializable {
 	private String interfaceClass;
 
 	private Class<?> inter;
-	
+
 	private String host;
 	private int port;
-	
+
 	private String url;
-	
+
 	private int timeout;
 
 	@XmlAttribute
@@ -69,7 +66,7 @@ public class RpcClientConfig implements Serializable{
 	public void setUrl(String url) {
 		this.url = url;
 		String[] ss = ConfigUtils.parseUrl(url);
-		if(ss != null) {
+		if (ss != null) {
 			this.host = ss[0];
 			this.port = Integer.valueOf(ss[1]);
 		}
@@ -85,11 +82,8 @@ public class RpcClientConfig implements Serializable{
 
 	@Override
 	public String toString() {
-		return "RpcClientConfig [interfaceClass=" + interfaceClass + ", inter="
-				+ inter + ", host=" + host + ", port=" + port + ", timeout="
-				+ timeout + "]";
+		return "RpcClientConfig [interfaceClass=" + interfaceClass + ", inter=" + inter + ", host=" + host + ", port="
+				+ port + ", timeout=" + timeout + "]";
 	}
-	
-	
 
 }
