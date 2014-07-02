@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.config.RpcServiceConfig;
+import org.dxx.rpc.config.annotation.RpcNutzService;
 import org.dxx.rpc.config.annotation.RpcService;
 import org.dxx.rpc.config.annotation.RpcSpringService;
 import org.dxx.rpc.config.loader.Loader;
@@ -35,6 +36,8 @@ public class Servers {
 			try {
 				if (implClass.isAnnotationPresent(RpcSpringService.class)) {
 					instance = beanFactoy.getSpringBean(implClass);
+				} else if (implClass.isAnnotationPresent(RpcNutzService.class)) {
+					instance = beanFactoy.getNutzBean(implClass);
 				} else {
 					instance = beanFactoy.get(implClass);
 				}
@@ -51,7 +54,8 @@ public class Servers {
 		Set<Class<?>> allClasses = Loader.getRpcServices(packages);
 
 		for (Class<?> c : allClasses) {
-			if (!c.isAnnotationPresent(RpcService.class) && !c.isAnnotationPresent(RpcSpringService.class)) {
+			if (!c.isAnnotationPresent(RpcService.class) && !c.isAnnotationPresent(RpcSpringService.class)
+					&& !c.isAnnotationPresent(RpcNutzService.class)) {
 				continue;
 			}
 			for (Class<?> i : c.getInterfaces()) {
@@ -59,6 +63,8 @@ public class Servers {
 					interAndImpl.put(i, c);
 					if (c.isAnnotationPresent(RpcSpringService.class)) {
 						serviceConfigs.put(i, new RpcServiceConfig(c.getAnnotation(RpcSpringService.class).value()));
+					} else if (c.isAnnotationPresent(RpcNutzService.class)) {
+						serviceConfigs.put(i, new RpcServiceConfig(c.getAnnotation(RpcNutzService.class).value()));
 					} else {
 						serviceConfigs.put(i, new RpcServiceConfig(c.getAnnotation(RpcService.class).value()));
 					}

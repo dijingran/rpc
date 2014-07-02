@@ -12,6 +12,8 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- spring support -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
@@ -25,6 +27,14 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- nutz support -->
+		<dependency>
+			<groupId>org.nutz</groupId>
+			<artifactId>nutz</artifactId>
+			<version>1.b.49</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.dxx</groupId>
 			<artifactId>rpc-common</artifactId>
