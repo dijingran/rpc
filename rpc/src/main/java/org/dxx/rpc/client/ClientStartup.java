@@ -40,7 +40,7 @@ public class ClientStartup implements Runnable {
 
 	@Override
 	public void run() {
-		logger.debug("Try create channel : {}:{}", host, port);
+		logger.debug("Try create channel : {}:{}, for : {}", new Object[] { host, port, interfaces });
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 		final ObjectDecoder decoder = new ObjectDecoder(ClassResolvers.softCachingConcurrentResolver(Thread
@@ -80,6 +80,7 @@ public class ClientStartup implements Runnable {
 			logger.error(e.getMessage(), e);
 		} finally {
 			workerGroup.shutdownGracefully();
+			logger.debug("Shutdown.");
 		}
 
 	}

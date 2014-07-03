@@ -41,7 +41,7 @@ public class ChannelContext {
 	public static void remove(Channel c) {
 		for (Class<?> inter : channels.keySet()) {
 			if (c == channels.get(inter)) {
-				logger.debug("Remove channel for interface  : {}", inter.getName());
+				logger.debug("Remove channel for interface  : {}, {}", inter.getName(), c);
 				channels.remove(inter);
 			}
 		}

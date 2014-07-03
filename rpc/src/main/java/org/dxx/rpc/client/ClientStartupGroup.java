@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
@@ -33,12 +32,12 @@ import org.slf4j.LoggerFactory;
 
 public class ClientStartupGroup {
 	static Logger logger = LoggerFactory.getLogger(ClientStartupGroup.class);
-	private static ExecutorService es = Executors.newCachedThreadPool();
 
 	private Map<String, Set<Class<?>>> urlAndInterfaces = new HashMap<String, Set<Class<?>>>();
 	final List<ClientStartup> startups = new ArrayList<ClientStartup>();
 
 	CountDownLatch latch = new CountDownLatch(0);
+	AtomicInteger seq = new AtomicInteger(0);
 
 	/**
 	 * <p>
@@ -47,6 +46,7 @@ public class ClientStartupGroup {
 	 * <li>Synchronized, avoid same channel be created multi times.
 	 */
 	public synchronized void createChannelsSync() {
+		logger.debug("Begin to create channel.");
 		urlAndInterfaces.clear();
 		startups.clear();
 
@@ -61,7 +61,7 @@ public class ClientStartupGroup {
 		for (ClientStartup s : startups) {
 			s.setInterfaces(urlAndInterfaces.get(s.getUrl()));
 			s.setGroup(this);
-			es.submit(s);
+			new Thread(s, "CreateChannel-" + seq.incrementAndGet()).start();
 		}
 
 		try {
