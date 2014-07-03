@@ -1,7 +1,7 @@
 package org.dxx.rpc.exception;
 
 @SuppressWarnings("serial")
-public class RpcException extends RuntimeException{
+public class RpcException extends RuntimeException {
 
 	public RpcException() {
 		super();

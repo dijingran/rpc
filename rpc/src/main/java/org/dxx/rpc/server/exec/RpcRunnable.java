@@ -2,6 +2,8 @@ package org.dxx.rpc.server.exec;
 
 import io.netty.channel.Channel;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 
 import org.dxx.rpc.EchoService;
@@ -50,9 +52,15 @@ public class RpcRunnable implements Runnable {
 
 		} catch (Throwable e) {
 			logger.warn(e.getMessage(), e);
-			r.setError(new RpcException(channel.toString(), e));
+			r.setError(new RpcException("Remote Ex ->" + channel.toString() + " : " + getStackTrace(e)));
 		} finally {
 			channel.writeAndFlush(r);
 		}
+	}
+
+	private static String getStackTrace(Throwable e) {
+		StringWriter stringWriter = new StringWriter();
+		e.printStackTrace(new PrintWriter(stringWriter));
+		return stringWriter.getBuffer().toString();
 	}
 }
