@@ -1,12 +1,9 @@
 package org.dxx.rpc;
 
-import java.io.Serializable;
-
 import org.dxx.rpc.exception.RpcException;
 
 @SuppressWarnings("serial")
-public class Response implements Serializable {
-	private long id;
+public class Response extends AbstractResponse {
 
 	private Object obj;
 
@@ -26,14 +23,6 @@ public class Response implements Serializable {
 
 	public void setObj(Object obj) {
 		this.obj = obj;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	@Override

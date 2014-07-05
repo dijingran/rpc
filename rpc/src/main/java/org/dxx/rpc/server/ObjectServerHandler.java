@@ -18,7 +18,11 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter { // (1)
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
-		channelHandler.handle(ctx.channel(), (Request) msg);
+		if (msg instanceof String) {
+			ctx.channel().writeAndFlush("Not implement yet!\r\n");
+		} else {
+			channelHandler.handle(ctx.channel(), (Request) msg);
+		}
 	}
 
 	@Override

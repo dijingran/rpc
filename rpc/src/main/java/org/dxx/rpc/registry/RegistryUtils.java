@@ -30,7 +30,7 @@ public class RegistryUtils {
 	}
 
 	public static void setResponse(LocateRpcServerResponse response) {
-		RegistryUtils.responses.put(response.getRequestId(), response);
+		RegistryUtils.responses.put(response.getId(), response);
 	}
 
 	public static void setRegistyChannel(Channel registyChannel) {

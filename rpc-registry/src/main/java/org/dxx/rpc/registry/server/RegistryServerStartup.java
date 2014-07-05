@@ -1,4 +1,4 @@
-package org.dxx.rpc.server;
+package org.dxx.rpc.registry.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -11,22 +11,24 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
-import org.dxx.rpc.common.Awakeable;
-import org.dxx.rpc.registry.RegistryUtils;
+import org.dxx.rpc.registry.RegistryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServerStartup extends Awakeable {
-	static final Logger logger = LoggerFactory.getLogger(ServerStartup.class);
+public class RegistryServerStartup {
+	static final Logger logger = LoggerFactory.getLogger(RegistryServerStartup.class);
 	private int port;
 
-	public ServerStartup(int port) {
+	public RegistryServerStartup() {
+		this.port = RegistryConstants.DEFUALT_PORT;
+	}
+
+	public RegistryServerStartup(int port) {
 		super();
 		this.port = port;
 	}
 
-	@Override
-	public void run() {
+	public void run() throws Exception {
 		ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() { // (4)
 			@Override
 			public void initChannel(SocketChannel ch) throws Exception {
@@ -44,22 +46,12 @@ public class ServerStartup extends Awakeable {
 			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(channelInitializer)
 					.option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
 
-			// Bind and start to accept incoming connections.
 			ChannelFuture f = b.bind(port).sync();
-			logger.info("Rpc server is running on port : {}", port);
-			// call registry and init channels for rpc clients
-			RegistryUtils.createRegistryChannelSync();
-			awake();
-
+			logger.info("Registy is running on port {}!", port);
 			f.channel().closeFuture().sync();
-
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			awake();
 		} finally {
 			workerGroup.shutdownGracefully();
 			bossGroup.shutdownGracefully();
 		}
 	}
-
 }

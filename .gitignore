@@ -4,11 +4,6 @@ rpc/.settings
 rpc/.classpath
 rpc/.project
 
-rpc-common/bin
-rpc-common/target
-rpc-common/.settings
-rpc-common/.classpath
-rpc-common/.project
 
 rpc-registry/bin
 rpc-registry/target
@@ -16,17 +11,7 @@ rpc-registry/.settings
 rpc-registry/.classpath
 rpc-registry/.project
 
-rpc-registry/rpc-registry-api/bin
-rpc-registry/rpc-registry-api/target
-rpc-registry/rpc-registry-api/.settings
-rpc-registry/rpc-registry-api/.classpath
-rpc-registry/rpc-registry-api/.project
 
-rpc-registry/rpc-registry-server/bin
-rpc-registry/rpc-registry-server/target
-rpc-registry/rpc-registry-server/.settings
-rpc-registry/rpc-registry-server/.classpath
-rpc-registry/rpc-registry-server/.project
 
 
 sample/bin

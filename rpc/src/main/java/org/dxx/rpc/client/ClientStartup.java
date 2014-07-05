@@ -9,12 +9,11 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
 
 import java.util.Set;
 
+import org.dxx.rpc.codec.DexnDecoder;
+import org.dxx.rpc.codec.DexnEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +42,6 @@ public class ClientStartup implements Runnable {
 		logger.debug("Try create channel : {}:{}, for : {}", new Object[] { host, port, interfaces });
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-		final ObjectDecoder decoder = new ObjectDecoder(ClassResolvers.softCachingConcurrentResolver(Thread
-				.currentThread().getContextClassLoader()));
 		try {
 			Bootstrap b = new Bootstrap();
 			b.group(workerGroup);
@@ -53,7 +50,7 @@ public class ClientStartup implements Runnable {
 			b.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline().addLast(new ObjectEncoder(), decoder, new ObjectClientHandler());
+					ch.pipeline().addLast(new DexnEncoder(), new DexnDecoder(), new ObjectClientHandler());
 				}
 			});
 
