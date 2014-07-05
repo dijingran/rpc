@@ -61,7 +61,6 @@ public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 		LENGTH_PLACEHOLDER[1] = DexnDecoder.MAGIC_LOW;
 
 		byte[] bytes = SerializationUtils.fstSerialize(msg);
-		System.arraycopy(intToBytes(bytes.length), 0, LENGTH_PLACEHOLDER, 2, 4);
 
 		ByteBufOutputStream bout = new ByteBufOutputStream(out);
 		bout.write(LENGTH_PLACEHOLDER);

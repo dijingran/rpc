@@ -52,7 +52,5 @@ public class RpcTest {
 						+ "  total cost : " + cost + ", average cost : " + (cost / (i * 1.0)));
 			}
 		}
-
-		Thread.sleep(10000L);
 	}
 }
