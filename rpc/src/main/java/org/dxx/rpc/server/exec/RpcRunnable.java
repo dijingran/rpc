@@ -50,7 +50,7 @@ public class RpcRunnable implements Runnable {
 				StopWatch sw = new StopWatch();
 				Method m = service.getClass().getMethod(request.getMethodName(), request.getArgTypes());
 				r.setObj(m.invoke(service, request.getArgs()));
-				logger.trace("Invoke method [{}] cost {} ms.", m.getName(), sw.stop());
+				logger.trace("Invoke method cost {} ms : {}", sw.stop(), m);
 			}
 
 		} catch (Throwable e) {

@@ -66,7 +66,7 @@ public class ClientStartupGroup {
 
 		try {
 			latch.await();
-			logger.debug("create channel complete! cost : {} ms.", System.currentTimeMillis() - start);
+			logger.debug("Create channel complete! cost : {} ms.", System.currentTimeMillis() - start);
 		} catch (InterruptedException e1) {
 			logger.error(e1.getMessage(), e1);
 		}

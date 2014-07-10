@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.dxx.rpc.EchoService;
 import org.dxx.rpc.Request;
 import org.dxx.rpc.ResponseFuture;
+import org.dxx.rpc.common.StopWatch;
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
@@ -37,11 +38,12 @@ public class ProxyFactory implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		StopWatch sw = new StopWatch();
 		if (ignoreMethod(method)) {
 			if ("toString".equals(method.getName())) {
-				return proxy.getClass().toString();
+				return "RPC_" + proxy.getClass().toString();
 			}
-			throw new RpcException("method not implement : " + method);
+			throw new RpcException("Method not implement : " + method);
 		}
 
 		if (!EchoService.ECHO_METHOD_NAME.equals(method.getName())) {
@@ -58,8 +60,6 @@ public class ProxyFactory implements InvocationHandler {
 		r.setArgTypes(method.getParameterTypes());
 		r.setArgs(args);
 
-		logger.trace("Send : {}", r);
-
 		ResponseFuture f = new ResponseFuture(r);
 		try {
 			ChannelContext.getChannel(interfaceClass).writeAndFlush(r);
@@ -67,6 +67,7 @@ public class ProxyFactory implements InvocationHandler {
 			f.release();
 			throw e;
 		}
+		logger.trace("Send request cost {} ms : {}", sw.stop(), r);
 		return f.get().getObj();
 	}
 
