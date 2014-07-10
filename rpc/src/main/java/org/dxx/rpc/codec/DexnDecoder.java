@@ -69,7 +69,7 @@ public class DexnDecoder extends DexnTelnetDecoder {
 			return;
 		}
 
-		// with magic num
+		// skip magic num
 		int bodyLength = byteToInt(header, 2);
 		byte[] body = new byte[bodyLength];
 		in.readBytes(body);

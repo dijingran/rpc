@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enhance the {@link Runnable} , support blocking current thread until {@link #awake()} is invoked.
+ * Enhance the {@link Runnable} , support blocking current thread until {@link #awake()} invoked.
  * <p>
  * {@link #submitAndWait()} will block for {@link Awakeable#TIME_OUT} mills.
  * </p>
@@ -31,7 +31,7 @@ public abstract class Awakeable implements Runnable {
 	private CountDownLatch latch = new CountDownLatch(1);
 
 	/**
-	 * Submit "this" to {@link ExecutorService} , blocking current thread until {@link #awake()} is invoked.
+	 * Submit "this" to {@link ExecutorService} , blocking current thread until {@link #awake()} invoked.
 	 * <p>
 	 * 
 	 * </p>
