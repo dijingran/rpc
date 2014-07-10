@@ -34,7 +34,7 @@ public class ClientStartupGroup {
 	static Logger logger = LoggerFactory.getLogger(ClientStartupGroup.class);
 
 	private Map<String, Set<Class<?>>> urlAndInterfaces = new HashMap<String, Set<Class<?>>>();
-	final List<ClientStartup> startups = new ArrayList<ClientStartup>();
+	List<ClientStartup> startups = new ArrayList<ClientStartup>();
 
 	CountDownLatch latch = new CountDownLatch(0);
 	AtomicInteger seq = new AtomicInteger(0);
@@ -51,7 +51,7 @@ public class ClientStartupGroup {
 		startups.clear();
 
 		long start = System.currentTimeMillis();
-		final List<ClientStartup> startups = calculateChannels();
+		startups = calculateChannels();
 		if (startups.isEmpty()) {
 			logger.trace("No need to create channels.");
 			return;
@@ -80,7 +80,7 @@ public class ClientStartupGroup {
 	*/
 	private List<ClientStartup> calculateChannels() {
 		RpcClientConfigs configs = Loader.getRpcClientConfigs();
-		final List<ClientStartup> startups = new ArrayList<ClientStartup>();
+		final List<ClientStartup> list = new ArrayList<ClientStartup>();
 
 		List<String> intersWithoutUrl = new ArrayList<String>();
 		// 指定了URL，不用经过注册中心
@@ -98,7 +98,7 @@ public class ClientStartupGroup {
 				Set<Class<?>> interfaces = new HashSet<Class<?>>();
 				interfaces.add(c.getInter());
 				urlAndInterfaces.put(url, interfaces);
-				startups.add(new ClientStartup(c.getHost(), c.getPort()));
+				list.add(new ClientStartup(c.getHost(), c.getPort()));
 			} else {
 				urlAndInterfaces.get(url).add(c.getInter());
 			}
@@ -109,28 +109,28 @@ public class ClientStartupGroup {
 				if (Loader.getRpcConfig().getRegistry() == null) {
 					logger.warn("没有配置注册中心，并且以下接口没有指定服务提供者的URL ：{}", intersWithoutUrl);
 				}
-				appendServers(startups, RegistryUtils.locateServer(intersWithoutUrl));
+				appendServers(list, RegistryUtils.locateServer(intersWithoutUrl));
 			}
 		} catch (Exception e) {
 			logger.warn(e.getMessage(), e);
 		}
-		return startups;
+		return list;
 	}
 
 	/**
 	 * 把 {@link LocateRpcServerResponse} 中的服务端url追加到启动列表中
 	 * <p>
 	 *
-	 * @param startups
+	 * @param startupList
 	 * @param response 
 	*/
 
-	private void appendServers(final List<ClientStartup> startups, LocateRpcServerResponse response) {
+	private void appendServers(final List<ClientStartup> startupList, LocateRpcServerResponse response) {
 		if (response == null) {
 			logger.warn("尚未连接到注册中心");
 			return;
 		}
-		if (response == null || !response.isSuccess()) {
+		if (!response.isSuccess()) {
 			logger.warn("从注册中心获取服务端地址失败:" + response.getErrorMessage());
 			return;
 		}
@@ -140,7 +140,7 @@ public class ClientStartupGroup {
 				Set<Class<?>> interfaces = new HashSet<Class<?>>();
 				interfaces.add(RegistryUtils.getInter(s.getInterfaceClass()));
 				urlAndInterfaces.put(url, interfaces);
-				startups.add(new ClientStartup(s.getHost(), s.getPort()));
+				startupList.add(new ClientStartup(s.getHost(), s.getPort()));
 			} else {
 				urlAndInterfaces.get(url).add(RegistryUtils.getInter(s.getInterfaceClass()));
 			}

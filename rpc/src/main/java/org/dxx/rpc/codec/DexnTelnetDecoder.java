@@ -10,7 +10,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +25,7 @@ import org.slf4j.LoggerFactory;
 public class DexnTelnetDecoder extends ByteToMessageDecoder {
 	static final Logger logger = LoggerFactory.getLogger(DexnTelnetDecoder.class);
 
+	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 		if (in.readableBytes() == 0) {
 			return;
@@ -66,7 +66,7 @@ public class DexnTelnetDecoder extends ByteToMessageDecoder {
 
 	}
 
-	private static String toString(byte[] message) throws UnsupportedEncodingException {
+	private static String toString(byte[] message) {
 		byte[] copy = new byte[message.length];
 		int index = 0;
 		for (int i = 0; i < message.length; i++) {

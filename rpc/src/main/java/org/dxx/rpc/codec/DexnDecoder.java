@@ -12,8 +12,6 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.List;
 
 import org.dxx.rpc.common.SerializationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -21,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * @Date	 2014-7-5
  */
 public class DexnDecoder extends DexnTelnetDecoder {
-	static final Logger logger = LoggerFactory.getLogger(DexnDecoder.class);
 	// header length.
 	protected static final int HEADER_LENGTH = 16;
 
