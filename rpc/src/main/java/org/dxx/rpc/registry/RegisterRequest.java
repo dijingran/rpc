@@ -6,6 +6,12 @@ import java.util.List;
 
 import org.dxx.rpc.AbstractRequest;
 
+/**
+ * Server -> Registry
+ * 
+ * @author   dixingxing
+ * @Date	 2014年7月11日
+ */
 @SuppressWarnings("serial")
 public class RegisterRequest extends AbstractRequest {
 	private List<RegisterRequest.Service> services = new ArrayList<RegisterRequest.Service>();

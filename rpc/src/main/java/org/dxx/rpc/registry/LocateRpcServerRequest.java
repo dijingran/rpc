@@ -5,6 +5,12 @@ import java.util.List;
 
 import org.dxx.rpc.AbstractRequest;
 
+/**
+ * Client -> Registry
+ * 
+ * @author   dixingxing
+ * @Date	 2014年7月11日
+ */
 @SuppressWarnings("serial")
 public class LocateRpcServerRequest extends AbstractRequest {
 
