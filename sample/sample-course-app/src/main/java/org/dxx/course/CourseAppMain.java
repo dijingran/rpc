@@ -6,6 +6,8 @@
 
 package org.dxx.course;
 
+import java.util.Random;
+
 import org.dxx.course.service.CourseServiceImpl;
 import org.dxx.rpc.RpcUtils;
 import org.dxx.rpc.student.StudentService;
@@ -43,7 +45,7 @@ public class CourseAppMain {
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
-			Thread.sleep(2000L);
+			Thread.sleep(new Random().nextInt(10) * 1000);
 		}
 	}
 }

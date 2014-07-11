@@ -3,7 +3,9 @@ package org.dxx.rpc.client;
 import io.netty.channel.Channel;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
@@ -18,7 +20,7 @@ public class ChannelContext {
 	static ClientStartupGroup clientStartupGroup = new ClientStartupGroup();
 
 	/**
-	 * 根据接口名获得channel。
+	 * 根据接口名获得channel。 TODO
 	 */
 	public static Channel getChannel(Class<?> interfaceClass) {
 		Channel c = channels.get(interfaceClass);
@@ -55,4 +57,18 @@ public class ChannelContext {
 	public static boolean exists(String interName) {
 		return interNameAndchannels.containsKey(interName);
 	}
+
+	// =============== heartbeat S ===============
+	// TODO use this
+	private boolean isInvalid(Channel c) {
+		return invalidChannels.contains(c);
+	}
+
+	public static void heartbeat(Channel c) {
+		logger.trace("Hearbeating : {}", c);
+		invalidChannels.add(c);
+	}
+
+	static Set<Channel> invalidChannels = new CopyOnWriteArraySet<Channel>();
+	// =============== heartbeat E===============
 }

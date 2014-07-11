@@ -2,7 +2,10 @@ package org.dxx.rpc.server;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 
+import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.Request;
 import org.dxx.rpc.server.exec.RpcChannelHandler;
 import org.slf4j.Logger;
@@ -22,6 +25,20 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter { // (1)
 			ctx.channel().writeAndFlush("Not implement yet!\r\n");
 		} else {
 			channelHandler.handle(ctx.channel(), (Request) msg);
+		}
+	}
+
+	/**
+	 * @see io.netty.channel.ChannelInboundHandlerAdapter#userEventTriggered(io.netty.channel.ChannelHandlerContext, java.lang.Object)
+	 */
+	@Override
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+		if (evt instanceof IdleStateEvent) {
+			IdleStateEvent e = (IdleStateEvent) evt;
+			if (e.state() == IdleState.WRITER_IDLE) {
+				logger.trace("Send heatbeat Request : {}", ctx.channel());
+				ctx.writeAndFlush(new HeartbeatRequest());
+			}
 		}
 	}
 
@@ -45,7 +62,7 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter { // (1)
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
-		logger.debug(cause.getMessage(), cause);
+		logger.debug(cause.getMessage());
 		ctx.close();
 	}
 }

@@ -8,6 +8,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
 
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
@@ -32,6 +35,7 @@ public class ServerStartup extends Awakeable {
 			public void initChannel(SocketChannel ch) throws Exception {
 				ch.pipeline().addLast("encoder", new DexnEncoder());
 				ch.pipeline().addLast("decoder", new DexnDecoder());
+				ch.pipeline().addLast(new IdleStateHandler(0, 3, 0, TimeUnit.SECONDS));
 				ch.pipeline().addLast(new ObjectServerHandler());
 			}
 		};

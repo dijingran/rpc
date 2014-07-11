@@ -3,6 +3,7 @@ package org.dxx.rpc.client;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.Response;
 import org.dxx.rpc.ResponseFuture;
 import org.slf4j.Logger;
@@ -19,7 +20,11 @@ public class ObjectClientHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		ResponseFuture.receive((Response) msg);
+		ChannelContext.heartbeat(ctx.channel());
+		if (msg instanceof HeartbeatRequest) {
+		} else {
+			ResponseFuture.receive((Response) msg);
+		}
 	}
 
 	@Override
