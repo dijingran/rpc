@@ -2,8 +2,6 @@ package org.dxx.rpc;
 
 import java.util.Arrays;
 
-import org.dxx.rpc.config.RpcClientConfig;
-
 @SuppressWarnings("serial")
 public class Request extends AbstractRequest {
 
@@ -15,14 +13,14 @@ public class Request extends AbstractRequest {
 
 	private Object[] args;
 
-	private RpcClientConfig rpcClientConfig;
+	private int timeout;
 
-	public RpcClientConfig getRpcClientConfig() {
-		return rpcClientConfig;
+	public int getTimeout() {
+		return timeout;
 	}
 
-	public void setRpcClientConfig(RpcClientConfig rpcClientConfig) {
-		this.rpcClientConfig = rpcClientConfig;
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 
 	public Class<?> getInterfaceClass() {

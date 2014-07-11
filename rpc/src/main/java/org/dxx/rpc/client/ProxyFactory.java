@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.dxx.rpc.EchoService;
 import org.dxx.rpc.Request;
 import org.dxx.rpc.ResponseFuture;
-import org.dxx.rpc.common.StopWatch;
+import org.dxx.rpc.common.TraceUtils;
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
@@ -21,24 +21,24 @@ public class ProxyFactory implements InvocationHandler {
 
 	private static final AtomicLong sequence = new AtomicLong(0);
 
-	private Class<?> interfaceClass;
+	private Class<?> inter;
 
-	private RpcClientConfig rpcClientConfig;
+	private int timeout;
 
-	private ProxyFactory(Class<?> interfaceClass, RpcClientConfig rpcClientConfig) {
+	private ProxyFactory(Class<?> interfaceClass, int timeout) {
 		super();
-		this.interfaceClass = interfaceClass;
-		this.rpcClientConfig = rpcClientConfig;
+		this.inter = interfaceClass;
+		this.timeout = timeout;
 	}
 
 	public static Object get(Class<?> interfaceClass, RpcClientConfig rpcClientConfig) {
 		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass,
-				EchoService.class }, new ProxyFactory(interfaceClass, rpcClientConfig));
+				EchoService.class }, new ProxyFactory(interfaceClass, rpcClientConfig.getTimeout()));
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		StopWatch sw = new StopWatch();
+		long start = System.nanoTime();
 		if (ignoreMethod(method)) {
 			if ("toString".equals(method.getName())) {
 				return "RPC_" + proxy.getClass().toString();
@@ -47,27 +47,30 @@ public class ProxyFactory implements InvocationHandler {
 		}
 
 		if (!EchoService.ECHO_METHOD_NAME.equals(method.getName())) {
-			if (MockUtils.isMock(interfaceClass)) {
-				return MockUtils.invokeMockClass(interfaceClass, args, method.getName(), method.getParameterTypes());
+			if (MockUtils.isMock(inter)) {
+				return MockUtils.invokeMockClass(inter, args, method.getName(), method.getParameterTypes());
 			}
 		}
 
 		Request r = new Request();
 		r.setId(sequence.incrementAndGet());
-		r.setInterfaceClass(interfaceClass);
-		r.setRpcClientConfig(rpcClientConfig);
+		r.setInterfaceClass(inter);
+		r.setTimeout(timeout);
 		r.setMethodName(method.getName());
 		r.setArgTypes(method.getParameterTypes());
 		r.setArgs(args);
 
 		ResponseFuture f = new ResponseFuture(r);
 		try {
-			ChannelContext.getChannel(interfaceClass).writeAndFlush(r);
+			ChannelContext.getChannel(inter).writeAndFlush(r);
 		} catch (Throwable e) {
 			f.release();
 			throw e;
 		}
-		logger.trace("Send request cost {} ms : {}", sw.stop(), r);
+
+		if (logger.isTraceEnabled()) {
+			logger.trace("Send request cost {} ms : {}", TraceUtils.diff(start), r);
+		}
 		return f.get().getObj();
 	}
 

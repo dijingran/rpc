@@ -14,7 +14,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * 从指定包下查找class，使用 classloader.getResources方式
@@ -25,7 +27,7 @@ public final class ScanUtils {
 	/**
 	 * logger
 	 */
-	private static final Logger LOG = Logger.getLogger(ScanUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ScanUtils.class);
 
 	private static final int LENGTH_FOR_CLASS = 6;
 	/**

@@ -41,6 +41,7 @@ public class RpcUtils {
 		long start = System.currentTimeMillis();
 		RpcConfig conf = Loader.getRpcConfig();
 		Servers.init(conf.getRpcServerConfig().getPackages());
+		Clients.init();
 
 		new ServerStartup(conf.getRpcServerConfig().getPort()).submitAndWait(8000);
 		logger.debug("Rpc is running! cost {} ms", System.currentTimeMillis() - start);

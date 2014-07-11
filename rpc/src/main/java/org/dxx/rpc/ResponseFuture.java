@@ -25,9 +25,20 @@ public class ResponseFuture {
 	private final Lock lock = new ReentrantLock();
 	private final Condition done = lock.newCondition();
 
+	public ResponseFuture(Request request) {
+		super();
+		begin = System.currentTimeMillis();
+		this.request = request;
+		if (request.getTimeout() >= 0) {
+			this.timeout = request.getTimeout();
+		}
+		responses.put(request.getId(), this);
+	}
+
 	public static void receive(Response response) {
-		responses.remove(response.getId()).doReceived(response);
-		logger.trace("Done : {}", response);
+		ResponseFuture rf = responses.remove(response.getId());
+		logger.trace("Receive response cost {} ms : {}", System.currentTimeMillis() - rf.begin, response);
+		rf.doReceived(response);
 	}
 
 	private void doReceived(Response resp) {
@@ -40,30 +51,16 @@ public class ResponseFuture {
 		}
 	}
 
-	public ResponseFuture(Request request) {
-		super();
-		begin = System.currentTimeMillis();
-		this.request = request;
-		if (request.getRpcClientConfig() != null && request.getRpcClientConfig().getTimeout() >= 0) {
-			this.timeout = request.getRpcClientConfig().getTimeout();
-		}
-		responses.put(request.getId(), this);
-	}
-
 	private boolean isDone() {
 		return response != null;
 	}
 
 	public Response get() {
 		if (!isDone()) {
-			long start = System.currentTimeMillis();
 			lock.lock();
 			try {
-				while (!isDone()) {
+				if (!isDone()) {
 					done.await(timeout, TimeUnit.MILLISECONDS);
-					if (isDone() || System.currentTimeMillis() - start > timeout) {
-						break;
-					}
 				}
 			} catch (InterruptedException e) {
 				throw new RpcException(e);
@@ -87,7 +84,7 @@ public class ResponseFuture {
 	private RpcTimeoutException timeoutException() {
 		String s = ChannelContext.getChannel(request.getInterfaceClass()) + " : "
 				+ request.getInterfaceClass().toString();
-		return new RpcTimeoutException(request.getRpcClientConfig().getTimeout(), s);
+		return new RpcTimeoutException(timeout, s);
 	}
 
 	public long getBegin() {

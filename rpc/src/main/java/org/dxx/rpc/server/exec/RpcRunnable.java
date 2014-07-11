@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import org.dxx.rpc.EchoService;
 import org.dxx.rpc.Request;
 import org.dxx.rpc.Response;
-import org.dxx.rpc.common.StopWatch;
+import org.dxx.rpc.common.TraceUtils;
 import org.dxx.rpc.exception.RpcException;
 import org.dxx.rpc.server.Servers;
 import org.slf4j.Logger;
@@ -47,10 +47,13 @@ public class RpcRunnable implements Runnable {
 						+ channel.toString()));
 				logger.warn("Service not found : {}", request.getInterfaceClass());
 			} else {
-				StopWatch sw = new StopWatch();
+				long start = System.nanoTime();
 				Method m = service.getClass().getMethod(request.getMethodName(), request.getArgTypes());
 				r.setObj(m.invoke(service, request.getArgs()));
-				logger.trace("Invoke method cost {} ms : {}", sw.stop(), m);
+
+				if (logger.isTraceEnabled()) {
+					logger.trace("Invoke method cost {} ms : {}", TraceUtils.diff(start), m);
+				}
 			}
 
 		} catch (Throwable e) {

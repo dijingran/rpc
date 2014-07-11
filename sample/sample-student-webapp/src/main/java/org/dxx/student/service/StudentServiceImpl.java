@@ -37,7 +37,6 @@ public class StudentServiceImpl implements StudentService {
 		return student;
 	}
 
-	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
 				"classpath:spring/applicationContext.xml");

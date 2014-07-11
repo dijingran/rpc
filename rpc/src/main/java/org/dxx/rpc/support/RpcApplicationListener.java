@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import org.dxx.rpc.RpcUtils;
 import org.dxx.rpc.WebUtils;
+import org.dxx.rpc.client.Clients;
 import org.dxx.rpc.config.annotation.RpcSpringService;
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ public class RpcApplicationListener implements ApplicationListener<ContextRefres
 		} catch (Throwable e) {
 			logger.debug("Case to XmlWebApplicationContext Ex : {}", e.getMessage());
 		}
+
+		Clients.init();
 
 		DefaultListableBeanFactory bf = (DefaultListableBeanFactory) ctx.getAutowireCapableBeanFactory();
 		for (String bdn : bf.getBeanDefinitionNames()) {

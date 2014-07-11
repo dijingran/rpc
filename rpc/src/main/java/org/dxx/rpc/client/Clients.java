@@ -16,14 +16,18 @@ public class Clients {
 	private static Map<Class<?>, RpcClientConfig> interAndConfigs;
 	private static Map<Class<?>, Object> interAndProxies = new ConcurrentHashMap<Class<?>, Object>();
 
-	private static RpcClientConfig getConfig(Class<?> interfaceClass) {
-		if (interAndConfigs == null) {
-			interAndConfigs = new HashMap<Class<?>, RpcClientConfig>();
-			RpcClientConfigs configs = Loader.getRpcClientConfigs();
-			for (RpcClientConfig c : configs.getClients()) {
-				interAndConfigs.put(c.getInter(), c);
-			}
+	/**
+	 * Init client configs map. 
+	 */
+	public static void init() {
+		interAndConfigs = new HashMap<Class<?>, RpcClientConfig>();
+		RpcClientConfigs configs = Loader.getRpcClientConfigs();
+		for (RpcClientConfig c : configs.getClients()) {
+			interAndConfigs.put(c.getInter(), c);
 		}
+	}
+
+	private static RpcClientConfig getConfig(Class<?> interfaceClass) {
 		return interAndConfigs.get(interfaceClass);
 	}
 
