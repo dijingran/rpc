@@ -12,8 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
@@ -36,9 +34,6 @@ public class ClientStartupGroup {
 	private Map<String, Set<Class<?>>> urlAndInterfaces = new HashMap<String, Set<Class<?>>>();
 	List<ClientStartup> startups = new ArrayList<ClientStartup>();
 
-	CountDownLatch latch = new CountDownLatch(0);
-	AtomicInteger seq = new AtomicInteger(0);
-
 	/**
 	 * <p>
 	 * Create channels, blocking until all channels finished(include not connected).
@@ -57,19 +52,12 @@ public class ClientStartupGroup {
 			return;
 		}
 
-		latch = new CountDownLatch(startups.size());
 		for (ClientStartup s : startups) {
 			s.setInterfaces(urlAndInterfaces.get(s.getUrl()));
-			s.setGroup(this);
-			new Thread(s, "CreateChannel-" + seq.incrementAndGet()).start();
+			s.startup();
 		}
 
-		try {
-			latch.await();
-			logger.debug("Create channel complete! cost : {} ms.", System.currentTimeMillis() - start);
-		} catch (InterruptedException e1) {
-			logger.error(e1.getMessage(), e1);
-		}
+		logger.debug("Create channels complete! cost : {} ms.", System.currentTimeMillis() - start);
 	}
 
 	/**

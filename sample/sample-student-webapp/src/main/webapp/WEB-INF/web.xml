@@ -27,10 +27,10 @@
 	</context-param>
 
 	<!-- Put this after "org.springframework.web.context.ContextLoaderListener" 
-		, ensure spring context initialized first. -->
+		, ensure spring context initialized first. 
 	<listener>
 		<listener-class>org.dxx.rpc.RpcListener</listener-class>
-	</listener>
+	</listener> -->
 
 	<servlet>
 		<servlet-name>studentServlet</servlet-name>

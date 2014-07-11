@@ -27,7 +27,7 @@ public class CourseAppMain {
 				"classpath:spring/applicationContext.xml");
 
 		// 2. 初始化rpc服务，作为服务端：对外暴露CourseService服务（CourseServiceImpl标注了@RpcSpringService）。
-		RpcUtils.startup();
+		//		RpcUtils.startup(); // 这个可以省略，因为  applicationContext.xml中配置了 org.dxx.rpc.support.RpcApplicationListener
 
 		// 3. 作为客户端，调用其它应用提供的StudentService服务，见RpcClient.xml
 

@@ -17,13 +17,11 @@ import org.dxx.rpc.codec.DexnEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClientStartup implements Runnable {
+public class ClientStartup {
 	static Logger logger = LoggerFactory.getLogger(ClientStartup.class);
 
 	private String host;
 	private int port;
-
-	private ClientStartupGroup group;
 
 	private Set<Class<?>> interfaces;
 
@@ -33,12 +31,7 @@ public class ClientStartup implements Runnable {
 		this.port = port;
 	}
 
-	public void setGroup(ClientStartupGroup group) {
-		this.group = group;
-	}
-
-	@Override
-	public void run() {
+	public void startup() {
 		logger.debug("Try create channel : {}:{}, for : {}", new Object[] { host, port, interfaces });
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -54,32 +47,18 @@ public class ClientStartup implements Runnable {
 				}
 			});
 
-			Channel c = null;
-			try {
+			ChannelFuture f = b.connect(host, port).sync();
+			Channel c = f.channel();
 
-				ChannelFuture f = b.connect(host, port).sync();
-				c = f.channel();
-
-				// store the relation between interface class and channel
-				for (Class<?> i : this.interfaces) {
-					ChannelContext.add(i, c);
-				}
-				logger.debug("Channel created : {}", c);
-			} finally {
-				group.latch.countDown();
-				if (c != null) {
-					// Wait until the connection is closed.
-					c.closeFuture().sync();
-				}
+			// store the relation between interface class and channel
+			for (Class<?> i : this.interfaces) {
+				ChannelContext.add(i, c);
 			}
+			logger.debug("Channel created : {}", c);
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-		} finally {
-			workerGroup.shutdownGracefully();
-			logger.debug("Shutdown.");
 		}
-
 	}
 
 	public void setInterfaces(Set<Class<?>> interfaces) {
