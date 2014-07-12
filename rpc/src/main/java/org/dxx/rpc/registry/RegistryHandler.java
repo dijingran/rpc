@@ -34,9 +34,9 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 		RegisterRequest request = new RegisterRequest();
 		request.setPort(Loader.getRpcConfig().getRpcServerConfig().getPort());
 
-		List<RegisterRequest.Service> services = new ArrayList<RegisterRequest.Service>();
+		List<Service> services = new ArrayList<Service>();
 		for (Class<?> interfaceClass : Servers.interAndImpl.keySet()) {
-			RegisterRequest.Service s = new RegisterRequest.Service();
+			Service s = new Service();
 			s.setInterfaceClass(interfaceClass.getName());
 			s.setDesc(Servers.getDef(interfaceClass).getDescription());
 			services.add(s);
@@ -56,8 +56,8 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 			} else {
 				logger.error("Register failed : {}", response.getErrorMessage());
 			}
-		} else if (msg instanceof LocateRpcServerResponse) {
-			RegistryUtils.receiveLocateServerResponse((LocateRpcServerResponse) msg);
+		} else if (msg instanceof GetServerLocationResponse) {
+			RegistryUtils.receiveLocateServerResponse((GetServerLocationResponse) msg);
 		}
 	}
 

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dxx.rpc.registry.RegisterRequest;
+import org.dxx.rpc.registry.Service;
 import org.dxx.rpc.registry.ServiceRepository;
 import org.dxx.rpc.registry.cmd.AbstractConditionCommand;
 
@@ -69,14 +69,14 @@ public class CmdList extends AbstractConditionCommand {
 	}
 
 	private Map<String, List<String>> filtrate() {
-		Map<String, List<RegisterRequest.Service>> services = ServiceRepository.getInstance().getServices();
+		Map<String, List<Service>> services = ServiceRepository.getInstance().getServices();
 
 		Map<String, List<String>> tmpMap = new HashMap<String, List<String>>();
 		for (String u : services.keySet()) {
 			if (this.url == null || u.toLowerCase().indexOf(this.url) >= 0) {
-				List<RegisterRequest.Service> inters = services.get(u);
+				List<Service> inters = services.get(u);
 				List<String> list = new ArrayList<String>();
-				for (RegisterRequest.Service inter : inters) {
+				for (Service inter : inters) {
 					if (pause && !ServiceRepository.isPaused(u, inter.getInterfaceClass())) {
 						continue;
 					}

@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.dxx.rpc.registry.LocateRpcServerRequest;
+import org.dxx.rpc.registry.GetServerLocationRequest;
 import org.dxx.rpc.registry.RegisterRequest;
 import org.dxx.rpc.registry.ServiceRepository;
 import org.dxx.rpc.registry.cmd.AbstractCommand;
@@ -33,8 +33,8 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		logger.debug("Received : {}", msg);
-		if (msg instanceof LocateRpcServerRequest) {
-			ctx.channel().writeAndFlush(repository.locateRpcServer((LocateRpcServerRequest) msg));
+		if (msg instanceof GetServerLocationRequest) {
+			ctx.channel().writeAndFlush(repository.getServer((GetServerLocationRequest) msg));
 		} else if (msg instanceof RegisterRequest) {
 			RegisterRequest request = (RegisterRequest) msg;
 			// remote address

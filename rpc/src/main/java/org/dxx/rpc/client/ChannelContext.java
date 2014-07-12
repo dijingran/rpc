@@ -17,8 +17,6 @@ public class ChannelContext {
 	static Map<Class<?>, Channel> channels = new ConcurrentHashMap<Class<?>, Channel>();
 	static Map<String, Channel> interNameAndchannels = new ConcurrentHashMap<String, Channel>();
 
-	static ClientStartupGroup clientStartupGroup = new ClientStartupGroup();
-
 	/**
 	 * 根据接口名获得channel。 TODO
 	 */
@@ -26,7 +24,7 @@ public class ChannelContext {
 		Channel c = channels.get(interfaceClass);
 		if (c == null) {
 			// TODO 多次为空时，将接口放到失败列表中，避免每次都尝试创建连接
-			clientStartupGroup.createChannels();
+			new ClientStartup(interfaceClass.getName()).startup();
 			c = channels.get(interfaceClass);
 		}
 		if (c == null) {

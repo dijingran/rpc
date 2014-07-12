@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.dxx.rpc.registry.LocateRpcServerResponse.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,7 @@ public class ServiceRepository {
 	}
 
 	/** url, services */
-	private Map<String, List<RegisterRequest.Service>> services = new ConcurrentHashMap<String, List<RegisterRequest.Service>>();
+	private Map<String, List<Service>> services = new ConcurrentHashMap<String, List<Service>>();
 
 	/** interfaceClass, "host:port..." */
 	private Map<String, List<String>> interAndUrl = new ConcurrentHashMap<String, List<String>>();
@@ -46,7 +45,7 @@ public class ServiceRepository {
 				return new RegisterResponse("URL : " + url + " can be only registered one time!");
 			}
 			synchronized (interAndUrl) {
-				for (RegisterRequest.Service s : request.getServices()) {
+				for (Service s : request.getServices()) {
 					List<String> urls = interAndUrl.get(s.getInterfaceClass());
 					if (urls == null) {
 						urls = new ArrayList<String>();
@@ -65,42 +64,34 @@ public class ServiceRepository {
 		}
 	}
 
-	public LocateRpcServerResponse locateRpcServer(LocateRpcServerRequest request) {
-		LocateRpcServerResponse response = new LocateRpcServerResponse();
+	public GetServerLocationResponse getServer(GetServerLocationRequest request) {
+		GetServerLocationResponse response = new GetServerLocationResponse();
 		response.setId(request.getId());
 		try {
-			List<Service> list = new ArrayList<LocateRpcServerResponse.Service>(request.getInterfaceClasses().size());
-			for (String interfaceClass : request.getInterfaceClasses()) {
-				Service s = locateOne(interfaceClass);
-				if (s != null) {
-					list.add(s);
+			List<String> urls = null;
+			synchronized (interAndUrl) {
+				urls = interAndUrl.get(request.getInterfaceClass());
+			}
+			if (urls == null || urls.isEmpty()) {
+				logger.warn("Service [{}] not found!", request.getInterfaceClass());
+				return null;
+			}
+			for (String url : urls) {// TODO load balance here
+				if (!isPaused(url, request.getInterfaceClass())) {
+					response.setHost(url.split(":")[0]);
+					response.setPort(Integer.valueOf(url.split(":")[1]));
+					response.setServices(services.get(url));
+					return response;
 				}
 			}
-			response.setServices(list);
+			logger.warn("Service [{}] not found !! May be paused!", request.getInterfaceClass());
+			return null;
 		} catch (Throwable e) {
 			logger.error(e.getMessage(), e);
 			response.setErrorMessage(e.getMessage());
 		}
 		return response;
 
-	}
-
-	private Service locateOne(String interfaceClass) {
-		List<String> urls = null;
-		synchronized (interAndUrl) {
-			urls = interAndUrl.get(interfaceClass);
-		}
-		if (urls == null || urls.isEmpty()) {
-			logger.warn("Service [{}] not found!", interfaceClass);
-			return null;
-		}
-		for (String url : urls) {// TODO load balance here
-			if (!isPaused(url, interfaceClass)) {
-				return new Service(interfaceClass, url.split(":")[0], Integer.valueOf(url.split(":")[1]));
-			}
-		}
-		logger.warn("Service [{}] not found !! May be paused!", interfaceClass);
-		return null;
 	}
 
 	/**
@@ -110,10 +101,10 @@ public class ServiceRepository {
 		if (url == null) {
 			return;
 		}
-		List<RegisterRequest.Service> serviceList = services.remove(url);
+		List<Service> serviceList = services.remove(url);
 
 		if (serviceList != null && !serviceList.isEmpty()) {
-			for (RegisterRequest.Service s : serviceList) {
+			for (Service s : serviceList) {
 				for (String interfaceClass : interAndUrl.keySet()) {
 					if (s.getInterfaceClass().equals(interfaceClass)) {
 						List<String> urls = interAndUrl.get(interfaceClass);
@@ -130,7 +121,7 @@ public class ServiceRepository {
 
 	}
 
-	public Map<String, List<RegisterRequest.Service>> getServices() {
+	public Map<String, List<Service>> getServices() {
 		return services;
 	}
 

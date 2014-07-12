@@ -10,10 +10,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import java.util.Set;
-
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
+import org.dxx.rpc.config.RpcClientConfig;
+import org.dxx.rpc.config.RpcClientConfigs;
+import org.dxx.rpc.config.loader.Loader;
+import org.dxx.rpc.registry.GetServerLocationResponse;
+import org.dxx.rpc.registry.RegistryUtils;
+import org.dxx.rpc.registry.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,16 +27,34 @@ public class ClientStartup {
 	private String host;
 	private int port;
 
-	private Set<Class<?>> interfaces;
+	// 为此接口创建长连接
+	private String interfaceClass;
 
-	public ClientStartup(String host, int port) {
+	public ClientStartup(String interfaceClass) {
 		super();
-		this.host = host;
-		this.port = port;
+		this.interfaceClass = interfaceClass;
 	}
 
 	public void startup() {
-		logger.debug("Try create channel : {}:{}, for : {}", new Object[] { host, port, interfaces });
+		RpcClientConfigs configs = Loader.getRpcClientConfigs();
+		for (RpcClientConfig c : configs.getClients()) {
+			if (interfaceClass.equals(c.getInterfaceClass())) {
+				if (c.getUrl() != null && c.getUrl().length() > 0) {
+					this.port = c.getPort();
+					this.host = c.getHost();
+				}
+			}
+		}
+
+		GetServerLocationResponse serverLocation = null;
+		// 没有配置url需要访问注册中心
+		if (this.host == null) {
+			serverLocation = RegistryUtils.getServerLocation(interfaceClass);
+			this.host = serverLocation.getHost();
+			this.port = serverLocation.getPort();
+		}
+
+		logger.debug("Try create channel : {}:{}, for : {}", new Object[] { host, port, interfaceClass });
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 		try {
@@ -51,18 +73,22 @@ public class ClientStartup {
 			Channel c = f.channel();
 
 			// store the relation between interface class and channel
-			for (Class<?> i : this.interfaces) {
-				ChannelContext.add(i, c);
+			if (serverLocation != null) {
+				for (Service s : serverLocation.getServices()) {
+					try {
+						ChannelContext.add(Class.forName(s.getInterfaceClass()), c);
+					} catch (Exception e) {
+						logger.warn(e.getMessage(), e);
+					}
+				}
+			} else {
+				ChannelContext.add(Class.forName(interfaceClass), c);
 			}
 			logger.debug("Channel created : {}", c);
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
-	}
-
-	public void setInterfaces(Set<Class<?>> interfaces) {
-		this.interfaces = interfaces;
 	}
 
 	public String getUrl() {

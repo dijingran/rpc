@@ -3,5 +3,5 @@
 
 	<!-- 使用注册中心时可以不配置url -->
 	<client interfaceClass="org.dxx.rpc.student.StudentService" timeout="3000"
-		url="127.0.0.1:50051"/>
+		/>
 </rpc>

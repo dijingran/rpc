@@ -2,7 +2,8 @@ package org.dxx.rpc.registry;
 
 import io.netty.channel.Channel;
 
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,27 +24,17 @@ public class RegistryUtils {
 	private static AtomicLong sequence = new AtomicLong(0);
 	private static Channel registyChannel;
 
-	private static LocateRpcServerResponse serverLocations;
-
 	private static CountDownLatch countDownLatch;
+
+	private static Map<Long, GetServerLocationResponse> locationMap = new ConcurrentHashMap<Long, GetServerLocationResponse>();
 
 	public static boolean isRegistryInitialized() {
 		return registyChannel != null;
 	}
 
-	public static void receiveLocateServerResponse(LocateRpcServerResponse response) {
-		serverLocations = response;
-		countDownLatch.countDown();
-
-		if (response.getId() == 0L) {
-			logger.debug("Update server locations : {}", response);
-		} else {
-			if (response.isSuccess()) {
-				logger.debug("Get server locations success : {}", response);
-			} else {
-				logger.error("Get server locations failed : {}", response.getErrorMessage());
-			}
-		}
+	public static void receiveLocateServerResponse(GetServerLocationResponse response) {
+		countDownLatch.countDown(); // TODO not right
+		locationMap.put(response.getId(), response);
 	}
 
 	public static void setRegistyChannel(Channel registyChannel) {
@@ -55,26 +46,19 @@ public class RegistryUtils {
 	}
 
 	/**
-	 * 调用注册中心，并返回所有服务端地址
+	 * 调用注册中心，并返回所指定接口的服务端地址
 	 *
-	 * @param intersWithoutUrl
+	 * @param interfaceClass
 	 * @return
 	 */
-	public static LocateRpcServerResponse locateServer(List<String> intersWithoutUrl) {
-		if (serverLocations == null) {
-			serverLocations = locateServerFromRegistry(intersWithoutUrl);
-		}
-		return serverLocations;
-	}
-
-	private synchronized static LocateRpcServerResponse locateServerFromRegistry(List<String> intersWithoutUrl) {
+	public static GetServerLocationResponse getServerLocation(String interfaceClass) {
 		if (registyChannel == null) {
 			return null; // TODO 重连或者抛异常?
 		}
-		logger.debug("Locate urls for interfaces : {}", intersWithoutUrl);
-		LocateRpcServerRequest request = new LocateRpcServerRequest();
+		logger.debug("Locate urls for interface : {}", interfaceClass);
+		GetServerLocationRequest request = new GetServerLocationRequest();
 		request.setId(sequence.incrementAndGet());
-		request.setInterfaceClasses(intersWithoutUrl);
+		request.setInterfaceClass(interfaceClass);
 		registyChannel.writeAndFlush(request);
 		countDownLatch = new CountDownLatch(1);
 		try {
@@ -83,10 +67,15 @@ public class RegistryUtils {
 			logger.warn(e1.getMessage(), e1);
 		}
 
-		if (serverLocations == null) {
-			logger.error("调用注册中心获取server地址超时 ： " + RpcConstants.LOCATE_TIME_OUT);
+		GetServerLocationResponse response = locationMap.get(request.getId());
+		if (response == null) {
+			throw new RegistryException("调用注册中心获取server地址超时 ： " + RpcConstants.LOCATE_TIME_OUT);
 		}
-		return serverLocations;
+		if (!response.isSuccess()) {
+			throw new RegistryException("Get server location error : " + response.getErrorMessage());
+		}
+		logger.debug("Get server location success : {}", response);
+		return response;
 	}
 
 	public static Class<?> getInter(String interfaceClass) {
