@@ -26,7 +26,7 @@ public class ChannelContext {
 		Channel c = channels.get(interfaceClass);
 		if (c == null) {
 			// TODO 多次为空时，将接口放到失败列表中，避免每次都尝试创建连接
-			clientStartupGroup.createChannelsSync();
+			clientStartupGroup.createChannels();
 			c = channels.get(interfaceClass);
 		}
 		if (c == null) {

@@ -94,7 +94,7 @@ public class RegistryUtils {
 			logger.debug("<registry../> is not configured !");
 			return;
 		}
-		new RegistryStartup().submitAndWait();
+		new RegistryStartup().startup();
 	}
 
 }

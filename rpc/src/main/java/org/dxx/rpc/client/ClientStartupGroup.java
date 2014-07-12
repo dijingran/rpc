@@ -36,11 +36,11 @@ public class ClientStartupGroup {
 
 	/**
 	 * <p>
-	 * Create channels, blocking until all channels finished(include not connected).
+	 * Create channels.
 	 * </p>
 	 * <li>Synchronized, avoid same channel be created multi times.
 	 */
-	public synchronized void createChannelsSync() {
+	public synchronized void createChannels() {
 		logger.debug("Begin to create channels.");
 		urlAndInterfaces.clear();
 		startups.clear();

@@ -11,7 +11,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
-import org.dxx.rpc.common.Awakeable;
 import org.dxx.rpc.config.Registry;
 import org.dxx.rpc.config.loader.Loader;
 import org.slf4j.Logger;
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author   dixingxing
  * @Date	 2014-6-25
  */
-public class RegistryStartup extends Awakeable {
+public class RegistryStartup implements Runnable {
 	static final Logger logger = LoggerFactory.getLogger(RegistryStartup.class);
 	private String host;
 	private int port;
@@ -45,8 +44,15 @@ public class RegistryStartup extends Awakeable {
 		this.port = (registry.getPort() <= 0 ? RegistryConstants.DEFUALT_PORT : registry.getPort());
 	}
 
+	/**
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
+		startup();
+	}
+
+	public void startup() {
 		if (this.host == null) {
 			return;
 		}
@@ -69,14 +75,9 @@ public class RegistryStartup extends Awakeable {
 			});
 			ChannelFuture f = b.connect(host, port).sync();
 			RegistryUtils.setRegistyChannel(f.channel());
-			awake();
-			f.channel().closeFuture().sync();
 		} catch (Exception e) {
 			logger.warn("连接注册中心异常 : " + e.getMessage());
 			RegistryUtils.scheduleRegistry();
-			awake();
-		} finally {
-			workerGroup.shutdownGracefully();
 		}
 	}
 

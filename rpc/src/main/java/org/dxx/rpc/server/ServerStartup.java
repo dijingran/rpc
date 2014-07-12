@@ -1,7 +1,6 @@
 package org.dxx.rpc.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -14,12 +13,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
-import org.dxx.rpc.common.Awakeable;
 import org.dxx.rpc.registry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServerStartup extends Awakeable {
+public class ServerStartup {
 	static final Logger logger = LoggerFactory.getLogger(ServerStartup.class);
 	private int port;
 
@@ -28,8 +26,7 @@ public class ServerStartup extends Awakeable {
 		this.port = port;
 	}
 
-	@Override
-	public void run() {
+	public void startup() {
 		ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() { // (4)
 			@Override
 			public void initChannel(SocketChannel ch) throws Exception {
@@ -41,7 +38,6 @@ public class ServerStartup extends Awakeable {
 		};
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
-
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
@@ -49,20 +45,13 @@ public class ServerStartup extends Awakeable {
 					.option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
 
 			// Bind and start to accept incoming connections.
-			ChannelFuture f = b.bind(port).sync();
+			b.bind(port).sync();
 			logger.info("Rpc server is running on port : {}", port);
 			// call registry and init channels for rpc clients
 			RegistryUtils.createRegistryChannelSync();
-			awake();
-
-			f.channel().closeFuture().sync();
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			awake();
-		} finally {
-			workerGroup.shutdownGracefully();
-			bossGroup.shutdownGracefully();
 		}
 	}
 

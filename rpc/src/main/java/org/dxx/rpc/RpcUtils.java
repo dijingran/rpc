@@ -27,7 +27,7 @@ public class RpcUtils {
 	private static boolean running = false;
 
 	/**
-	 * 启动，阻塞直到启动完成
+	 * 启动RPC
 	 * <p>
 	 *
 	 * @return
@@ -43,7 +43,7 @@ public class RpcUtils {
 		Servers.init(conf.getRpcServerConfig().getPackages());
 		Clients.init();
 
-		new ServerStartup(conf.getRpcServerConfig().getPort()).submitAndWait(8000);
+		new ServerStartup(conf.getRpcServerConfig().getPort()).startup();
 		logger.debug("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
 	}
 
