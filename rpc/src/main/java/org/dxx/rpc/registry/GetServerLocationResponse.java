@@ -64,6 +64,8 @@ public class GetServerLocationResponse extends AbstractResponse {
 
 	@Override
 	public String toString() {
-		return "LocateRpcServerResponse [errorMessage=" + errorMessage + ", services=" + services + "]";
+		return "GetServerLocationResponse [id=" + id + ",errorMessage=" + errorMessage + ", host=" + host + ", port="
+				+ port + ", services=" + services + "]";
 	}
+
 }

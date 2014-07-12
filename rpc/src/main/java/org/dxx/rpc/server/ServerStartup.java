@@ -11,6 +11,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
 
+import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
 import org.dxx.rpc.registry.RegistryUtils;
@@ -32,7 +33,7 @@ public class ServerStartup {
 			public void initChannel(SocketChannel ch) throws Exception {
 				ch.pipeline().addLast("encoder", new DexnEncoder());
 				ch.pipeline().addLast("decoder", new DexnDecoder());
-				ch.pipeline().addLast(new IdleStateHandler(0, 3, 0, TimeUnit.SECONDS));
+				ch.pipeline().addLast(new IdleStateHandler(0, RpcConstants.HEAT_BEAT, 0, TimeUnit.MILLISECONDS));
 				ch.pipeline().addLast(new ObjectServerHandler());
 			}
 		};
@@ -48,7 +49,7 @@ public class ServerStartup {
 			b.bind(port).sync();
 			logger.info("Rpc server is running on port : {}", port);
 			// call registry and init channels for rpc clients
-			RegistryUtils.createRegistryChannelSync();
+			RegistryUtils.createRegistryChannel();
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

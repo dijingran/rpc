@@ -22,6 +22,13 @@ public interface RpcConstants {
 
 	/** 调用方法默认的超时时间 */
 	int DEFAULT_RESPONSE_TIMEOUT = 3000;
-	/**默认的服务端端口（暴露服务的端口），使用自动端口时从此值开始，查找可用端口*/
+
+	/** 默认的服务端端口（暴露服务的端口），使用自动端口时从此值开始，查找可用端口 */
 	int DEFAULT_SERVER_PORT = 50050;
+
+	/** 心跳周期  */
+	long HEAT_BEAT = 3000L;
+
+	/** 长时间没有数据写入 ，标记channel为不可用*/
+	long INVALID_THRESHOLD = RpcConstants.HEAT_BEAT * 2;
 }

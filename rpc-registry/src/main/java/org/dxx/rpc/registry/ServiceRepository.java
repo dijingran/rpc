@@ -64,6 +64,10 @@ public class ServiceRepository {
 		}
 	}
 
+	private static boolean isDeactive(GetServerLocationRequest request, String url) {
+		return request.getDeactiveUrl() != null && url.equals(request.getDeactiveUrl());
+	}
+
 	public GetServerLocationResponse getServer(GetServerLocationRequest request) {
 		GetServerLocationResponse response = new GetServerLocationResponse();
 		response.setId(request.getId());
@@ -74,16 +78,34 @@ public class ServiceRepository {
 			}
 			if (urls == null || urls.isEmpty()) {
 				logger.warn("Service [{}] not found!", request.getInterfaceClass());
-				return null;
+				response.setErrorMessage("Service [" + request.getInterfaceClass() + "] not found!");
+				return response;
 			}
-			for (String url : urls) {// TODO load balance here
-				if (!isPaused(url, request.getInterfaceClass())) {
-					response.setHost(url.split(":")[0]);
-					response.setPort(Integer.valueOf(url.split(":")[1]));
-					response.setServices(services.get(url));
-					return response;
+			String finalUrl = null;
+			String secondChance = null;
+			for (String url : urls) {
+				if (isDeactive(request, url)) {
+					secondChance = request.getDeactiveUrl();
+					break;
 				}
 			}
+			for (String url : urls) {// TODO load balance here
+				if (!isDeactive(request, url) && !isPaused(url, request.getInterfaceClass())) {
+					finalUrl = url;
+					break;
+				}
+			}
+			if (finalUrl == null && secondChance != null) {
+				logger.warn("Return the deactive channel : {}", secondChance);
+				finalUrl = secondChance;
+			}
+			if (finalUrl != null) {
+				response.setHost(finalUrl.split(":")[0]);
+				response.setPort(Integer.valueOf(finalUrl.split(":")[1]));
+				response.setServices(services.get(finalUrl));
+				return response;
+			}
+
 			logger.warn("Service [{}] not found !! May be paused!", request.getInterfaceClass());
 			return null;
 		} catch (Throwable e) {

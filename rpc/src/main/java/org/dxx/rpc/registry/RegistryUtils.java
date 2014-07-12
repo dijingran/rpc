@@ -24,7 +24,7 @@ public class RegistryUtils {
 	private static AtomicLong sequence = new AtomicLong(0);
 	private static Channel registyChannel;
 
-	private static CountDownLatch countDownLatch;
+	private static Map<Long, CountDownLatch> countDownLatches = new ConcurrentHashMap<Long, CountDownLatch>();
 
 	private static Map<Long, GetServerLocationResponse> locationMap = new ConcurrentHashMap<Long, GetServerLocationResponse>();
 
@@ -32,9 +32,13 @@ public class RegistryUtils {
 		return registyChannel != null;
 	}
 
-	public static void receiveLocateServerResponse(GetServerLocationResponse response) {
-		countDownLatch.countDown(); // TODO not right
-		locationMap.put(response.getId(), response);
+	public static void receiveGetServerLocationResponse(GetServerLocationResponse response) {
+		logger.debug("Receive GetServerLocationResponse : {}", response);
+		CountDownLatch latch = countDownLatches.get(response.getId());
+		if (latch != null) {
+			locationMap.put(response.getId(), response);
+			latch.countDown();
+		}
 	}
 
 	public static void setRegistyChannel(Channel registyChannel) {
@@ -51,25 +55,32 @@ public class RegistryUtils {
 	 * @param interfaceClass
 	 * @return
 	 */
-	public static GetServerLocationResponse getServerLocation(String interfaceClass) {
+	public static GetServerLocationResponse getServerLocation(String interfaceClass, String deactiveUrl) {
 		if (registyChannel == null) {
-			return null; // TODO 重连或者抛异常?
+			throw new RegistryException("尚未连接到注册中心！");
 		}
-		logger.debug("Locate urls for interface : {}", interfaceClass);
 		GetServerLocationRequest request = new GetServerLocationRequest();
 		request.setId(sequence.incrementAndGet());
 		request.setInterfaceClass(interfaceClass);
+		request.setDeactiveUrl(deactiveUrl);
+
+		logger.debug("Locate urls for interface {} : {}", interfaceClass, request);
+
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		countDownLatches.put(request.getId(), countDownLatch);
+
 		registyChannel.writeAndFlush(request);
-		countDownLatch = new CountDownLatch(1);
 		try {
 			countDownLatch.await(RpcConstants.LOCATE_TIME_OUT, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e1) {
 			logger.warn(e1.getMessage(), e1);
+		} finally {
+			countDownLatches.remove(request.getId());
 		}
 
 		GetServerLocationResponse response = locationMap.get(request.getId());
 		if (response == null) {
-			throw new RegistryException("调用注册中心获取server地址超时 ： " + RpcConstants.LOCATE_TIME_OUT);
+			throw new RegistryException("Invoke Registry for server location timeout : " + RpcConstants.LOCATE_TIME_OUT);
 		}
 		if (!response.isSuccess()) {
 			throw new RegistryException("Get server location error : " + response.getErrorMessage());
@@ -90,10 +101,7 @@ public class RegistryUtils {
 		scheduler.schedule(new RegistryStartup(), RpcConstants.REGISTRY_RETRY_TIME, TimeUnit.MILLISECONDS);
 	}
 
-	/**
-	 * 创建注册中心的channel
-	 */
-	public static void createRegistryChannelSync() {
+	public static void createRegistryChannel() {
 		Registry registry = Loader.getRpcConfig().getRegistry();
 		if (registry == null) {
 			logger.debug("<registry../> is not configured !");

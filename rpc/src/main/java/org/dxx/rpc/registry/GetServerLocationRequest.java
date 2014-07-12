@@ -14,6 +14,8 @@ import org.dxx.rpc.AbstractRequest;
 public class GetServerLocationRequest extends AbstractRequest {
 	private String interfaceClass;
 
+	private String deactiveUrl;
+
 	public String getInterfaceClass() {
 		return interfaceClass;
 	}
@@ -22,12 +24,18 @@ public class GetServerLocationRequest extends AbstractRequest {
 		this.interfaceClass = interfaceClass;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	public String getDeactiveUrl() {
+		return deactiveUrl;
+	}
+
+	public void setDeactiveUrl(String deactiveUrl) {
+		this.deactiveUrl = deactiveUrl;
+	}
+
 	@Override
 	public String toString() {
-		return "LocateRpcServerRequest [interfaceClass=" + interfaceClass + "]";
+		return "GetServerLocationRequest [id=" + id + ", interfaceClass=" + interfaceClass + ", deactiveUrl="
+				+ deactiveUrl + "]";
 	}
 
 }

@@ -57,7 +57,7 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 				logger.error("Register failed : {}", response.getErrorMessage());
 			}
 		} else if (msg instanceof GetServerLocationResponse) {
-			RegistryUtils.receiveLocateServerResponse((GetServerLocationResponse) msg);
+			RegistryUtils.receiveGetServerLocationResponse((GetServerLocationResponse) msg);
 		}
 	}
 

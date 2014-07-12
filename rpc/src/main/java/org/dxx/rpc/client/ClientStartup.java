@@ -38,9 +38,13 @@ public class ClientStartup {
 
 	private String interfaceClass;
 
-	public ClientStartup(String interfaceClass) {
+	// TODO use list
+	private String deactiveUrl;
+
+	public ClientStartup(String interfaceClass, String deactiveUrl) {
 		super();
 		this.interfaceClass = interfaceClass;
+		this.deactiveUrl = deactiveUrl;
 	}
 
 	public void startup() {
@@ -55,9 +59,14 @@ public class ClientStartup {
 		}
 
 		GetServerLocationResponse serverLocation = null;
-		// 没有配置url需要访问注册中心
+		// no url
 		if (this.host == null) {
-			serverLocation = RegistryUtils.getServerLocation(interfaceClass);
+			try {
+				serverLocation = RegistryUtils.getServerLocation(interfaceClass, deactiveUrl);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return;
+			}
 			this.host = serverLocation.getHost();
 			this.port = serverLocation.getPort();
 		}

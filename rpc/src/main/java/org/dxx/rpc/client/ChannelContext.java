@@ -2,11 +2,14 @@ package org.dxx.rpc.client;
 
 import io.netty.channel.Channel;
 
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,28 +22,35 @@ public class ChannelContext {
 	/**
 	 * 根据接口名获得channel。 TODO
 	 */
-	public static Channel getChannel(Class<?> interfaceClass) {
-		Channel c = interAndChannels.get(interfaceClass.getName());
+	public static Channel getChannel(Class<?> inter) {
+		Channel c = interAndChannels.get(inter.getName());
+		if (c != null && !isActive(c)) {
+			deactive(c);
+			c = null;
+		}
+
 		if (c == null) {
 			// TODO 多次为空时，将接口放到失败列表中，避免每次都尝试创建连接
-			new ClientStartup(interfaceClass.getName()).startup();
-			c = interAndChannels.get(interfaceClass.getName());
+			new ClientStartup(inter.getName(), getDeactiveUrl(inter.getName())).startup();
+			c = interAndChannels.get(inter.getName());
 		}
 		if (c == null) {
-			throw new RpcException("No channel found for interface : " + interfaceClass.getName());
+			throw new RpcException("No channel found for interface : " + inter.getName());
 		}
 		return c;
 	}
 
 	public static void add(String interfaceName, Channel channel) {
 		interAndChannels.put(interfaceName, channel);
+		activeMap.put(channel, System.currentTimeMillis());
 	}
 
 	public static void remove(Channel c) {
-		for (String inter : interAndChannels.keySet()) {
-			if (c == interAndChannels.get(inter)) {
-				interAndChannels.remove(inter);
-				logger.debug("Remove channel for interface  : {}, {}", inter, c);
+		for (Iterator<Entry<String, Channel>> iter = interAndChannels.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry<String, Channel> entry = iter.next();
+			if (entry.getValue() == c) {
+				logger.debug("Remove channel for interface  : {}, {}", entry.getKey(), c);
+				iter.remove();
 			}
 		}
 	}
@@ -50,16 +60,48 @@ public class ChannelContext {
 	}
 
 	// =============== heartbeat S ===============
-	// TODO use this
-	private boolean isInvalid(Channel c) {
-		return invalidChannels.contains(c);
+	/**
+	 * Channel是否可用（长时间{@link RpcConstants#INVALID_THRESHOLD}没有接受到数据，视为不可用）
+	 *
+	 * @param c
+	 * @return
+	 */
+	private static boolean isActive(Channel c) {
+		return (System.currentTimeMillis() - activeMap.get(c)) <= RpcConstants.INVALID_THRESHOLD;
 	}
 
-	public static void heartbeat(Channel c) {
-		logger.trace("Hearbeating : {}", c);
-		invalidChannels.add(c);
+	private static void deactive(Channel c) {
+		for (Iterator<Entry<String, Channel>> iter = interAndChannels.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry<String, Channel> entry = iter.next();
+			if (entry.getValue() == c) {
+				logger.debug("Deactive (Remove) channel for interface  : {}, {}", entry.getKey(), c);
+				deactiveChannels.put(entry.getKey(), c);
+				iter.remove();
+			}
+		}
+		logger.debug("Channel is not active, just close it : {}", c);
+		c.close();
 	}
 
-	static Set<Channel> invalidChannels = new CopyOnWriteArraySet<Channel>();
+	public static void updateActiveTime(Channel c) {
+		activeMap.put(c, System.currentTimeMillis());
+	}
+
+	private static String getDeactiveUrl(String interfaceClass) {
+		Channel c = deactiveChannels.get(interfaceClass);
+		if (c == null) {
+			return null;
+		}
+		InetSocketAddress sa = (InetSocketAddress) c.remoteAddress();
+		return sa.getAddress().getHostAddress() + ":" + sa.getPort();
+	}
+
+	/** channel, last access time(System.currentTimeMillis()) */
+	static Map<Channel, Long> activeMap = new HashMap<Channel, Long>();
+
+	/** interfaceName, channel  : Invalid channels, already closed, can't be reused.*/
+	// TODO map list ; remove
+	static Map<String, Channel> deactiveChannels = new ConcurrentHashMap<String, Channel>();
 	// =============== heartbeat E===============
+
 }
