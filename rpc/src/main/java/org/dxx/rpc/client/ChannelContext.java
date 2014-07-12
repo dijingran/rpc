@@ -14,18 +14,17 @@ import org.slf4j.LoggerFactory;
 public class ChannelContext {
 	private static final Logger logger = LoggerFactory.getLogger(ChannelContext.class);
 
-	static Map<Class<?>, Channel> channels = new ConcurrentHashMap<Class<?>, Channel>();
-	static Map<String, Channel> interNameAndchannels = new ConcurrentHashMap<String, Channel>();
+	static Map<String, Channel> interAndChannels = new ConcurrentHashMap<String, Channel>();
 
 	/**
 	 * 根据接口名获得channel。 TODO
 	 */
 	public static Channel getChannel(Class<?> interfaceClass) {
-		Channel c = channels.get(interfaceClass);
+		Channel c = interAndChannels.get(interfaceClass.getName());
 		if (c == null) {
 			// TODO 多次为空时，将接口放到失败列表中，避免每次都尝试创建连接
 			new ClientStartup(interfaceClass.getName()).startup();
-			c = channels.get(interfaceClass);
+			c = interAndChannels.get(interfaceClass.getName());
 		}
 		if (c == null) {
 			throw new RpcException("No channel found for interface : " + interfaceClass.getName());
@@ -33,27 +32,21 @@ public class ChannelContext {
 		return c;
 	}
 
-	public static void add(Class<?> interfaceClass, Channel channel) {
-		channels.put(interfaceClass, channel);
-		interNameAndchannels.put(interfaceClass.getName(), channel);
+	public static void add(String interfaceName, Channel channel) {
+		interAndChannels.put(interfaceName, channel);
 	}
 
 	public static void remove(Channel c) {
-		for (Class<?> inter : channels.keySet()) {
-			if (c == channels.get(inter)) {
-				logger.debug("Remove channel for interface  : {}, {}", inter.getName(), c);
-				channels.remove(inter);
-			}
-		}
-		for (String inter : interNameAndchannels.keySet()) {
-			if (c == interNameAndchannels.get(inter)) {
-				interNameAndchannels.remove(inter);
+		for (String inter : interAndChannels.keySet()) {
+			if (c == interAndChannels.get(inter)) {
+				interAndChannels.remove(inter);
+				logger.debug("Remove channel for interface  : {}, {}", inter, c);
 			}
 		}
 	}
 
 	public static boolean exists(String interName) {
-		return interNameAndchannels.containsKey(interName);
+		return interAndChannels.containsKey(interName);
 	}
 
 	// =============== heartbeat S ===============

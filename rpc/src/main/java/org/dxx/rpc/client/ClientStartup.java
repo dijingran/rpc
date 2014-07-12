@@ -21,13 +21,21 @@ import org.dxx.rpc.registry.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 为单个接口定位服务端的ip及端口，并创建 channel。
+ * <p>
+ * 同时将此服务端提供的接口名记录下来，缓存到 {@link ChannelContext#channels} 中。
+ * </p>
+ * 
+ * @author   dixingxing
+ * @Date	 2014-7-12
+ */
 public class ClientStartup {
 	static Logger logger = LoggerFactory.getLogger(ClientStartup.class);
 
 	private String host;
 	private int port;
 
-	// 为此接口创建长连接
 	private String interfaceClass;
 
 	public ClientStartup(String interfaceClass) {
@@ -75,24 +83,16 @@ public class ClientStartup {
 			// store the relation between interface class and channel
 			if (serverLocation != null) {
 				for (Service s : serverLocation.getServices()) {
-					try {
-						ChannelContext.add(Class.forName(s.getInterfaceClass()), c);
-					} catch (Exception e) {
-						logger.warn(e.getMessage(), e);
-					}
+					ChannelContext.add(s.getInterfaceClass(), c);
 				}
 			} else {
-				ChannelContext.add(Class.forName(interfaceClass), c);
+				ChannelContext.add(interfaceClass, c);
 			}
 			logger.debug("Channel created : {}", c);
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
-	}
-
-	public String getUrl() {
-		return this.host + ":" + this.port;
 	}
 
 }
