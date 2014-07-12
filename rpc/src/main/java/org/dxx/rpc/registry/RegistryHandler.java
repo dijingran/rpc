@@ -57,14 +57,7 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 				logger.error("Register failed : {}", response.getErrorMessage());
 			}
 		} else if (msg instanceof LocateRpcServerResponse) {
-			LocateRpcServerResponse response = (LocateRpcServerResponse) msg;
-
-			if (response.isSuccess()) {
-				logger.debug("Locate success : {}", response);
-			} else {
-				logger.error("Locate failed : {}", response.getErrorMessage());
-			}
-			RegistryUtils.setResponse(response);
+			RegistryUtils.receiveLocateServerResponse((LocateRpcServerResponse) msg);
 		}
 	}
 
@@ -75,6 +68,5 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 			RegistryUtils.removeRegistryChannel();
 			RegistryUtils.scheduleRegistry();
 		}
-
 	}
 }

@@ -38,7 +38,7 @@ public class ClientStartupGroup {
 	 * <p>
 	 * Create channels.
 	 * </p>
-	 * <li>Synchronized, avoid same channel be created multi times.
+	 * <li>Important : Synchronized, avoid same channel be created multi times.
 	 */
 	public synchronized void createChannels() {
 		logger.debug("Begin to create channels.");
