@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 public class ServiceRepository {
 	Logger logger = LoggerFactory.getLogger(ServiceRepository.class);
 
+	private static Balancer balancer = new DefaultBalancer();
+
 	private static ServiceRepository instance = new ServiceRepository();
 
 	public static ServiceRepository getInstance() {
@@ -89,12 +91,16 @@ public class ServiceRepository {
 					break;
 				}
 			}
+
+			List<String> optionalUrls = new ArrayList<String>();
 			for (String url : urls) {// TODO load balance here
 				if (!isDeactive(request, url) && !isPaused(url, request.getInterfaceClass())) {
-					finalUrl = url;
-					break;
+					optionalUrls.add(url);
 				}
 			}
+
+			finalUrl = balancer.select(optionalUrls);
+
 			if (finalUrl == null && secondChance != null) {
 				logger.warn("Return the deactive channel : {}", secondChance);
 				finalUrl = secondChance;
@@ -124,7 +130,6 @@ public class ServiceRepository {
 			return;
 		}
 		List<Service> serviceList = services.remove(url);
-
 		if (serviceList != null && !serviceList.isEmpty()) {
 			for (Service s : serviceList) {
 				for (String interfaceClass : interAndUrl.keySet()) {
@@ -140,7 +145,7 @@ public class ServiceRepository {
 		}
 
 		logger.debug("Unregistered services provided by : {}", url);
-
+		balancer.reset(url);
 	}
 
 	public Map<String, List<Service>> getServices() {
