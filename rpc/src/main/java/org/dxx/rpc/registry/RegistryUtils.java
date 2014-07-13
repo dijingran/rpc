@@ -69,8 +69,8 @@ public class RegistryUtils {
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		countDownLatches.put(request.getId(), countDownLatch);
 
-		registyChannel.writeAndFlush(request);
 		try {
+			registyChannel.writeAndFlush(request);
 			countDownLatch.await(RpcConstants.LOCATE_TIME_OUT, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e1) {
 			logger.warn(e1.getMessage(), e1);
