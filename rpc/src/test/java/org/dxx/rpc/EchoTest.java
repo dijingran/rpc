@@ -6,6 +6,7 @@
 
 package org.dxx.rpc;
 
+import org.dxx.rpc.common.RpcUtils;
 import org.dxx.rpc.share.UserService;
 import org.junit.Assert;
 import org.junit.Test;

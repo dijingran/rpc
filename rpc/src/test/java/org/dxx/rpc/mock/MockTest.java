@@ -6,7 +6,7 @@
 
 package org.dxx.rpc.mock;
 
-import org.dxx.rpc.RpcUtils;
+import org.dxx.rpc.common.RpcUtils;
 import org.dxx.rpc.share.UserService;
 import org.junit.Assert;
 import org.junit.Test;

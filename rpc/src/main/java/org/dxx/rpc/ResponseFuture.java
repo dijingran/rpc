@@ -82,7 +82,7 @@ public class ResponseFuture {
 	}
 
 	private RpcTimeoutException timeoutException() {
-		String s = ChannelContext.getChannel(request.getInterfaceClass()) + " : "
+		String s = ChannelContext.getOrCreateChannel(request.getInterfaceClass().getName()) + " : "
 				+ request.getInterfaceClass().toString();
 		return new RpcTimeoutException(timeout, s);
 	}

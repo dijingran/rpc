@@ -9,7 +9,7 @@ package org.dxx.course;
 import java.util.Random;
 
 import org.dxx.course.service.CourseServiceImpl;
-import org.dxx.rpc.RpcUtils;
+import org.dxx.rpc.common.RpcUtils;
 import org.dxx.rpc.student.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

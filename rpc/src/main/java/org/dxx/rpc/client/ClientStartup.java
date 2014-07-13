@@ -48,6 +48,20 @@ public class ClientStartup {
 	}
 
 	public void startup() {
+		// maybe can improve this
+		synchronized (ClientStartup.class) {
+			startupInternal();
+		}
+	}
+
+	public void startupInternal() {
+		long start = System.currentTimeMillis();
+
+		if (ChannelContext.isChannelExist(interfaceClass)) {
+			logger.debug("Aready has channel, ignore.");
+			return;
+		}
+
 		RpcClientConfigs configs = Loader.getRpcClientConfigs();
 		for (RpcClientConfig c : configs.getClients()) {
 			if (interfaceClass.equals(c.getInterfaceClass())) {
@@ -82,7 +96,7 @@ public class ClientStartup {
 			b.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline().addLast(new DexnEncoder(), new DexnDecoder(), new ObjectClientHandler());
+					ch.pipeline().addLast(new DexnEncoder(), new DexnDecoder(), new ClientHandler());
 				}
 			});
 
@@ -97,7 +111,7 @@ public class ClientStartup {
 			} else {
 				ChannelContext.add(interfaceClass, c);
 			}
-			logger.debug("Channel created : {}", c);
+			logger.debug("Channel created cost {} ms : {}", System.currentTimeMillis() - start, c);
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

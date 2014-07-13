@@ -62,7 +62,7 @@ public class ProxyFactory implements InvocationHandler {
 
 		ResponseFuture f = new ResponseFuture(r);
 		try {
-			ChannelContext.getChannel(inter).writeAndFlush(r);
+			ChannelContext.getOrCreateChannel(inter.getName()).writeAndFlush(r);
 		} catch (Throwable e) {
 			f.release();
 			throw e;

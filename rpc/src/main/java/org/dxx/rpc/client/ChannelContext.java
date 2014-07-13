@@ -20,10 +20,18 @@ public class ChannelContext {
 	static Map<String, Channel> interAndChannels = new ConcurrentHashMap<String, Channel>();
 
 	/**
+	 * 检查是否已有channel，避免重复创建
+	 */
+	static boolean isChannelExist(String interfaceClass) {
+		Channel c = interAndChannels.get(interfaceClass);
+		return c != null && isActive(c);
+	}
+
+	/**
 	 * 根据接口名获得channel。 TODO
 	 */
-	public static Channel getChannel(Class<?> inter) {
-		Channel c = interAndChannels.get(inter.getName());
+	public static Channel getOrCreateChannel(String interfaceClass) {
+		Channel c = interAndChannels.get(interfaceClass);
 		if (c != null && !isActive(c)) {
 			deactive(c);
 			c = null;
@@ -31,11 +39,11 @@ public class ChannelContext {
 
 		if (c == null) {
 			// TODO 多次为空时，将接口放到失败列表中，避免每次都尝试创建连接
-			new ClientStartup(inter.getName(), getDeactiveUrl(inter.getName())).startup();
-			c = interAndChannels.get(inter.getName());
+			new ClientStartup(interfaceClass, getDeactiveUrl(interfaceClass)).startup();
+			c = interAndChannels.get(interfaceClass);
 		}
 		if (c == null) {
-			throw new RpcException("No channel found for interface : " + inter.getName());
+			throw new RpcException("No channel found for interface : " + interfaceClass);
 		}
 		return c;
 	}

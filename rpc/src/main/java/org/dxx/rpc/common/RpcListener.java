@@ -1,4 +1,4 @@
-package org.dxx.rpc;
+package org.dxx.rpc.common;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

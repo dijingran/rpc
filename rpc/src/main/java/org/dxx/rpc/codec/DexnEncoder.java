@@ -51,6 +51,7 @@ public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 				&& !AbstractResponse.class.isAssignableFrom(msg.getClass())) {
 			ByteBufOutputStream bout = new ByteBufOutputStream(out);
 			bout.write(((String) msg).getBytes());
+			bout.close();
 			return;
 		}
 
@@ -62,8 +63,9 @@ public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 
 		ByteBufOutputStream bout = new ByteBufOutputStream(out);
 		bout.write(LENGTH_PLACEHOLDER);
-
 		bout.write(bytes);
+		bout.close();
+
 		out.setInt(startIdx + 2, out.writerIndex() - startIdx - 16); // body length after magic number
 	}
 

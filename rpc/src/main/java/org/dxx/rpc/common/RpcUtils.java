@@ -4,8 +4,9 @@
  * Copyright (c) 2014, 北京微课创景教育科技有限公司版权所有.
 */
 
-package org.dxx.rpc;
+package org.dxx.rpc.common;
 
+import org.dxx.rpc.EchoService;
 import org.dxx.rpc.client.Clients;
 import org.dxx.rpc.config.RpcConfig;
 import org.dxx.rpc.config.loader.Loader;

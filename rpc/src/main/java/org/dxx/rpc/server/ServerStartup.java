@@ -34,7 +34,7 @@ public class ServerStartup {
 				ch.pipeline().addLast("encoder", new DexnEncoder());
 				ch.pipeline().addLast("decoder", new DexnDecoder());
 				ch.pipeline().addLast(new IdleStateHandler(0, RpcConstants.HEAT_BEAT, 0, TimeUnit.MILLISECONDS));
-				ch.pipeline().addLast(new ObjectServerHandler());
+				ch.pipeline().addLast(new ServerHandler());
 			}
 		};
 

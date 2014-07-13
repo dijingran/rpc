@@ -2,6 +2,7 @@ package org.dxx.rpc;
 
 import java.util.concurrent.CyclicBarrier;
 
+import org.dxx.rpc.common.RpcUtils;
 import org.dxx.rpc.exception.RpcTimeoutException;
 import org.dxx.rpc.share.HelloService;
 import org.junit.Assert;

@@ -3,7 +3,7 @@ package org.dxx.rpc.config.loader;
 import java.util.Set;
 
 import org.dxx.rpc.RpcConstants;
-import org.dxx.rpc.WebUtils;
+import org.dxx.rpc.common.WebUtils;
 import org.dxx.rpc.config.RpcClientConfigs;
 import org.dxx.rpc.config.RpcConfig;
 import org.dxx.rpc.config.RpcMockConfigs;

@@ -8,7 +8,7 @@ package org.dxx.rpc.support;
 
 import java.util.Enumeration;
 
-import org.dxx.rpc.WebUtils;
+import org.dxx.rpc.common.WebUtils;
 import org.dxx.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

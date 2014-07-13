@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles a server-side channel.
  */
-public class ObjectServerHandler extends ChannelInboundHandlerAdapter { // (1)
+public class ServerHandler extends ChannelInboundHandlerAdapter { // (1)
 	RpcChannelHandler channelHandler = new RpcChannelHandler();
 
-	Logger logger = LoggerFactory.getLogger(ObjectServerHandler.class);
+	Logger logger = LoggerFactory.getLogger(ServerHandler.class);
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)

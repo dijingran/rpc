@@ -9,9 +9,9 @@ import org.dxx.rpc.ResponseFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ObjectClientHandler extends ChannelInboundHandlerAdapter {
+public class ClientHandler extends ChannelInboundHandlerAdapter {
 
-	Logger logger = LoggerFactory.getLogger(ObjectClientHandler.class);
+	Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
