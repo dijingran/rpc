@@ -11,7 +11,8 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.util.List;
 
-import org.dxx.rpc.common.SerializationUtils;
+import org.dxx.rpc.serialization.FstSerializer;
+import org.dxx.rpc.serialization.Serializer;
 
 /**
  * 
@@ -19,6 +20,9 @@ import org.dxx.rpc.common.SerializationUtils;
  * @Date	 2014-7-5
  */
 public class DexnDecoder extends DexnTelnetDecoder {
+
+	private Serializer serializer = new FstSerializer();
+
 	// header length.
 	protected static final int HEADER_LENGTH = 16;
 
@@ -71,6 +75,6 @@ public class DexnDecoder extends DexnTelnetDecoder {
 		byte[] body = new byte[bodyLength];
 		in.readBytes(body);
 
-		out.add(SerializationUtils.fstDeserialize(body));
+		out.add(serializer.deserialize(body));
 	}
 }

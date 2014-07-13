@@ -15,7 +15,8 @@ import java.io.Serializable;
 
 import org.dxx.rpc.AbstractRequest;
 import org.dxx.rpc.AbstractResponse;
-import org.dxx.rpc.common.SerializationUtils;
+import org.dxx.rpc.serialization.FstSerializer;
+import org.dxx.rpc.serialization.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,8 @@ import org.slf4j.LoggerFactory;
 public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 
 	static final Logger logger = LoggerFactory.getLogger(DexnEncoder.class);
+
+	private Serializer serializer = new FstSerializer();
 
 	private static final byte[] LENGTH_PLACEHOLDER = new byte[16];
 
@@ -59,7 +62,7 @@ public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 		LENGTH_PLACEHOLDER[0] = DexnDecoder.MAGIC_HIGH;
 		LENGTH_PLACEHOLDER[1] = DexnDecoder.MAGIC_LOW;
 
-		byte[] bytes = SerializationUtils.fstSerialize(msg);
+		byte[] bytes = serializer.serialize(msg);
 
 		ByteBufOutputStream bout = new ByteBufOutputStream(out);
 		bout.write(LENGTH_PLACEHOLDER);
