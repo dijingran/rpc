@@ -6,6 +6,8 @@
 
 package org.dxx.rpc;
 
+import io.netty.util.AttributeKey;
+
 /**
  * 常量，所有表示时间的均以毫秒为单位
  * 
@@ -31,4 +33,9 @@ public interface RpcConstants {
 
 	/** 长时间没有数据写入 ，标记channel为不可用*/
 	long INVALID_THRESHOLD = RpcConstants.HEAT_BEAT * 2;
+
+	/**
+	 * 标记channel是否需要发送心跳包
+	 */
+	AttributeKey<Boolean> ATTR_NEED_HEARTBEAT = AttributeKey.valueOf("attr_need_heartbeat");
 }

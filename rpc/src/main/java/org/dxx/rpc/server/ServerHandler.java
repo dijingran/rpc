@@ -7,6 +7,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.Request;
+import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.server.exec.RpcChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter { // (1)
 		if (msg instanceof String) {
 			ctx.channel().writeAndFlush("Not implement yet!\r\n");
 		} else {
+			ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).set(true);
 			channelHandler.handle(ctx.channel(), (Request) msg);
 		}
 	}
@@ -36,8 +38,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter { // (1)
 		if (evt instanceof IdleStateEvent) {
 			IdleStateEvent e = (IdleStateEvent) evt;
 			if (e.state() == IdleState.WRITER_IDLE) {
-				logger.trace("Send heatbeat Request : {}", ctx.channel());
-				ctx.writeAndFlush(new HeartbeatRequest());
+				Boolean needHeartbeat = ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).get();
+				if (needHeartbeat != null && needHeartbeat == true) {
+					logger.trace("Send heatbeat Request : {}", ctx.channel());
+					ctx.writeAndFlush(new HeartbeatRequest());
+				}
 			}
 		}
 	}

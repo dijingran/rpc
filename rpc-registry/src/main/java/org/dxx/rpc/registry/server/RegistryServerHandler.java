@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.HeartbeatRequest;
+import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.registry.ClientChannelContext;
 import org.dxx.rpc.registry.GetServerLocationRequest;
 import org.dxx.rpc.registry.GetServerLocationResponse;
@@ -43,6 +44,9 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 			ctx.channel().writeAndFlush(resp);
 			logger.debug("Wrote GetServerLocationResponse : {}", resp);
 		} else if (msg instanceof RegisterRequest) {
+			ClientChannelContext.add(ctx.channel());
+			ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).set(true);
+
 			RegisterRequest request = (RegisterRequest) msg;
 			// remote address
 			InetSocketAddress sa = (InetSocketAddress) ctx.channel().remoteAddress();
@@ -66,15 +70,13 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 		if (evt instanceof IdleStateEvent) {
 			IdleStateEvent e = (IdleStateEvent) evt;
 			if (e.state() == IdleState.WRITER_IDLE) {
-				logger.trace("Send heatbeat Request : {}", ctx.channel());
-				ctx.channel().writeAndFlush(new HeartbeatRequest());
+				Boolean needHeartbeat = ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).get();
+				if (needHeartbeat != null && needHeartbeat == true) {
+					logger.trace("Send heatbeat Request : {}", ctx.channel());
+					ctx.writeAndFlush(new HeartbeatRequest());
+				}
 			}
 		}
-	}
-
-	@Override
-	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-		ClientChannelContext.add(ctx.channel());
 	}
 
 	@Override

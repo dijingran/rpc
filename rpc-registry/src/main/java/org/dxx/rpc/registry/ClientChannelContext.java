@@ -8,8 +8,8 @@ package org.dxx.rpc.registry;
 
 import io.netty.channel.Channel;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * 
@@ -19,9 +19,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 public class ClientChannelContext {
-	private static List<Channel> channels = new CopyOnWriteArrayList<Channel>();
+	private static Set<Channel> channels = new CopyOnWriteArraySet<Channel>();
 
-	public static List<Channel> allChannels() {
+	public static Set<Channel> allChannels() {
 		return channels;
 	}
 

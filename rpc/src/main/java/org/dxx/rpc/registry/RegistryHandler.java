@@ -24,6 +24,8 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		// this is important , just send message to registry, 
+		// indicats this channle need heartbeat.
 		RegistryUtils.register(ctx.channel());
 	}
 
