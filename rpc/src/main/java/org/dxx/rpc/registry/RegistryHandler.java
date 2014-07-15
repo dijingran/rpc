@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import org.dxx.rpc.HeartbeatRequest;
+import org.dxx.rpc.client.ServerLocationCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,8 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 			}
 		} else if (msg instanceof GetServerLocationResponse) {
 			RegistryUtils.receiveGetServerLocationResponse((GetServerLocationResponse) msg);
+		} else if (msg instanceof UpdateServerLocationRequest) {
+			ServerLocationCache.update((UpdateServerLocationRequest) msg);
 		}
 	}
 

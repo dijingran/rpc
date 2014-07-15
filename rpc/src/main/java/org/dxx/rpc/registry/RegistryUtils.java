@@ -108,7 +108,7 @@ public class RegistryUtils {
 			throw new RegistryException("Invoke Registry for server location timeout : " + RpcConstants.LOCATE_TIME_OUT);
 		}
 		if (!response.isSuccess()) {
-			throw new RegistryException("Get server location error : " + response.getErrorMessage());
+			logger.error("Get server location error : " + response.getErrorMessage());
 		}
 		logger.debug("Get server location success : {}", response);
 		return response;

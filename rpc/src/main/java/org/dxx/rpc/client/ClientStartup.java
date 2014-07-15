@@ -16,6 +16,7 @@ import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
 import org.dxx.rpc.config.loader.Loader;
 import org.dxx.rpc.registry.GetServerLocationResponse;
+import org.dxx.rpc.registry.RegistryException;
 import org.dxx.rpc.registry.RegistryUtils;
 import org.dxx.rpc.registry.Service;
 import org.slf4j.Logger;
@@ -72,17 +73,29 @@ public class ClientStartup {
 			}
 		}
 
-		GetServerLocationResponse serverLocation = null;
+		GetServerLocationResponse loc = null;
 		// no url
 		if (this.host == null) {
 			try {
-				serverLocation = RegistryUtils.getServerLocation(interfaceClass, deactiveUrl);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
+				loc = RegistryUtils.getServerLocation(interfaceClass, deactiveUrl);
+			} catch (RegistryException e) {
+				logger.warn("Invoke registry failed, try get server location from local cache." + e.getMessage(), e);
+				loc = ServerLocationCache.getServerLocation(interfaceClass, deactiveUrl);
+				if (loc == null) {
+					logger.error("Get server location from local cached failed!");
+				}
+			} catch (Exception e2) {
+				logger.error(e2.getMessage(), e2);
+			}
+
+			if (loc.isSuccess()) {
+				this.host = loc.getHost();
+				this.port = loc.getPort();
+			}
+			if (this.host == null) {
+				logger.error("Can not resolve server location for interface : {}", interfaceClass);
 				return;
 			}
-			this.host = serverLocation.getHost();
-			this.port = serverLocation.getPort();
 		}
 
 		logger.debug("Try create channel : {}:{}, for : {}", new Object[] { host, port, interfaceClass });
@@ -104,8 +117,8 @@ public class ClientStartup {
 			Channel c = f.channel();
 
 			// store the relation between interface class and channel
-			if (serverLocation != null) {
-				for (Service s : serverLocation.getServices()) {
+			if (loc != null) {
+				for (Service s : loc.getServices()) {
 					ChannelContext.add(s.getInterfaceClass(), c);
 				}
 			} else {
@@ -117,5 +130,4 @@ public class ClientStartup {
 			logger.error(e.getMessage(), e);
 		}
 	}
-
 }

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.HeartbeatRequest;
+import org.dxx.rpc.registry.ClientChannelContext;
 import org.dxx.rpc.registry.GetServerLocationRequest;
 import org.dxx.rpc.registry.GetServerLocationResponse;
 import org.dxx.rpc.registry.RegisterRequest;
@@ -50,6 +51,7 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 			}
 			ctx.channel().writeAndFlush(
 					repository.register(sa.getAddress().getHostAddress(), request.getPort(), request));
+
 		} else { // String from telnet
 			AbstractCommand c = commandFactory.get(msg.toString());
 			if (c != null) {
@@ -65,13 +67,19 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 			IdleStateEvent e = (IdleStateEvent) evt;
 			if (e.state() == IdleState.WRITER_IDLE) {
 				logger.trace("Send heatbeat Request : {}", ctx.channel());
-				ctx.writeAndFlush(new HeartbeatRequest());
+				ctx.channel().writeAndFlush(new HeartbeatRequest());
 			}
 		}
 	}
 
 	@Override
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		ClientChannelContext.add(ctx.channel());
+	}
+
+	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		ClientChannelContext.remove(ctx.channel());
 		repository.unregister(channelAndUrl.get(ctx.channel()));
 		ctx.channel().close();
 	}

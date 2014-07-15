@@ -1,5 +1,7 @@
 package org.dxx.rpc.registry;
 
+import io.netty.channel.Channel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * @Date	 2014-6-21
  */
 public class ServiceRepository {
-	Logger logger = LoggerFactory.getLogger(ServiceRepository.class);
+	static Logger logger = LoggerFactory.getLogger(ServiceRepository.class);
 
 	private static Balancer balancer = new DefaultBalancer();
 
@@ -59,6 +61,7 @@ public class ServiceRepository {
 			}
 			services.put(url, request.getServices());
 			logger.debug("Registered : {}", url);
+			pushServices();
 			return new RegisterResponse();
 		} catch (Throwable e) {
 			logger.error(e.getMessage(), e);
@@ -143,7 +146,7 @@ public class ServiceRepository {
 			}
 
 		}
-
+		pushServices();
 		logger.debug("Unregistered services provided by : {}", url);
 		balancer.reset(url);
 	}
@@ -168,7 +171,7 @@ public class ServiceRepository {
 				pausedInterfaces.add(url + "|" + inter);
 			}
 		}
-
+		pushServices();
 		logger.debug("Paused interfaces (after pause) : {}", pausedInterfaces);
 	}
 
@@ -181,12 +184,32 @@ public class ServiceRepository {
 				pausedInterfaces.remove(url + "|" + inter);
 			}
 		}
-
+		pushServices();
 		logger.debug("Paused interfaces (after resume) : {}", pausedInterfaces);
 	}
 
 	public static boolean isPaused(String url, String interfaceClass) {
 		return getInstance().pausedInterfaces.contains(url + "|" + interfaceClass);
+	}
+
+	/**
+	 * While avaliable services changed, push them to clients.
+	 * TODO use thread pool
+	*/
+	public static void pushServices() {
+		if (ClientChannelContext.allChannels().size() == 0) {
+			logger.trace("No client connected, ignore.");
+		}
+		long s = System.currentTimeMillis();
+		UpdateServerLocationRequest request = new UpdateServerLocationRequest();
+		request.setInterAndUrl(ServiceRepository.getInstance().interAndUrl);
+		for (Channel c : ClientChannelContext.allChannels()) {
+			logger.trace("Push service to channel : {}", c);
+			c.writeAndFlush(request);
+		}
+
+		logger.debug("Push services to clients cost : {} ms.", System.currentTimeMillis() - s);
+
 	}
 
 }
