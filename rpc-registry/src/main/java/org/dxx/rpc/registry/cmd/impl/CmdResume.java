@@ -33,7 +33,7 @@ public class CmdResume extends CmdList implements ConfirmRequired {
 			channel.writeAndFlush("> No services can be resumed!\r\n");
 			return;
 		}
-		sb.append("-------You are resuming the services, [Confirm] \"y\" / [Cancel] other keys：");
+		sb.append("-------You are resuming the services, [Confirm] \"y\" / [Cancel] other keys:");
 
 		channel.writeAndFlush(sb.toString());
 		CmdYes.saveAsLast(this);
