@@ -31,7 +31,7 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		RegistryUtils.updateAccessTime();
+		RegistryUtils.updateAccessTime(ctx.channel());
 		if (msg instanceof HeartbeatRequest) {
 			// do nothing
 		} else if (msg instanceof RegisterResponse) {

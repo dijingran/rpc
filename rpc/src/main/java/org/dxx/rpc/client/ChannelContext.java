@@ -3,7 +3,6 @@ package org.dxx.rpc.client;
 import io.netty.channel.Channel;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,7 +49,7 @@ public class ChannelContext {
 
 	public static void add(String interfaceName, Channel channel) {
 		interAndChannels.put(interfaceName, channel);
-		accessMap.put(channel, System.currentTimeMillis());
+		channel.attr(RpcConstants.ATTR_ACCESS_MILLS).set(System.currentTimeMillis());
 	}
 
 	public static void remove(Channel c) {
@@ -75,7 +74,7 @@ public class ChannelContext {
 	 * @return
 	 */
 	private static boolean isActive(Channel c) {
-		return (System.currentTimeMillis() - accessMap.get(c)) <= RpcConstants.INVALID_THRESHOLD;
+		return (System.currentTimeMillis() - c.attr(RpcConstants.ATTR_ACCESS_MILLS).get()) <= RpcConstants.INVALID_THRESHOLD;
 	}
 
 	private static void deactive(Channel c) {
@@ -92,7 +91,7 @@ public class ChannelContext {
 	}
 
 	public static void updateAccessTime(Channel c) {
-		accessMap.put(c, System.currentTimeMillis());
+		c.attr(RpcConstants.ATTR_ACCESS_MILLS).set(System.currentTimeMillis());
 	}
 
 	private static String getDeactiveUrl(String interfaceClass) {
@@ -103,9 +102,6 @@ public class ChannelContext {
 		InetSocketAddress sa = (InetSocketAddress) c.remoteAddress();
 		return sa.getAddress().getHostAddress() + ":" + sa.getPort();
 	}
-
-	/** channel, last access time(System.currentTimeMillis()) */
-	static Map<Channel, Long> accessMap = new HashMap<Channel, Long>();
 
 	/** interfaceName, channel  : Invalid channels, already closed, can't be reused.*/
 	// TODO map list ; remove

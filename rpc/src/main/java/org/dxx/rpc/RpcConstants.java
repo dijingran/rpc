@@ -38,4 +38,9 @@ public interface RpcConstants {
 	 * 标记channel是否需要发送心跳包
 	 */
 	AttributeKey<Boolean> ATTR_NEED_HEARTBEAT = AttributeKey.valueOf("attr_need_heartbeat");
+
+	/**
+	 * 记录上次心跳时间(System.currentTimeMillis())，后续用此时间判断是否channel可用。
+	 */
+	AttributeKey<Long> ATTR_ACCESS_MILLS = AttributeKey.valueOf("attr_access_mills");
 }

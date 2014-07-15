@@ -129,7 +129,7 @@ public class RegistryUtils {
 
 	public static synchronized void setRegistyChannel(Channel registyChannel) {
 		RegistryUtils.registryChannel = registyChannel;
-		updateAccessTime();
+		updateAccessTime(registyChannel);
 	}
 
 	public static synchronized void removeRegistryChannel(Channel c) {
@@ -167,10 +167,8 @@ public class RegistryUtils {
 
 	// =============== heartbeat S ===============
 
-	private static Long accessTime = 0L;
-
-	static synchronized void updateAccessTime() {
-		accessTime = System.currentTimeMillis();
+	static synchronized void updateAccessTime(Channel c) {
+		c.attr(RpcConstants.ATTR_ACCESS_MILLS).set(System.currentTimeMillis());
 	}
 
 	/**
@@ -180,7 +178,7 @@ public class RegistryUtils {
 	 * @return
 	 */
 	private static boolean isActive(Channel c) {
-		return (System.currentTimeMillis() - accessTime) <= RpcConstants.INVALID_THRESHOLD;
+		return (System.currentTimeMillis() - c.attr(RpcConstants.ATTR_ACCESS_MILLS).get()) <= RpcConstants.INVALID_THRESHOLD;
 	}
 
 	// =============== heartbeat E ===============
