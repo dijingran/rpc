@@ -13,5 +13,5 @@
 		<appender-ref ref="Console" />
 	</root>
 	
-	<logger name="org.dxx.rpc" level="trace"/> 
+	<logger name="org.dxx.rpc" level="info"/> 
 </configuration>

@@ -8,7 +8,11 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 
+import java.util.concurrent.TimeUnit;
+
+import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
 import org.dxx.rpc.registry.RegistryConstants;
@@ -32,9 +36,10 @@ public class RegistryServerStartup {
 		ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() { // (4)
 			@Override
 			public void initChannel(SocketChannel ch) throws Exception {
+				ch.pipeline().addLast(new IdleStateHandler(0, RpcConstants.HEAT_BEAT, 0, TimeUnit.MILLISECONDS));
 				ch.pipeline().addLast("encoder", new DexnEncoder());
 				ch.pipeline().addLast("decoder", new DexnDecoder());
-				ch.pipeline().addLast(new ObjectServerHandler());
+				ch.pipeline().addLast(new RegistryServerHandler());
 			}
 		};
 

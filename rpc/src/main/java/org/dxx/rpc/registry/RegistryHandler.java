@@ -9,12 +9,7 @@ package org.dxx.rpc.registry;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.dxx.rpc.config.Registry;
-import org.dxx.rpc.config.loader.Loader;
-import org.dxx.rpc.server.Servers;
+import org.dxx.rpc.HeartbeatRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,31 +23,18 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		Registry registry = Loader.getRpcConfig().getRegistry();
-		logger.debug("Registering rpc services to Registry : {}:{}", registry.getHost(), registry.getPort());
-
-		RegisterRequest request = new RegisterRequest();
-		request.setPort(Loader.getRpcConfig().getRpcServerConfig().getPort());
-
-		List<Service> services = new ArrayList<Service>();
-		for (Class<?> interfaceClass : Servers.interAndImpl.keySet()) {
-			Service s = new Service();
-			s.setInterfaceClass(interfaceClass.getName());
-			s.setDesc(Servers.getDef(interfaceClass).getDescription());
-			services.add(s);
-		}
-		request.setServices(services);
-		ctx.writeAndFlush(request);
-		logger.debug("RegisterRequest sent : {}", request);
+		RegistryUtils.register(ctx.channel());
 	}
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
-		if (msg instanceof RegisterResponse) {
+		RegistryUtils.updateAccessTime();
+		if (msg instanceof HeartbeatRequest) {
+			// do nothing
+		} else if (msg instanceof RegisterResponse) {
 			RegisterResponse response = (RegisterResponse) msg;
 			if (response.isSuccess()) {
-				logger.debug("Register success : {}", response);
+				logger.info("Register success : {}", response);
 			} else {
 				logger.error("Register failed : {}", response.getErrorMessage());
 			}
@@ -65,7 +47,7 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		logger.debug("Registry channel unregistered!");
 		if (RegistryUtils.isRegistryInitialized()) {
-			RegistryUtils.removeRegistryChannel();
+			RegistryUtils.removeRegistryChannel(ctx.channel());
 			RegistryUtils.scheduleRegistry();
 		}
 	}

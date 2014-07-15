@@ -44,7 +44,7 @@ public class ChannelContextTest {
 		Tracer.doTrace("heartbeat", 10000 * 10, new Tracer() {
 			@Override
 			public void exec() {
-				ChannelContext.updateActiveTime(c2);
+				ChannelContext.updateAccessTime(c2);
 			}
 		});
 	}

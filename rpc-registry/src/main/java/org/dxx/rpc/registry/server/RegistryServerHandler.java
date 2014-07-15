@@ -3,11 +3,14 @@ package org.dxx.rpc.registry.server;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.registry.GetServerLocationRequest;
 import org.dxx.rpc.registry.GetServerLocationResponse;
 import org.dxx.rpc.registry.RegisterRequest;
@@ -20,12 +23,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles a server-side channel.
  */
-public class ObjectServerHandler extends ChannelInboundHandlerAdapter {
+public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 
 	/** 记录Channel和URL的对应关系，unregister时用来卸载该URL下的所有服务 */
 	private Map<Channel, String> channelAndUrl = new ConcurrentHashMap<Channel, String>();
 
-	Logger logger = LoggerFactory.getLogger(ObjectServerHandler.class);
+	Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
 
 	private static ServiceRepository repository = ServiceRepository.getInstance();
 
@@ -57,12 +60,14 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		super.channelActive(ctx);
-	}
-
-	@Override
-	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+		if (evt instanceof IdleStateEvent) {
+			IdleStateEvent e = (IdleStateEvent) evt;
+			if (e.state() == IdleState.WRITER_IDLE) {
+				logger.trace("Send heatbeat Request : {}", ctx.channel());
+				ctx.writeAndFlush(new HeartbeatRequest());
+			}
+		}
 	}
 
 	@Override
@@ -73,7 +78,7 @@ public class ObjectServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
-		logger.debug(cause.getMessage());
+		logger.info(cause.getMessage());
 		ctx.close();
 	}
 }
