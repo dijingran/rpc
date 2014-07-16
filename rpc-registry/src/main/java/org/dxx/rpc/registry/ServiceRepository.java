@@ -3,8 +3,10 @@ package org.dxx.rpc.registry;
 import io.netty.channel.Channel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -96,7 +98,7 @@ public class ServiceRepository {
 			}
 
 			List<String> optionalUrls = new ArrayList<String>();
-			for (String url : urls) {// TODO load balance here
+			for (String url : urls) {
 				if (!isDeactive(request, url) && !isPaused(url, request.getInterfaceClass())) {
 					optionalUrls.add(url);
 				}
@@ -202,7 +204,8 @@ public class ServiceRepository {
 		}
 		long s = System.currentTimeMillis();
 		UpdateServerLocationRequest request = new UpdateServerLocationRequest();
-		request.setInterAndUrl(ServiceRepository.getInstance().interAndUrl);
+		request.setInterAndUrl(getAvaliableInterAndUrl());
+
 		for (Channel c : ClientChannelContext.allChannels()) {
 			logger.debug("Push service to channel : {}", c);
 			c.writeAndFlush(request);
@@ -210,6 +213,33 @@ public class ServiceRepository {
 
 		logger.debug("Push services to clients cost : {} ms.", System.currentTimeMillis() - s);
 
+	}
+
+	/**
+	 * Return interAndUrl without paused url.
+	 * @return
+	 */
+	private static Map<String, List<String>> getAvaliableInterAndUrl() {
+		Map<String, List<String>> services = new ConcurrentHashMap<String, List<String>>();
+		ServiceRepository repository = getInstance();
+		if (repository.pausedInterfaces.size() > 0) {
+			for (Iterator<Entry<String, List<String>>> iter = repository.interAndUrl.entrySet().iterator(); iter
+					.hasNext();) {
+				Entry<String, List<String>> e = iter.next();
+				List<String> urls = new ArrayList<String>();
+				String interfaceClass = e.getKey();
+				for (String url : e.getValue()) {
+					if (!isPaused(url, interfaceClass)) {
+						urls.add(url);
+					}
+				}
+
+				services.put(interfaceClass, urls);
+			}
+		} else {
+			services = repository.interAndUrl;
+		}
+		return services;
 	}
 
 }
