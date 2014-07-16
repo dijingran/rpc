@@ -204,7 +204,7 @@ public class ServiceRepository {
 		UpdateServerLocationRequest request = new UpdateServerLocationRequest();
 		request.setInterAndUrl(ServiceRepository.getInstance().interAndUrl);
 		for (Channel c : ClientChannelContext.allChannels()) {
-			logger.trace("Push service to channel : {}", c);
+			logger.debug("Push service to channel : {}", c);
 			c.writeAndFlush(request);
 		}
 
