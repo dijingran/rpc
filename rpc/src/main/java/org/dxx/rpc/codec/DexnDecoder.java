@@ -23,58 +23,45 @@ public class DexnDecoder extends DexnTelnetDecoder {
 
 	private Serializer serializer = new FstSerializer();
 
-	// header length.
-	protected static final int HEADER_LENGTH = 16;
-
-	// magic header.
-	protected static final short MAGIC = (short) 0xdabb;
-
-	protected static final byte MAGIC_HIGH = shortToByte(MAGIC)[0];
-
-	protected static final byte MAGIC_LOW = shortToByte(MAGIC)[1];
-
-	private static byte[] shortToByte(short s) {
-		int t = s;
-		byte[] b = new byte[2];
-		for (int i = 0; i < b.length; i++) {
-			b[i] = new Integer(t & 0xff).byteValue();
-			t = t >> 8;
-		}
-		return b;
+	private enum State {
+		header, body, telnet;
 	}
 
-	public static int byteToInt(byte[] b, int offset) {
-		int value = 0;
-		for (int i = 0; i < 4; i++) {
-			int shift = (4 - 1 - i) * 8;
-			value += (b[i + offset] & 0x000000FF) << shift;
-		}
-		return value;
-	}
+	private State state = State.header;
+
+	private int bodyLength;
 
 	/**
 	 * @see org.dxx.serialization.netty.codec.DexnTelnetDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)
 	 */
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-		if (in.readableBytes() < HEADER_LENGTH) {
+		if (state == State.telnet) {
 			super.decode(ctx, in, out);
-			return;
-		}
-		int oldIndex = in.readerIndex();
-		byte[] header = new byte[HEADER_LENGTH];
-		in.readBytes(header);
-		if (header[0] != MAGIC_HIGH || header[1] != MAGIC_LOW) {
-			in.setIndex(oldIndex, in.writerIndex());
-			super.decode(ctx, in, out);
-			return;
-		}
+		} else if (state == State.header) {
+			byte magic = in.getByte(in.readerIndex());
+			if (magic != DexnEncoder.MAGIC) {
+				state = State.telnet;
+				super.decode(ctx, in, out);
+				return;
+			}
 
-		// skip magic num
-		int bodyLength = byteToInt(header, 2);
-		byte[] body = new byte[bodyLength];
-		in.readBytes(body);
+			if (in.readableBytes() < DexnEncoder.HEADER_LENGTH) {
+				return;
+			}
+			in.skipBytes(1); // skip magic
+			bodyLength = in.readInt();
+			in.skipBytes(11); // skip reserve bytes
 
-		out.add(serializer.deserialize(body));
+			state = State.body;
+		} else if (state == State.body) {
+			if (in.readableBytes() < bodyLength) {
+				return;
+			}
+			byte[] body = new byte[bodyLength];
+			in.readBytes(body);
+			out.add(serializer.deserialize(body));
+			state = State.header;
+		}
 	}
 }

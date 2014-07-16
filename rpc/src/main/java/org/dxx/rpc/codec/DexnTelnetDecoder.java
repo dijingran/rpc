@@ -30,11 +30,8 @@ public class DexnTelnetDecoder extends ByteToMessageDecoder {
 		if (in.readableBytes() == 0) {
 			return;
 		}
-		int oldIndex = in.readerIndex();
-		if (in.readerIndex() + in.readableBytes() - 1 > 0) {
-			in.setIndex(in.readerIndex() + in.readableBytes() - 1, in.writerIndex());
-		}
-		byte b = in.readByte();
+
+		byte b = in.getByte(in.readerIndex() + in.readableBytes() - 1); // last word
 		if (firstLetter) {
 			firstLetter = false;
 			ctx.channel().writeAndFlush(new String(new byte[] { b }, getCharset()));
@@ -43,19 +40,18 @@ public class DexnTelnetDecoder extends ByteToMessageDecoder {
 		if (b < 0) { // ingore
 			return;
 		}
-		in.setIndex(oldIndex, in.writerIndex()); // reset index back;
 
 		byte[] cmd = new byte[in.readableBytes()];
-		in.readBytes(cmd);
+		in.getBytes(in.readerIndex(), cmd);
 		if (isExit(cmd)) {
 			ctx.close();
 			return;
 		}
 
 		if (b == 13 || b == 10) { // enter
+			in.skipBytes(cmd.length);
 			out.add(toString(cmd));
 		} else {
-			in.setIndex(oldIndex, in.writerIndex()); // reset index back;
 			if (b == 8) { //backspace
 				boolean doublechar = cmd.length >= 3 && cmd[cmd.length - 3] < 0; // double byte char
 				ctx.channel()

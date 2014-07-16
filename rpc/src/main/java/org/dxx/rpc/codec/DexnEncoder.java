@@ -31,7 +31,10 @@ public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 
 	private Serializer serializer = new FstSerializer();
 
-	private static final byte[] LENGTH_PLACEHOLDER = new byte[16];
+	// header length.
+	static final int HEADER_LENGTH = 16;
+	static final byte MAGIC = (byte) 0x80;
+	static final byte[] RESERVE_PLACEHOLDER = new byte[11];
 
 	public static byte[] intToBytes(int i) {
 		byte[] result = new byte[4];
@@ -58,18 +61,15 @@ public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 			return;
 		}
 
-		int startIdx = out.writerIndex();
-		LENGTH_PLACEHOLDER[0] = DexnDecoder.MAGIC_HIGH;
-		LENGTH_PLACEHOLDER[1] = DexnDecoder.MAGIC_LOW;
-
 		byte[] bytes = serializer.serialize(msg);
 
 		ByteBufOutputStream bout = new ByteBufOutputStream(out);
-		bout.write(LENGTH_PLACEHOLDER);
+
+		bout.write(MAGIC);
+		bout.writeInt(bytes.length);
+		bout.write(RESERVE_PLACEHOLDER);
 		bout.write(bytes);
 		bout.close();
-
-		out.setInt(startIdx + 2, out.writerIndex() - startIdx - 16); // body length after magic number
 	}
 
 }
