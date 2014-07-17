@@ -7,8 +7,8 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.RpcConstants;
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 
 	/** 记录Channel和URL的对应关系，unregister时用来卸载该URL下的所有服务 */
-	private Map<Channel, String> channelAndUrl = new ConcurrentHashMap<Channel, String>();
+	private Map<Channel, String> channelAndUrl = new HashMap<Channel, String>();
 
 	Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
 
