@@ -88,7 +88,7 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
-		logger.info(cause.getMessage());
+		logger.info(cause.getMessage(), cause);
 		ctx.close();
 	}
 }

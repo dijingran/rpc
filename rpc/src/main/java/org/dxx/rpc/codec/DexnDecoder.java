@@ -36,6 +36,9 @@ public class DexnDecoder extends DexnTelnetDecoder {
 	 */
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+		if (in.readableBytes() <= 0) {
+			return;
+		}
 		if (state == State.telnet) {
 			super.decode(ctx, in, out);
 		} else if (state == State.header) {
