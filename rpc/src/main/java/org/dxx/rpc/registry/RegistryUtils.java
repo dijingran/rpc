@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -23,11 +22,11 @@ import org.slf4j.LoggerFactory;
 
 public class RegistryUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RegistryUtils.class);
-	private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	private static final ExecutorService registryExecutorService = Executors.newFixedThreadPool(1);
 
 	private static AtomicLong sequence = new AtomicLong(0);
-	private static Channel registryChannel;
+	/** Registry channel */
+	private static Channel channel;
 
 	private static Map<Long, CountDownLatch> countDownLatches = new ConcurrentHashMap<Long, CountDownLatch>();
 
@@ -70,17 +69,17 @@ public class RegistryUtils {
 	 * @return
 	 */
 	public static GetServerLocationResponse getServerLocation(String interfaceClass, String deactiveUrl) {
-		if (registryChannel == null) {
+		if (channel == null) {
 			throw new RegistryException("尚未连接到注册中心！");
 		}
 
-		if (!isActive(registryChannel)) {
-			removeRegistryChannel(registryChannel);
+		if (!isActive(channel)) {
+			removeChannel();
 			logger.info("The registry channel is already deactive, close it and try create new channel.");
-			createRegistryChannel();
+			createChannel();
 		}
 
-		if (registryChannel == null) {
+		if (channel == null) {
 			throw new RegistryException("无法连接到注册中心！");
 		}
 
@@ -95,7 +94,7 @@ public class RegistryUtils {
 		countDownLatches.put(request.getId(), countDownLatch);
 
 		try {
-			registryChannel.writeAndFlush(request);
+			channel.writeAndFlush(request);
 			countDownLatch.await(RpcConstants.LOCATE_TIME_OUT, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e1) {
 			logger.warn(e1.getMessage(), e1);
@@ -123,18 +122,29 @@ public class RegistryUtils {
 		}
 	}
 
-	public static boolean isRegistryInitialized() {
-		return registryChannel != null;
+	public static boolean isInitialized() {
+		return channel != null;
 	}
 
-	public static synchronized void setRegistyChannel(Channel registyChannel) {
-		RegistryUtils.registryChannel = registyChannel;
+	public static boolean isChannelActive() {
+		return channel != null && isActive(channel);
+	}
+
+	public static synchronized void setChannel(Channel registyChannel) {
+		channel = registyChannel;
 		updateAccessTime(registyChannel);
 	}
 
-	public static synchronized void removeRegistryChannel(Channel c) {
-		c.close();
-		RegistryUtils.registryChannel = null;
+	public static synchronized void removeChannel() {
+		try {
+			if (channel != null) {
+				channel.close();
+			}
+		} catch (Exception e) {
+			logger.warn(e.getMessage(), e);
+		} finally {
+			channel = null;
+		}
 	}
 
 	public static Class<?> getInter(String interfaceClass) {
@@ -145,21 +155,13 @@ public class RegistryUtils {
 		}
 	}
 
-	public static void scheduleRegistry() {
-		scheduler.schedule(new RegistryStartup(), RpcConstants.REGISTRY_RETRY_TIME, TimeUnit.MILLISECONDS);
-	}
-
 	/**
-	 * synchronized , avoid multi channel created !
+	 * Synchronized avoid multi channels created !
 	 */
-	public static synchronized void createRegistryChannel() {
+	public static synchronized void createChannel() {
 		Registry registry = Loader.getRpcConfig().getRegistry();
 		if (registry == null) {
 			logger.debug("<registry../> is not configured !");
-			return;
-		}
-		if (registryChannel != null) {
-			logger.warn("Channel already exists!");
 			return;
 		}
 		new RegistryStartup().startup();
@@ -177,7 +179,7 @@ public class RegistryUtils {
 	 * @param c
 	 * @return
 	 */
-	private static boolean isActive(Channel c) {
+	static boolean isActive(Channel c) {
 		return (System.currentTimeMillis() - c.attr(RpcConstants.ATTR_ACCESS_MILLS).get()) <= RpcConstants.INVALID_THRESHOLD;
 	}
 

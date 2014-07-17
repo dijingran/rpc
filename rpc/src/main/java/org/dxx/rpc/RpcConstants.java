@@ -16,8 +16,8 @@ import io.netty.util.AttributeKey;
  */
 
 public interface RpcConstants {
-	/** 当注册中心不可用时，重连的时间间隔 */
-	long REGISTRY_RETRY_TIME = 10000L;
+	/** 当注册中心不可用时(channel未创建或心跳失败)，重连的时间间隔 */
+	long REGISTRY_CHECK_TIME = 2000L;
 
 	/** 从注册中心获取服务端URL的超时时间 */
 	long LOCATE_TIME_OUT = 5000L;

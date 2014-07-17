@@ -51,9 +51,8 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		logger.debug("Registry channel unregistered!");
-		if (RegistryUtils.isRegistryInitialized()) {
-			RegistryUtils.removeRegistryChannel(ctx.channel());
-			RegistryUtils.scheduleRegistry();
+		if (RegistryUtils.isInitialized()) {
+			RegistryUtils.removeChannel();
 		}
 	}
 }

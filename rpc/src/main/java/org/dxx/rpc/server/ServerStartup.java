@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
+import org.dxx.rpc.registry.RegistryStartup;
 import org.dxx.rpc.registry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +50,14 @@ public class ServerStartup {
 			b.bind(port).sync();
 			logger.info("Rpc server is running on port : {}", port);
 			// call registry and init channels for rpc clients
-			RegistryUtils.createRegistryChannel();
+			RegistryUtils.createChannel();
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
+		} finally {
+			// Create registry channel if channel not exists or channel is dead.
+			workerGroup.scheduleAtFixedRate(new RegistryStartup(), 10, RpcConstants.REGISTRY_CHECK_TIME,
+					TimeUnit.MILLISECONDS);
 		}
 	}
 

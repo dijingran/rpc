@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RegistryStartup implements Runnable {
 	static final Logger logger = LoggerFactory.getLogger(RegistryStartup.class);
+
 	private String host;
 	private int port;
 
@@ -32,33 +33,35 @@ public class RegistryStartup implements Runnable {
 		Registry registry = Loader.getRpcConfig().getRegistry();
 		if (registry == null) {
 			logger.info("<registry../> is not configured !");
-			return;
-		}
-
-		if (registry.getHost() == null || registry.getHost().isEmpty()) {
-			logger.error("Registry host must not be empty");
 		} else {
-			this.host = registry.getHost();
-		}
+			if (registry.getHost() == null || registry.getHost().isEmpty()) {
+				logger.error("Registry host must not be empty.");
+			} else {
+				this.host = registry.getHost();
+			}
 
-		this.port = (registry.getPort() <= 0 ? RegistryConstants.DEFUALT_PORT : registry.getPort());
+			this.port = (registry.getPort() <= 0 ? RegistryConstants.DEFUALT_PORT : registry.getPort());
+		}
 	}
 
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
 	@Override
 	public void run() {
 		startup();
 	}
 
 	public void startup() {
+		long start = System.currentTimeMillis();
 		if (this.host == null) {
 			return;
 		}
-		if (RegistryUtils.isRegistryInitialized()) {
-			logger.debug("Already inited ...");
+
+		if (RegistryUtils.isChannelActive()) {
 			return;
+		}
+
+		if (RegistryUtils.isInitialized()) {
+			RegistryUtils.removeChannel();
+			logger.info("Registry channel is not avaliable, try reconnect.");
 		}
 
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -74,10 +77,10 @@ public class RegistryStartup implements Runnable {
 				}
 			});
 			ChannelFuture f = b.connect(host, port).sync();
-			RegistryUtils.setRegistyChannel(f.channel());
-		} catch (Exception e) {
-			logger.warn("连接注册中心异常 : " + e.getMessage());
-			RegistryUtils.scheduleRegistry();
+			RegistryUtils.setChannel(f.channel());
+			logger.trace("Create registry channel cost {} ms.", (System.currentTimeMillis() - start));
+		} catch (Throwable e) {
+			logger.warn("Ex while create registy channel : " + e.getMessage());
 		}
 	}
 
