@@ -21,10 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 16 bytes header based protocol.
- * <li>1 : magic num.
- * <li>2 - 5 : body length.
- * <li>6 - 16 : reserve.
  * 
  * @author   dixingxing
  * @Date	 2014-6-21
@@ -33,21 +29,13 @@ public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 
 	static final Logger logger = LoggerFactory.getLogger(DexnEncoder.class);
 
+	// TODO extend point
 	private Serializer serializer = new FstSerializer();
 
 	// header length.
 	static final int HEADER_LENGTH = 16;
 	static final byte MAGIC = (byte) 0x80;
 	static final byte[] RESERVE_PLACEHOLDER = new byte[11];
-
-	public static byte[] intToBytes(int i) {
-		byte[] result = new byte[4];
-		result[0] = (byte) ((i >> 24) & 0xFF);
-		result[1] = (byte) ((i >> 16) & 0xFF);
-		result[2] = (byte) ((i >> 8) & 0xFF);
-		result[3] = (byte) (i & 0xFF);
-		return result;
-	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Serializable msg, ByteBuf out) throws Exception {
