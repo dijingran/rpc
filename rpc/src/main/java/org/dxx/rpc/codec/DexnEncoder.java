@@ -32,7 +32,7 @@ public class DexnEncoder extends MessageToByteEncoder<Serializable> {
 	// TODO extend point
 	private Serializer serializer = new FstSerializer();
 
-	// header length.
+	// header length. 
 	static final int HEADER_LENGTH = 16;
 	static final byte MAGIC = (byte) 0x80;
 	static final byte[] RESERVE_PLACEHOLDER = new byte[11];
