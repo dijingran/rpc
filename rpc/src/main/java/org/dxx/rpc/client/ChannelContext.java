@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 public class ChannelContext {
 	private static final Logger logger = LoggerFactory.getLogger(ChannelContext.class);
 
-	static Map<String, Channel> interAndChannels = new ConcurrentHashMap<String, Channel>();
+	static Map<String, Channel> interAndChannel = new ConcurrentHashMap<String, Channel>();
 
 	/**
 	 * 检查是否已有channel，避免重复创建
 	 */
 	static boolean isChannelExist(String interfaceClass) {
-		Channel c = interAndChannels.get(interfaceClass);
+		Channel c = interAndChannel.get(interfaceClass);
 		return c != null && isActive(c);
 	}
 
@@ -30,7 +30,7 @@ public class ChannelContext {
 	 * 根据接口名获得channel。 TODO
 	 */
 	public static Channel getOrCreateChannel(String interfaceClass) {
-		Channel c = interAndChannels.get(interfaceClass);
+		Channel c = interAndChannel.get(interfaceClass);
 		if (c != null && !isActive(c)) {
 			deactive(c);
 			c = null;
@@ -39,7 +39,7 @@ public class ChannelContext {
 		if (c == null) {
 			// TODO 多次为空时，将接口放到失败列表中，避免每次都尝试创建连接
 			new ClientStartup(interfaceClass, getDeactiveUrl(interfaceClass)).startup();
-			c = interAndChannels.get(interfaceClass);
+			c = interAndChannel.get(interfaceClass);
 		}
 		if (c == null) {
 			throw new RpcException("No channel found for interface : " + interfaceClass);
@@ -48,12 +48,12 @@ public class ChannelContext {
 	}
 
 	public static void add(String interfaceName, Channel channel) {
-		interAndChannels.put(interfaceName, channel);
+		interAndChannel.put(interfaceName, channel);
 		channel.attr(RpcConstants.ATTR_ACCESS_MILLS).set(System.currentTimeMillis());
 	}
 
 	public static void remove(Channel c) {
-		for (Iterator<Entry<String, Channel>> iter = interAndChannels.entrySet().iterator(); iter.hasNext();) {
+		for (Iterator<Entry<String, Channel>> iter = interAndChannel.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry<String, Channel> entry = iter.next();
 			if (entry.getValue() == c) {
 				logger.debug("Remove channel for interface  : {}, {}", entry.getKey(), c);
@@ -63,7 +63,7 @@ public class ChannelContext {
 	}
 
 	public static boolean exists(String interName) {
-		return interAndChannels.containsKey(interName);
+		return interAndChannel.containsKey(interName);
 	}
 
 	// =============== heartbeat S ===============
@@ -78,7 +78,7 @@ public class ChannelContext {
 	}
 
 	private static void deactive(Channel c) {
-		for (Iterator<Entry<String, Channel>> iter = interAndChannels.entrySet().iterator(); iter.hasNext();) {
+		for (Iterator<Entry<String, Channel>> iter = interAndChannel.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry<String, Channel> entry = iter.next();
 			if (entry.getValue() == c) {
 				logger.debug("Deactive (Remove) channel for interface  : {}, {}", entry.getKey(), c);

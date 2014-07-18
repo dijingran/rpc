@@ -9,6 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
 import org.dxx.rpc.config.Registry;
@@ -40,7 +41,7 @@ public class RegistryStartup implements Runnable {
 				this.host = registry.getHost();
 			}
 
-			this.port = (registry.getPort() <= 0 ? RegistryConstants.DEFUALT_PORT : registry.getPort());
+			this.port = (registry.getPort() <= 0 ? RpcConstants.REGISTRY_DEFUALT_PORT : registry.getPort());
 		}
 	}
 

@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.dxx.rpc.client.ChannelContext;
 import org.dxx.rpc.exception.RpcException;
-import org.dxx.rpc.exception.RpcTimeoutException;
+import org.dxx.rpc.exception.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,10 +81,10 @@ public class ResponseFuture {
 		return response;
 	}
 
-	private RpcTimeoutException timeoutException() {
+	private TimeoutException timeoutException() {
 		String s = ChannelContext.getOrCreateChannel(request.getInterfaceClass().getName()) + " : "
 				+ request.getInterfaceClass().toString();
-		return new RpcTimeoutException(timeout, s);
+		return new TimeoutException(timeout, s);
 	}
 
 	public long getBegin() {

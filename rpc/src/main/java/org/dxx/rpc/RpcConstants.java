@@ -16,6 +16,9 @@ import io.netty.util.AttributeKey;
  */
 
 public interface RpcConstants {
+	/** 注册中心默认端口 */
+	int REGISTRY_DEFUALT_PORT = 50010;
+
 	/** 当注册中心不可用时(channel未创建或心跳失败)，重连的时间间隔 */
 	long REGISTRY_CHECK_TIME = 2000L;
 

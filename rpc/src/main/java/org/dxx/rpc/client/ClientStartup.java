@@ -15,8 +15,8 @@ import org.dxx.rpc.codec.DexnEncoder;
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
 import org.dxx.rpc.config.loader.Loader;
+import org.dxx.rpc.exception.RegistryException;
 import org.dxx.rpc.registry.GetServerLocationResponse;
-import org.dxx.rpc.registry.RegistryException;
 import org.dxx.rpc.registry.RegistryUtils;
 import org.dxx.rpc.registry.Service;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class ClientStartup {
 		}
 	}
 
-	public void startupInternal() {
+	private void startupInternal() {
 		long start = System.currentTimeMillis();
 
 		if (ChannelContext.isChannelExist(interfaceClass)) {

@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.config.Registry;
 import org.dxx.rpc.config.loader.Loader;
+import org.dxx.rpc.exception.RegistryException;
 import org.dxx.rpc.exception.RpcException;
 import org.dxx.rpc.server.Servers;
 import org.slf4j.Logger;

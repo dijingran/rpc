@@ -21,6 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 16 bytes header based protocol.
+ * <li>1 : magic num.
+ * <li>2 - 5 : body length.
+ * <li>6 - 16 : reserve.
  * 
  * @author   dixingxing
  * @Date	 2014-6-21

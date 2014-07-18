@@ -38,7 +38,7 @@ public class Clients {
 			proxy = (T) ProxyFactory.get(interfaceClass, getConfig(interfaceClass));
 			interAndProxies.put(interfaceClass, proxy);
 		}
-		logger.trace("return proxy for interface: {}", interfaceClass);
+		logger.trace("Return proxy for interface: {}", interfaceClass);
 		return proxy;
 	}
 

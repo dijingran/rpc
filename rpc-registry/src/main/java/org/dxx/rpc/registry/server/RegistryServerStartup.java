@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
-import org.dxx.rpc.registry.RegistryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +23,7 @@ public class RegistryServerStartup {
 	private int port;
 
 	public RegistryServerStartup() {
-		this.port = RegistryConstants.DEFUALT_PORT;
+		this.port = RpcConstants.REGISTRY_DEFUALT_PORT;
 	}
 
 	public RegistryServerStartup(int port) {

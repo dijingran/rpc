@@ -1,4 +1,4 @@
-package org.dxx.rpc.registry;
+package org.dxx.rpc.exception;
 
 @SuppressWarnings("serial")
 public class RegistryException extends RuntimeException {

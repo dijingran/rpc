@@ -3,7 +3,7 @@ package org.dxx.rpc;
 import java.util.concurrent.CyclicBarrier;
 
 import org.dxx.rpc.common.RpcUtils;
-import org.dxx.rpc.exception.RpcTimeoutException;
+import org.dxx.rpc.exception.TimeoutException;
 import org.dxx.rpc.share.HelloService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class RpcTest {
 			for (; i < 1000; i++) {
 				try {
 					RpcUtils.get(HelloService.class).sayHello("" + i);
-				} catch (RpcTimeoutException e) {
+				} catch (TimeoutException e) {
 					timeoutTimes++;
 					logger.error(e.getMessage(), e);
 				}
