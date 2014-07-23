@@ -7,7 +7,6 @@
 package org.dxx.rpc.registry;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,36 +21,33 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DefaultBalancer implements Balancer {
 
-	private Map<String, AtomicInteger> couters = new ConcurrentHashMap<String, AtomicInteger>();
+	/** url, counter */
+	private ConcurrentHashMap<String, AtomicInteger> couters = new ConcurrentHashMap<String, AtomicInteger>();
 
 	@Override
 	public String select(List<String> urls) {
 		if (urls.isEmpty()) {
 			return null;
 		}
-		int[] array = new int[urls.size()];
+		int[] countArray = new int[urls.size()];
 
 		for (int i = 0; i < urls.size(); i++) {
-			AtomicInteger ai = couters.get(urls.get(i));
-			if (ai == null) {
-				ai = new AtomicInteger(0);
-				couters.put(urls.get(i), ai);
-			}
-			array[i] = ai.get();
+			AtomicInteger ai = couters.putIfAbsent(urls.get(i), new AtomicInteger(0));
+			countArray[i] = ai != null ? ai.get() : 0;
 		}
 
 		int minIndex = 0;
 		int min = Integer.MAX_VALUE;
-		for (int i = 0; i < array.length; i++) {
-			if (array[i] < min) {
-				min = array[i];
+		for (int i = 0; i < countArray.length; i++) {
+			if (countArray[i] < min) {
+				min = countArray[i];
 				minIndex = i;
 			}
 		}
 
-		String finalUrl = urls.get(minIndex);
-		couters.get(finalUrl).incrementAndGet();
-		return finalUrl;
+		String url = urls.get(minIndex);
+		couters.get(url).incrementAndGet();
+		return url;
 	}
 
 	@Override
