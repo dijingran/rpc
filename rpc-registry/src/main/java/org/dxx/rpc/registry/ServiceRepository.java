@@ -1,7 +1,5 @@
 package org.dxx.rpc.registry;
 
-import io.netty.channel.Channel;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -144,37 +142,24 @@ public class ServiceRepository {
 		return services;
 	}
 
-	public Map<String, List<String>> getInterAndUrl() {
-		return interAndUrl;
-	}
-
-	/**
-	 * 暂停服务，下次客户端不能注册
-	 * <p>
-	 *
-	 * @param interfaces 
-	 */
 	public void pause(Map<String, List<String>> interfaces) {
 		for (String url : interfaces.keySet()) {
 			for (String inter : interfaces.get(url)) {
 				pausedInterfaces.add(url + "|" + inter);
 			}
 		}
-		pushServices();
 		logger.debug("Paused interfaces (after pause) : {}", pausedInterfaces);
+		pushServices();
 	}
 
-	/**
-	 * 
-	 */
 	public void resume(Map<String, List<String>> interfaces) {
 		for (String url : interfaces.keySet()) {
 			for (String inter : interfaces.get(url)) {
 				pausedInterfaces.remove(url + "|" + inter);
 			}
 		}
-		pushServices();
 		logger.debug("Paused interfaces (after resume) : {}", pausedInterfaces);
+		pushServices();
 	}
 
 	public static boolean isPaused(String url, String interfaceClass) {
@@ -183,21 +168,12 @@ public class ServiceRepository {
 
 	/**
 	 * While avaliable services changed, push them to clients.
-	 * TODO use thread pool
 	*/
-	public static void pushServices() {
-		if (ClientChannelContext.allChannels().size() == 0) {
-			logger.trace("No client connected, ignore.");
-		}
+	private static void pushServices() {
 		long s = System.currentTimeMillis();
 		UpdateServerLocationRequest request = new UpdateServerLocationRequest();
 		request.setInterAndUrl(getAvaliableInterAndUrl());
-
-		for (Channel c : ClientChannelContext.allChannels()) {
-			logger.debug("Push service to channel : {}", c);
-			c.writeAndFlush(request);
-		}
-
+		Channels.writeAndFlush(request);
 		logger.debug("Push services to clients cost : {} ms.", System.currentTimeMillis() - s);
 
 	}

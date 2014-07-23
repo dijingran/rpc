@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.RpcConstants;
-import org.dxx.rpc.registry.ClientChannelContext;
+import org.dxx.rpc.registry.Channels;
 import org.dxx.rpc.registry.GetServerLocationRequest;
 import org.dxx.rpc.registry.GetServerLocationResponse;
 import org.dxx.rpc.registry.RegisterRequest;
@@ -43,7 +43,7 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 			ctx.channel().writeAndFlush(resp);
 			logger.debug("Wrote GetServerLocationResponse : {}", resp);
 		} else if (msg instanceof RegisterRequest) {
-			ClientChannelContext.add(ctx.channel());
+			Channels.add(ctx.channel());
 			ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).set(true);
 
 			RegisterRequest request = (RegisterRequest) msg;
@@ -81,8 +81,6 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		logger.debug("Channel unregistered : {}", ctx.channel());
-		ClientChannelContext.remove(ctx.channel());
-
 		String url = channelAndUrl.remove(ctx.channel());
 
 		if (url != null) {

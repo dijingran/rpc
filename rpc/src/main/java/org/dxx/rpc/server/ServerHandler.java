@@ -40,7 +40,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter { // (1)
 			if (e.state() == IdleState.WRITER_IDLE) {
 				Boolean needHeartbeat = ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).get();
 				if (needHeartbeat != null && needHeartbeat == true) {
-					logger.trace("Send heatbeat Request : {}", ctx.channel());
 					ctx.writeAndFlush(new HeartbeatRequest());
 				}
 			}
