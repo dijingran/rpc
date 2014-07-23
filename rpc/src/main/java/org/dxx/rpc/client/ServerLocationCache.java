@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * <ol>
  * <li>与注册中心建立连接时
  * <li>当注册中心注册新服务或卸载老服务时
- * <li>注册中心暂停和回复服务时
+ * <li>注册中心暂停和恢复服务时
  * </ol> 
  * @author   dixingxing
  * @Date	 2014年7月15日
