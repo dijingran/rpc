@@ -7,8 +7,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.RpcConstants;
@@ -22,13 +21,13 @@ import org.dxx.rpc.registry.cmd.CommandFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Handles a server-side channel.
- */
 public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 
 	/** 记录Channel和URL的对应关系，unregister时用来卸载该URL下的所有服务 */
-	private Map<Channel, String> channelAndUrl = new HashMap<Channel, String>();
+	private static ConcurrentHashMap<Channel, String> channelAndUrl = new ConcurrentHashMap<Channel, String>();
+
+	/** To avoid remove avaliable services. */
+	private static ConcurrentHashMap<String, Channel> urlAndLatestChannel = new ConcurrentHashMap<String, Channel>();
 
 	Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
 
@@ -50,11 +49,12 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 			RegisterRequest request = (RegisterRequest) msg;
 			// remote address
 			InetSocketAddress sa = (InetSocketAddress) ctx.channel().remoteAddress();
+			String url = sa.getAddress().getHostAddress() + ":" + request.getPort();
 			if (!channelAndUrl.containsKey(ctx.channel())) {
-				channelAndUrl.put(ctx.channel(), sa.getAddress().getHostAddress() + ":" + request.getPort());
+				channelAndUrl.put(ctx.channel(), url);
 			}
-			ctx.channel().writeAndFlush(
-					repository.register(sa.getAddress().getHostAddress(), request.getPort(), request));
+			urlAndLatestChannel.put(url, ctx.channel());
+			ctx.channel().writeAndFlush(repository.register(url, request));
 
 		} else { // String from telnet
 			AbstractCommand c = commandFactory.get(msg.toString());
@@ -72,7 +72,6 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 			if (e.state() == IdleState.WRITER_IDLE) {
 				Boolean needHeartbeat = ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).get();
 				if (needHeartbeat != null && needHeartbeat == true) {
-					logger.trace("Send heatbeat Request : {}", ctx.channel());
 					ctx.writeAndFlush(new HeartbeatRequest());
 				}
 			}
@@ -81,14 +80,25 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		logger.debug("Channel unregistered : {}", ctx.channel());
 		ClientChannelContext.remove(ctx.channel());
-		repository.unregister(channelAndUrl.get(ctx.channel()));
+
+		String url = channelAndUrl.remove(ctx.channel());
+
+		if (url != null) {
+			Channel c = urlAndLatestChannel.get(url);
+			if (c == ctx.channel()) {
+				repository.unregister(url);
+			} else {
+				logger.debug("Channel is overdue when unregistered, do not unregister services.");
+			}
+		}
 		ctx.channel().close();
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
-		logger.info(cause.getMessage(), cause);
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		logger.info(ctx.channel() + ":" + cause.getMessage(), cause);
 		ctx.close();
 	}
 }

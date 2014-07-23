@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 public class RegistryUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RegistryUtils.class);
 	private static final ExecutorService registryExecutorService = Executors.newFixedThreadPool(1);
+	private static final ScheduledExecutorService registrySchedule = Executors.newScheduledThreadPool(1);
 
 	private static AtomicLong sequence = new AtomicLong(0);
 	/** Registry channel */
@@ -166,6 +168,15 @@ public class RegistryUtils {
 			return;
 		}
 		new RegistryStartup().startup();
+	}
+
+	/**
+	 * Create registry channel if channel not exists or channel is dead.
+	 */
+	public static void scheduleRegistry() {
+		logger.debug("Schedule RegistryStartup instance.");
+		registrySchedule.scheduleAtFixedRate(new RegistryStartup(), 10, RpcConstants.REGISTRY_CHECK_TIME,
+				TimeUnit.MILLISECONDS);
 	}
 
 	// =============== heartbeat S ===============

@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.codec.DexnDecoder;
 import org.dxx.rpc.codec.DexnEncoder;
-import org.dxx.rpc.registry.RegistryStartup;
 import org.dxx.rpc.registry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ public class ServerStartup {
 	}
 
 	public void startup() {
-		ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() { // (4)
+		ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() {
 			@Override
 			public void initChannel(SocketChannel ch) throws Exception {
 				ch.pipeline().addLast("encoder", new DexnEncoder());
@@ -46,7 +45,6 @@ public class ServerStartup {
 			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(channelInitializer)
 					.option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
 
-			// Bind and start to accept incoming connections.
 			b.bind(port).sync();
 			logger.info("Rpc server is running on port : {}", port);
 			// call registry and init channels for rpc clients
@@ -55,9 +53,7 @@ public class ServerStartup {
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		} finally {
-			// Create registry channel if channel not exists or channel is dead.
-			workerGroup.scheduleAtFixedRate(new RegistryStartup(), 10, RpcConstants.REGISTRY_CHECK_TIME,
-					TimeUnit.MILLISECONDS);
+			RegistryUtils.scheduleRegistry();
 		}
 	}
 

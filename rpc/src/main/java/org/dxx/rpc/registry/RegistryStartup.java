@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 public class RegistryStartup implements Runnable {
 	static final Logger logger = LoggerFactory.getLogger(RegistryStartup.class);
 
+	private static EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private String host;
 	private int port;
 
@@ -65,7 +66,6 @@ public class RegistryStartup implements Runnable {
 			logger.info("Registry channel is not avaliable, try reconnect.");
 		}
 
-		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			Bootstrap b = new Bootstrap();
 			b.group(workerGroup);
@@ -81,7 +81,7 @@ public class RegistryStartup implements Runnable {
 			RegistryUtils.setChannel(f.channel());
 			logger.trace("Create registry channel cost {} ms.", (System.currentTimeMillis() - start));
 		} catch (Throwable e) {
-			logger.warn("Ex while create registy channel : " + e.getMessage());
+			logger.warn("Ex while create registy channel : " + e.getMessage(), e);
 		}
 	}
 

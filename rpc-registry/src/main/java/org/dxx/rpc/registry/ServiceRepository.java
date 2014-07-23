@@ -35,31 +35,21 @@ public class ServiceRepository {
 	}
 
 	/** url, services */
-	private Map<String, List<Service>> services = new ConcurrentHashMap<String, List<Service>>();
+	private ConcurrentHashMap<String, List<Service>> services = new ConcurrentHashMap<String, List<Service>>();
 
 	/** interfaceClass, "host:port..." */
-	private Map<String, List<String>> interAndUrl = new ConcurrentHashMap<String, List<String>>();
+	private ConcurrentHashMap<String, List<String>> interAndUrl = new ConcurrentHashMap<String, List<String>>();
 
 	/** 192.168.1.78:50020|xxx.ccc.XxServic */
 	private Set<String> pausedInterfaces = new CopyOnWriteArraySet<String>();
 
-	public RegisterResponse register(String host, int port, RegisterRequest request) {
-		String url = host + ":" + port;
+	public RegisterResponse register(String url, RegisterRequest request) {
 		logger.debug("Registering : {}", url);
 		try {
-			if (services.containsKey(url)) {
-				return new RegisterResponse("URL : " + url + " can be only registered one time!");
-			}
-			synchronized (interAndUrl) {
-				for (Service s : request.getServices()) {
-					List<String> urls = interAndUrl.get(s.getInterfaceClass());
-					if (urls == null) {
-						urls = new ArrayList<String>();
-						interAndUrl.put(s.getInterfaceClass(), urls);
-					}
-					urls.add(url);
-					logger.debug("Register : {}", s);
-				}
+			for (Service s : request.getServices()) {
+				interAndUrl.putIfAbsent(s.getInterfaceClass(), new ArrayList<String>());
+				interAndUrl.get(s.getInterfaceClass()).add(url);
+				logger.debug("Register : {}", s);
 			}
 			services.put(url, request.getServices());
 			logger.debug("Registered : {}", url);
@@ -79,10 +69,7 @@ public class ServiceRepository {
 		GetServerLocationResponse response = new GetServerLocationResponse();
 		response.setId(request.getId());
 		try {
-			List<String> urls = null;
-			synchronized (interAndUrl) {
-				urls = interAndUrl.get(request.getInterfaceClass());
-			}
+			List<String> urls = interAndUrl.get(request.getInterfaceClass());
 			if (urls == null || urls.isEmpty()) {
 				logger.warn("Service [{}] not found!", request.getInterfaceClass());
 				response.setErrorMessage("Service [" + request.getInterfaceClass() + "] not found!");
@@ -135,7 +122,7 @@ public class ServiceRepository {
 			return;
 		}
 		List<Service> serviceList = services.remove(url);
-		if (serviceList != null && !serviceList.isEmpty()) {
+		if (serviceList != null) {
 			for (Service s : serviceList) {
 				for (String interfaceClass : interAndUrl.keySet()) {
 					if (s.getInterfaceClass().equals(interfaceClass)) {
@@ -148,8 +135,8 @@ public class ServiceRepository {
 			}
 
 		}
-		pushServices();
 		logger.debug("Unregistered services provided by : {}", url);
+		pushServices();
 		balancer.reset(url);
 	}
 
