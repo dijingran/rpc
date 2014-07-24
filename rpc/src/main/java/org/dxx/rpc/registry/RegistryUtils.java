@@ -175,7 +175,7 @@ public class RegistryUtils {
 	 */
 	public static void scheduleRegistry() {
 		logger.debug("Schedule RegistryStartup instance.");
-		registrySchedule.scheduleAtFixedRate(new RegistryStartup(), 10, RpcConstants.REGISTRY_CHECK_TIME,
+		registrySchedule.scheduleWithFixedDelay(new RegistryStartup(), 10, RpcConstants.REGISTRY_CHECK_TIME,
 				TimeUnit.MILLISECONDS);
 	}
 
