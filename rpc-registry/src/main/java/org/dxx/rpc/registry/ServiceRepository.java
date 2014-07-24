@@ -1,6 +1,7 @@
 package org.dxx.rpc.registry;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class ServiceRepository {
 	private ConcurrentHashMap<String, List<Service>> services = new ConcurrentHashMap<String, List<Service>>();
 
 	/** interfaceClass, "host:port..." */
-	private ConcurrentHashMap<String, List<String>> interAndUrl = new ConcurrentHashMap<String, List<String>>();
+	private ConcurrentHashMap<String, Set<String>> interAndUrl = new ConcurrentHashMap<String, Set<String>>();
 
 	/** 192.168.1.78:50020|xxx.ccc.XxServic */
 	private Set<String> pausedInterfaces = new CopyOnWriteArraySet<String>();
@@ -45,7 +46,7 @@ public class ServiceRepository {
 		logger.debug("Registering : {}", url);
 		try {
 			for (Service s : request.getServices()) {
-				interAndUrl.putIfAbsent(s.getInterfaceClass(), new ArrayList<String>());
+				interAndUrl.putIfAbsent(s.getInterfaceClass(), new CopyOnWriteArraySet<String>());
 				interAndUrl.get(s.getInterfaceClass()).add(url);
 				logger.debug("Register : {}", s);
 			}
@@ -67,7 +68,7 @@ public class ServiceRepository {
 		GetServerLocationResponse response = new GetServerLocationResponse();
 		response.setId(request.getId());
 		try {
-			List<String> urls = interAndUrl.get(request.getInterfaceClass());
+			Set<String> urls = interAndUrl.get(request.getInterfaceClass());
 			if (urls == null || urls.isEmpty()) {
 				logger.warn("Service [{}] not found!", request.getInterfaceClass());
 				response.setErrorMessage("Service [" + request.getInterfaceClass() + "] not found!");
@@ -124,7 +125,7 @@ public class ServiceRepository {
 			for (Service s : serviceList) {
 				for (String interfaceClass : interAndUrl.keySet()) {
 					if (s.getInterfaceClass().equals(interfaceClass)) {
-						List<String> urls = interAndUrl.get(interfaceClass);
+						Set<String> urls = interAndUrl.get(interfaceClass);
 						if (urls != null) {
 							urls.remove(url);
 						}
@@ -182,14 +183,14 @@ public class ServiceRepository {
 	 * Return interAndUrl without paused url.
 	 * @return
 	 */
-	private static Map<String, List<String>> getAvaliableInterAndUrl() {
-		Map<String, List<String>> services = new ConcurrentHashMap<String, List<String>>();
+	private static Map<String, Set<String>> getAvaliableInterAndUrl() {
+		Map<String, Set<String>> services = new ConcurrentHashMap<String, Set<String>>();
 		ServiceRepository repository = getInstance();
 		if (repository.pausedInterfaces.size() > 0) {
-			for (Iterator<Entry<String, List<String>>> iter = repository.interAndUrl.entrySet().iterator(); iter
+			for (Iterator<Entry<String, Set<String>>> iter = repository.interAndUrl.entrySet().iterator(); iter
 					.hasNext();) {
-				Entry<String, List<String>> e = iter.next();
-				List<String> urls = new ArrayList<String>();
+				Entry<String, Set<String>> e = iter.next();
+				Set<String> urls = new HashSet<String>();
 				String interfaceClass = e.getKey();
 				for (String url : e.getValue()) {
 					if (!isPaused(url, interfaceClass)) {

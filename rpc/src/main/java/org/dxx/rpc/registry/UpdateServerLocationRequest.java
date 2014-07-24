@@ -6,8 +6,8 @@
 
 package org.dxx.rpc.registry;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.AbstractRequest;
@@ -22,13 +22,13 @@ import org.dxx.rpc.AbstractRequest;
 public class UpdateServerLocationRequest extends AbstractRequest {
 
 	/** interfaceClass, "host:port..." */
-	private Map<String, List<String>> interAndUrl = new ConcurrentHashMap<String, List<String>>();
+	private Map<String, Set<String>> interAndUrl = new ConcurrentHashMap<String, Set<String>>();
 
-	public Map<String, List<String>> getInterAndUrl() {
+	public Map<String, Set<String>> getInterAndUrl() {
 		return interAndUrl;
 	}
 
-	public void setInterAndUrl(Map<String, List<String>> interAndUrl) {
+	public void setInterAndUrl(Map<String, Set<String>> interAndUrl) {
 		this.interAndUrl = interAndUrl;
 	}
 

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.registry.GetServerLocationResponse;
@@ -35,7 +36,7 @@ public class ServerLocationCache {
 	private static final Logger logger = LoggerFactory.getLogger(ServerLocationCache.class);
 
 	/** interfaceClass, "host:port..." */
-	private static Map<String, List<String>> interAndUrl = new ConcurrentHashMap<String, List<String>>();
+	private static Map<String, Set<String>> interAndUrl = new ConcurrentHashMap<String, Set<String>>();
 
 	/**
 	 * 从本地缓存中获取服务提供者地址
@@ -43,7 +44,7 @@ public class ServerLocationCache {
 	 * @param deactiveUrl 心跳失败的服务端地址
 	 */
 	public static GetServerLocationResponse getServerLocation(String interfaceClass, String deactiveUrl) {
-		List<String> urls = interAndUrl.get(interfaceClass);
+		Set<String> urls = interAndUrl.get(interfaceClass);
 		if (urls == null) {
 			logger.debug("Can't find service from local cache for interface : {}", interfaceClass);
 			return null;

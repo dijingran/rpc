@@ -9,9 +9,9 @@ package org.dxx.rpc.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.registry.UpdateServerLocationRequest;
@@ -28,8 +28,8 @@ public class ServerLocationCacheTest {
 
 	@Test
 	public void test() {
-		Map<String, List<String>> interAndUrl = new ConcurrentHashMap<String, List<String>>();
-		List<String> urls = new ArrayList<String>();
+		Map<String, Set<String>> interAndUrl = new ConcurrentHashMap<String, Set<String>>();
+		Set<String> urls = new HashSet<String>();
 		urls.add("192.168.1.11:50020");
 		urls.add("192.168.1.12:50020");
 		interAndUrl.put("UserService", urls);
