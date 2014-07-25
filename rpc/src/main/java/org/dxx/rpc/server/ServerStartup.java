@@ -7,13 +7,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
 
 import org.dxx.rpc.RpcConstants;
-import org.dxx.rpc.codec.DexnDecoder;
-import org.dxx.rpc.codec.DexnEncoder;
+import org.dxx.rpc.codec.DexnCodec;
 import org.dxx.rpc.registry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +32,10 @@ public class ServerStartup {
 		ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() {
 			@Override
 			public void initChannel(SocketChannel ch) throws Exception {
-				ch.pipeline().addLast("encoder", new DexnEncoder());
-				ch.pipeline().addLast("decoder", new DexnDecoder());
+				ch.pipeline().addLast(new DexnCodec());
+				ch.pipeline().addLast(new HttpServerCodec());
+				ch.pipeline().addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
+
 				ch.pipeline().addLast(new IdleStateHandler(0, RpcConstants.HEAT_BEAT, 0, TimeUnit.MILLISECONDS));
 				ch.pipeline().addLast(new ServerHandler());
 			}

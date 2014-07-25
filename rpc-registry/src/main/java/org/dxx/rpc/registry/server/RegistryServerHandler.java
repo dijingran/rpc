@@ -3,6 +3,7 @@ package org.dxx.rpc.registry.server;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.RpcConstants;
+import org.dxx.rpc.http.HttpRequestUtils;
 import org.dxx.rpc.registry.Channels;
 import org.dxx.rpc.registry.GetServerLocationRequest;
 import org.dxx.rpc.registry.GetServerLocationResponse;
@@ -37,11 +39,15 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		logger.debug("Received : {}", msg);
-		if (msg instanceof GetServerLocationRequest) {
+		if (msg instanceof HttpRequest) {
+			HttpRequestUtils.handle(ctx, msg);
+
+		} else if (msg instanceof GetServerLocationRequest) {
+
 			GetServerLocationResponse resp = repository.getServer((GetServerLocationRequest) msg);
 			ctx.channel().writeAndFlush(resp);
 			logger.debug("Wrote GetServerLocationResponse : {}", resp);
+
 		} else if (msg instanceof RegisterRequest) {
 			Channels.add(ctx.channel());
 			ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).set(true);

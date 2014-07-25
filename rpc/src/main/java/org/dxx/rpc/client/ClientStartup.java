@@ -9,9 +9,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
 
-import org.dxx.rpc.codec.DexnDecoder;
-import org.dxx.rpc.codec.DexnEncoder;
+import org.dxx.rpc.codec.DexnCodec;
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
 import org.dxx.rpc.config.loader.Loader;
@@ -109,7 +110,10 @@ public class ClientStartup {
 			b.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline().addLast(new DexnEncoder(), new DexnDecoder(), new ClientHandler());
+					ch.pipeline().addLast(new DexnCodec());
+					ch.pipeline().addLast(new HttpServerCodec());
+					ch.pipeline().addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
+					ch.pipeline().addLast(new ClientHandler());
 				}
 			});
 
