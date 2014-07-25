@@ -41,19 +41,25 @@ public class DexnTelnetDecoder extends ByteToMessageDecoder {
 			return;
 		}
 
-		byte[] cmd = new byte[in.readableBytes()];
-		in.getBytes(in.readerIndex(), cmd);
-		if (isExit(cmd)) {
+		byte[] bytes = new byte[in.readableBytes()];
+		in.getBytes(in.readerIndex(), bytes);
+		if (isExit(bytes)) {
 			ctx.close();
 			return;
 		}
 
+		String text = toString(bytes);
+		if (text.indexOf("HTTP") > 5) {// is HTTP request, fire next decoder.
+			ctx.fireChannelRead(in.readerIndex(0).retain());
+			return;
+		}
+
 		if (b == 13 || b == 10) { // enter
-			in.skipBytes(cmd.length);
-			out.add(toString(cmd));
+			in.skipBytes(bytes.length);
+			out.add(text);
 		} else {
-			if (b == 8) { //backspace
-				boolean doublechar = cmd.length >= 3 && cmd[cmd.length - 3] < 0; // double byte char
+			if (b == 8) { // backspace
+				boolean doublechar = bytes.length >= 3 && bytes[bytes.length - 3] < 0; // double byte char
 				ctx.channel()
 						.writeAndFlush(new String(doublechar ? new byte[] { 32, 32, 8, 8 } : new byte[] { 32, 8 }));
 				return;
