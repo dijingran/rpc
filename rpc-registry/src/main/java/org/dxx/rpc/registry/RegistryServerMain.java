@@ -7,6 +7,7 @@
 package org.dxx.rpc.registry;
 
 import org.dxx.rpc.monitor.HttpUtils;
+import org.dxx.rpc.registry.monitor.RegistryController;
 import org.dxx.rpc.registry.server.RegistryServerStartup;
 
 /**

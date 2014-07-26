@@ -45,7 +45,7 @@
           </button>
           <a class="brand" href="#">$projectName</a>
           <div class="nav-collapse collapse">
-            <p class="navbar-text pull-right">
+            <p class="navbar-text pull-right" style="display:none;">
 				服务器IP:$ip 
 				#if("$!userName" != "")
 				当前用户：$userName <a href="$!ctx/logout.do?loginURL=$!loginURL" class="navbar-link">退出</a>
@@ -55,8 +55,7 @@
             </p>
     		<!-- 菜单约定为servletPath： $_menu -->
             <ul class="nav">
-              <li #if($_menu == "detect")class="active"#end ><a href="$!ctx/detect.do">连接探测</a></li>
-              <li #if("$!_menu" =="" || $_menu == "stat")class="active"#end><a href="$!ctx/stat.do">统计页面</a></li>
+              <li #if("$!_menu" =="" || $_menu == "index")class="active"#end><a href="/">服务列表</a></li>
               <li #if($_menu == "log")class="active"#end><a href="$!ctx/log.do">日志控制台</a></li>
             </ul>
           </div><!--/.nav-collapse -->

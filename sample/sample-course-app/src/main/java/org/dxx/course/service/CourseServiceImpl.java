@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
  * @Date	 2014-6-23
  */
 @Service
-@RpcSpringService
+@RpcSpringService("课程服务")
 public class CourseServiceImpl implements CourseService {
 
 	/** 注入远程服务接口的代理类  */

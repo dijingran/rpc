@@ -80,7 +80,8 @@ public class HttpUtils {
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("screen_content", VelocityUtils.renderFile(c.exec(request, m), m));
 
-		return VelocityUtils.renderFile("vm/layout/default.html", m);
+		String layout = m.get("layout") != null ? (String) m.get("layout") : "vm/layout/default.html";
+		return VelocityUtils.renderFile(layout, m);
 	}
 
 	private static void writeResponse(ChannelHandlerContext ctx, String html) {

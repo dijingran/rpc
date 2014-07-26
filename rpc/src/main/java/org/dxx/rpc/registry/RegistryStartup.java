@@ -10,8 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import org.dxx.rpc.RpcConstants;
-import org.dxx.rpc.codec.DexnDecoder;
-import org.dxx.rpc.codec.DexnEncoder;
+import org.dxx.rpc.codec.DexnCodec;
 import org.dxx.rpc.config.Registry;
 import org.dxx.rpc.config.loader.Loader;
 import org.slf4j.Logger;
@@ -74,7 +73,7 @@ public class RegistryStartup implements Runnable {
 			b.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline().addLast(new DexnEncoder(), new DexnDecoder(), new RegistryHandler());
+					ch.pipeline().addLast(new DexnCodec(), new RegistryHandler());
 				}
 			});
 			ChannelFuture f = b.connect(host, port).sync();

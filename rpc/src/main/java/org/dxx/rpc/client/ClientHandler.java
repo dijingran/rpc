@@ -20,7 +20,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		//		ChannelContext.updateAccessTime(ctx.channel());
+		ChannelContext.updateAccessTime(ctx.channel());
 		if (msg instanceof HeartbeatRequest) {
 		} else {
 			logger.trace("Receive : {}", msg);

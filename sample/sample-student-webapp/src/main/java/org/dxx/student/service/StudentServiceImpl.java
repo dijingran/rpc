@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
  * @Date	 2014-6-23
  */
 @Service
-@RpcSpringService
+@RpcSpringService("学生服务")
 public class StudentServiceImpl implements StudentService {
 
 	@RpcBean

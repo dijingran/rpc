@@ -45,7 +45,7 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 
 			GetServerLocationResponse resp = repository.getServer((GetServerLocationRequest) msg);
 			ctx.channel().writeAndFlush(resp);
-			logger.debug("Wrote GetServerLocationResponse : {}", resp);
+			logger.debug("Wrote : {}", resp);
 
 		} else if (msg instanceof RegisterRequest) {
 			Channels.add(ctx.channel());
