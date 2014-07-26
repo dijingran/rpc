@@ -2,12 +2,14 @@ package org.dxx.rpc.server;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.Request;
 import org.dxx.rpc.RpcConstants;
+import org.dxx.rpc.monitor.HttpUtils;
 import org.dxx.rpc.server.exec.RpcChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +24,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter { // (1)
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
-		if (msg instanceof String) {
+		if (msg instanceof HttpRequest) {
+			HttpUtils.handleRequest(ctx, msg);
+
+		} else if (msg instanceof String) {
 			ctx.channel().writeAndFlush("Not implement yet!\r\n");
 		} else {
 			ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).set(true);

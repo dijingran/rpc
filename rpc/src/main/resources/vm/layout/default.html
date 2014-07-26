@@ -55,8 +55,9 @@
             </p>
     		<!-- 菜单约定为servletPath： $_menu -->
             <ul class="nav">
+              <li #if("$!_menu" =="" || $_menu == "stat")class="active"#end><a href="$!ctx/stat.do">服务状态</a></li>
+              <li #if($_menu == "detect")class="active"#end ><a href="$!ctx/detect.do">调用状态</a></li>
               <li #if($_menu == "detect")class="active"#end ><a href="$!ctx/detect.do">连接探测</a></li>
-              <li #if("$!_menu" =="" || $_menu == "stat")class="active"#end><a href="$!ctx/stat.do">统计页面</a></li>
               <li #if($_menu == "log")class="active"#end><a href="$!ctx/log.do">日志控制台</a></li>
             </ul>
           </div><!--/.nav-collapse -->

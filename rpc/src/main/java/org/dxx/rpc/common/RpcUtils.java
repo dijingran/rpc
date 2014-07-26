@@ -10,6 +10,8 @@ import org.dxx.rpc.EchoService;
 import org.dxx.rpc.client.Clients;
 import org.dxx.rpc.config.RpcConfig;
 import org.dxx.rpc.config.loader.Loader;
+import org.dxx.rpc.monitor.HttpUtils;
+import org.dxx.rpc.monitor.ServerController;
 import org.dxx.rpc.server.ServerStartup;
 import org.dxx.rpc.server.Servers;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ public class RpcUtils {
 		Clients.init();
 
 		new ServerStartup(conf.getRpcServerConfig().getPort()).startup();
+		HttpUtils.addMapping("", new ServerController());
 		logger.debug("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
 	}
 

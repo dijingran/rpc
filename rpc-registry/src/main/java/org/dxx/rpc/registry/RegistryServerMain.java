@@ -20,7 +20,6 @@ import org.dxx.rpc.registry.server.RegistryServerStartup;
 public class RegistryServerMain {
 	public static void main(String[] args) throws Exception {
 		HttpUtils.addMapping("", new RegistryController());
-		HttpUtils.addMapping("/registry", new RegistryController());
 		new RegistryServerStartup().run();
 	}
 }
