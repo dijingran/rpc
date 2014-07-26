@@ -23,9 +23,12 @@
 								
                                 $s.server.url 
 								<a style="margin-left:30px;" href="http://${s.server.url}" class="btn btn-mini btn-info" target="_blank">详情</a>
-								
+								#if(!$s.server.nonePaused)
 								<a class="btn btn-mini btn-success" onclick="opState('resumeAll', '$s.server.url');">全部恢复</a>
+								#end
+								#if(!$s.server.allPaused)
 								<a href="#" class="btn btn-mini btn-danger" onclick="opState('pauseAll', '$s.server.url');">全部暂停</a>
+								#end
 							</td>
 							#end
                             <td width="25%">

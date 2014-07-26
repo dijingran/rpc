@@ -31,6 +31,24 @@ public class Server {
 		}
 	}
 
+	public boolean isAllPaused() {
+		for (ViewService s : services) {
+			if (!s.isPaused()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isNonePaused() {
+		for (ViewService s : services) {
+			if (s.isPaused()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public String getUrl() {
 		return url;
 	}
