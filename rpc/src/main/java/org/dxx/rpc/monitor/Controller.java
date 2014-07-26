@@ -21,7 +21,7 @@ public interface Controller {
 	 *
 	 * @param request
 	 * @param model
-	 * @return view name or "redirect:" + view name.
+	 * @return View name or "redirect:" + view name;  response empty string while this method return null.
 	 */
 	String exec(DefaultFullHttpRequest request, Map<String, Object> model);
 }

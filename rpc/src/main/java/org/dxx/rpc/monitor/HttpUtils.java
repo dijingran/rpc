@@ -51,7 +51,7 @@ public class HttpUtils {
 			return;
 		}
 
-		logger.debug("{} : {}", request.getMethod().name(), request.getUri());
+		logger.trace("{} : {}", request.getMethod().name(), request.getUri());
 		logger.trace("Received : {}", request);
 
 		QueryStringDecoder qsDecoder = new QueryStringDecoder(request.getUri());
@@ -63,6 +63,18 @@ public class HttpUtils {
 		}
 
 		writeResponse(ctx, invokeController(request, qsDecoder));
+	}
+
+	public static String path(DefaultFullHttpRequest request) {
+		String path = new QueryStringDecoder(request.getUri()).path();
+		return path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+	}
+
+	public static String getParam(String key, QueryStringDecoder qs) {
+		if (qs.parameters().containsKey(key)) {
+			return qs.parameters().get(key).get(0);
+		}
+		return null;
 	}
 
 	static String path(QueryStringDecoder queryStringDecoder) {
@@ -78,7 +90,12 @@ public class HttpUtils {
 		}
 
 		Map<String, Object> m = new HashMap<String, Object>();
-		m.put("screen_content", VelocityUtils.renderFile(c.exec(request, m), m));
+		String result = c.exec(request, m);
+		if (result == null) {
+			return "";
+		}
+
+		m.put("screen_content", VelocityUtils.renderFile(result, m));
 
 		String layout = m.get("layout") != null ? (String) m.get("layout") : "vm/layout/default.html";
 		return VelocityUtils.renderFile(layout, m);
