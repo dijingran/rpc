@@ -1,0 +1,43 @@
+
+<style type="text/css"> 
+div.center{
+margin-left: auto !important;
+margin-right: auto !important;
+float:none !important;
+display: block;
+text-align:center;
+}
+</style>
+
+<div class="row-fluid">
+	<div class="well span3 center">
+		<form class="form-horizontal" action="$!ctx/login.do" method="post">
+			<legend>请登录</legend>
+			<fieldset>
+				<div class="control-group">
+    				<div class="input-prepend" title="请输入用户名" data-rel="tooltip">
+    					<span class="add-on"><i class="icon-user"></i></span>
+    					<input autofocus class="input-large span10" name="username" id="username" type="text" value="$!username" />
+    				</div>
+				</div>
+				<div class="control-group">
+    				<div class="input-prepend" title="请输入密码" data-rel="tooltip">
+    					<span class="add-on"><i class="icon-lock"></i></span>
+    					<input class="input-large span10" name="password" id="password" type="password" value="" />
+					</div>
+				</div>
+				<div class="control-group inline">
+    				<button type="submit" class="btn btn-primary">Login</button>
+				</div>
+				#if("$!message" != "")
+				<div class="control-group">
+            		<div class="alert alert-warning">
+            			$message
+            		</div>
+				</div>
+        		#end
+			</fieldset>
+			<input type="hidden" name="returnURL" value="$!returnURL"></input>
+		</form>
+	</div><!--/span-->
+</div><!--/row-->

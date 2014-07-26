@@ -1,0 +1,83 @@
+<script>
+function gotoPage(a,i) {
+	if(a != null) {
+    	if($(a).parent().attr("class") == "disabled") {
+    		return;
+    	}
+	}
+	$("#rnd").val(Math.random());
+	$("#currentPage").val(i);
+	$("#form1").action = window.location.href;
+
+	// 用于提交数据的表单，会把id为“form2merge”的表单数据一并提交。
+	$('#form1 :input[isacopy]').remove();
+    $('#form2merge :input').not(':submit').clone().hide().attr('isacopy','y').appendTo('#form1');
+	
+	$("#form1").submit();
+} 
+
+// 查询第一页
+function firstPage() {
+	gotoPage(null, 1);
+} 
+
+
+function sort(a) {
+	$("#sortBy").val($(a).attr("sortBy"));
+	var orderBy = ($(a).parent().find("i.icon-arrow-up").length == 0 ? "asc" : "des");
+	$("#orderBy").val(orderBy);
+	gotoPage(a, 1); // 跳转到第一页	
+}
+
+
+$(document).ready(function() {
+	// 初始化所有允许排序的列
+	$('a[sortBy]').each(function(i, val){
+		val = $(val);
+		val.attr("href","javascript:void(0);");
+		if($("#sortBy").val() == val.attr("sortBy")) { // 初始化箭头显示
+			val.append("asc" == $("#orderBy").val() ? '<i class="icon-arrow-up"></i>' : '<i class="icon-arrow-down"></i>');
+		}
+		
+		val.click(function(){
+			sort(val);
+		});
+    });
+}); 
+
+</script>
+
+#set($p1 = $p.startPage)
+#set($p2 = $p1 + 1)
+#set($p3 = $p1 + 2)
+#set($p4 = $p1 + 3)
+#set($p5 = $p1 + 4)
+
+#if($p.totalPage > 1)
+<div class="pagination">
+  <ul>
+    <li #if($p.currentPage <= 1) class="disabled" #end><a href="javascript:void(0);" onclick="javascript:gotoPage(this, ${p.currentPage}-1)">Prev</a></li>
+    <li #if($p1 == $p.currentPage) class="active" #end><a href="javascript:void(0);" onclick="javascript:gotoPage(this, $p1)">$p1</a></li>
+    <li #if($p2 == $p.currentPage) class="active" #elseif($p.maxPage < $p2) class="disabled" #end><a href="javascript:void(0);" onclick="javascript:gotoPage(this, $p2);">$p2</a></li>
+    <li #if($p3 == $p.currentPage) class="active" #elseif($p.maxPage < $p3) class="disabled" #end><a href="javascript:void(0);" onclick="javascript:gotoPage(this, $p3)">$p3</a></li>
+    <li #if($p4 == $p.currentPage) class="active" #elseif($p.maxPage < $p4) class="disabled" #end><a href="javascript:void(0);" onclick="javascript:gotoPage(this, $p4)">$p4</a></li>
+    <li #if($p5 == $p.currentPage) class="active" #elseif($p.maxPage < $p5) class="disabled" #end><a href="javascript:void(0);" onclick="javascript:gotoPage(this, $p5)">$p5</a></li>
+    <li #if($p.currentPage >= $p.totalPage) class="disabled" #end><a href="javascript:void(0);" onclick="javascript:gotoPage(this, ${p.currentPage} + 1);">Next</a></li>
+    <li><span class="muted">总数$!{p.total}，总页数$!{p.totalPage}</span></li>
+  </ul>
+  
+</div>
+#end
+	
+<form id="form1">
+    <input type="hidden" id="pageSize" name="pageSize" value="$p.pageSize"></input>
+    <input type="hidden" id="currentPage" name="currentPage" value="$p.currentPage"></input>
+    <input type="hidden" id="rnd" name="rnd" value=""></input>
+	
+	<!-- 排序参数 S-->
+    <input type="hidden" id="sortBy" name="sortBy" value="$!{sortBy}"></input>
+    <input type="hidden" id="orderBy" name="orderBy" value="$!{orderBy}"></input>
+	<!-- 排序参数 E-->
+	
+</form>
+	

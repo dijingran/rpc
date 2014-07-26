@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.RpcConstants;
-import org.dxx.rpc.http.HttpRequestUtils;
+import org.dxx.rpc.monitor.HttpUtils;
 import org.dxx.rpc.registry.Channels;
 import org.dxx.rpc.registry.GetServerLocationRequest;
 import org.dxx.rpc.registry.GetServerLocationResponse;
@@ -39,7 +39,7 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		if (msg instanceof HttpRequest) {
-			HttpRequestUtils.handle(ctx, msg);
+			HttpUtils.handleRequest(ctx, msg);
 
 		} else if (msg instanceof GetServerLocationRequest) {
 

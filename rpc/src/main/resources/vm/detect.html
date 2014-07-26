@@ -1,0 +1,74 @@
+
+  <div class="row-fluid">
+	<div class="span12">
+		  <div class="well">
+            <h2>连接探测页面</h2>
+			<div class="alert alert-info">
+                <p id="debug">此页面负责探测系统调用的远程接口是否能正常连接。</p>
+                <strong>执行探测共耗时：$totalCost</strong>
+            </div>
+         </div>
+		  
+		  <div id="main" class="row-fluid">
+			  #foreach($d in $detectors)
+				<div class="row-fluid">
+                    <div id="rowDiv$velocityCount" class="span5">
+                      <h2>$d.name()</h2>
+					  #if("$!d.interfaceClassName" != "")
+					  <span class="muted small">接口名：$d.interfaceClassName</span>
+					  #end
+    				    #if($d.isFailed())
+        					<div id="messageDiv$velocityCount" class="alert alert-error">
+                                <strong>接口调用失败 ! （耗时$d.getCost()）</strong>
+								<button onclick='toggle2($velocityCount);' class="btn btn-danger">查看错误信息</button>
+                            </div>
+            				<div id="exStack$velocityCount" class="hide">
+                                  $d.exStack
+                            </div>
+        				#else
+        					<div class="alert alert-success">
+    							 <strong>接口调用成功! （耗时$d.getCost()毫秒）</strong>
+                            </div>
+        				#end
+                    </div><!--/span-->
+					
+					
+              </div><!--/row-->
+			  #end
+          </div>
+		     
+		  
+        </div><!--/span-->
+  </div>
+  
+  
+  <script>
+	 var rowDivWidth = 0;
+	 var ex = "";
+	 var cRow = 0;
+	  function toggle2(i) {
+	  	if(rowDivWidth == 0) {
+			rowDivWidth = $('#rowDiv' + i).width();
+		}
+		// 创建展示异常信息的div
+		if(ex == "") {
+			ex = $('<div id="exContent" class="pull-right span6 alert alert-error"></div>');
+			$("#main").append(ex);
+		}
+		// 已经在当前行显示时，再次点击则隐藏
+		if(cRow == i && !ex.is(":hidden")){
+			//ex.hide();
+		} else {
+			  if(cRow != i){
+            	  var pos = $('#messageDiv' + i).position();
+                  var topPosition = pos.top;
+                  var leftPosition = pos.left + rowDivWidth + 10;
+                  ex.offset({ top: topPosition, left: leftPosition });
+                  ex.html($("#exStack" + i)[0].innerHTML);
+			  }
+        	  ex.show();
+        	  cRow = i;
+		}
+		
+	  }
+  </script>
