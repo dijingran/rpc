@@ -60,12 +60,12 @@ public class ServiceRepository {
 		}
 	}
 
-	private static boolean isDeactive(GetServerLocationRequest request, String url) {
+	private static boolean isDeactive(GetServerRequest request, String url) {
 		return request.getDeactiveUrl() != null && url.equals(request.getDeactiveUrl());
 	}
 
-	public GetServerLocationResponse getServer(GetServerLocationRequest request) {
-		GetServerLocationResponse response = new GetServerLocationResponse();
+	public GetServerResponse getServer(GetServerRequest request) {
+		GetServerResponse response = new GetServerResponse();
 		response.setId(request.getId());
 		try {
 			Set<String> urls = interAndUrl.get(request.getInterfaceClass());
@@ -172,7 +172,7 @@ public class ServiceRepository {
 	*/
 	private static void pushServices() {
 		long s = System.currentTimeMillis();
-		UpdateServerLocationRequest request = new UpdateServerLocationRequest();
+		UpdateServersRequest request = new UpdateServersRequest();
 		request.setInterAndUrl(getAvaliableInterAndUrl());
 		Channels.writeAndFlush(request);
 		logger.debug("Push services to clients cost : {} ms.", System.currentTimeMillis() - s);

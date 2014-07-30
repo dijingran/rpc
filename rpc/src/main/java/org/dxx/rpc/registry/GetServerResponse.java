@@ -10,10 +10,10 @@ import org.dxx.rpc.AbstractResponse;
  * 
  * @author   dixingxing
  * @Date	 2014-7-12
- * @see GetServerLocationRequest
+ * @see GetServerRequest
  */
 @SuppressWarnings("serial")
-public class GetServerLocationResponse extends AbstractResponse {
+public class GetServerResponse extends AbstractResponse {
 
 	private String errorMessage;
 
@@ -23,7 +23,7 @@ public class GetServerLocationResponse extends AbstractResponse {
 
 	private List<Service> services = new ArrayList<Service>();
 
-	public GetServerLocationResponse() {
+	public GetServerResponse() {
 	}
 
 	public String getHost() {

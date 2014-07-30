@@ -19,7 +19,7 @@ import org.dxx.rpc.AbstractRequest;
  * @Date	 2014年7月15日
  */
 @SuppressWarnings("serial")
-public class UpdateServerLocationRequest extends AbstractRequest {
+public class UpdateServersRequest extends AbstractRequest {
 
 	/** interfaceClass, "host:port..." */
 	private Map<String, Set<String>> interAndUrl = new ConcurrentHashMap<String, Set<String>>();

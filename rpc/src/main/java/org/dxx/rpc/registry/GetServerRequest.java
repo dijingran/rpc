@@ -8,10 +8,10 @@ import org.dxx.rpc.AbstractRequest;
  * 
  * @author   dixingxing
  * @Date	 2014年7月11日
- * @see GetServerLocationResponse
+ * @see GetServerResponse
  */
 @SuppressWarnings("serial")
-public class GetServerLocationRequest extends AbstractRequest {
+public class GetServerRequest extends AbstractRequest {
 	private String interfaceClass;
 
 	private String deactiveUrl;

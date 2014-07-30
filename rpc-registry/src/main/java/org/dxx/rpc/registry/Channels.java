@@ -22,10 +22,10 @@ public class Channels {
 	private static ChannelGroup cg = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
 	/**
-	 * Write {@link UpdateServerLocationRequest} to all clients.
+	 * Write {@link UpdateServersRequest} to all clients.
 	 * @see ServiceRepository#pushServices()
 	 */
-	public static void writeAndFlush(UpdateServerLocationRequest request) {
+	public static void writeAndFlush(UpdateServersRequest request) {
 		cg.writeAndFlush(request);
 	}
 

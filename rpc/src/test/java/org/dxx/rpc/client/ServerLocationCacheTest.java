@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.dxx.rpc.registry.UpdateServerLocationRequest;
+import org.dxx.rpc.registry.UpdateServersRequest;
 import org.junit.Test;
 
 /**
@@ -34,7 +34,7 @@ public class ServerLocationCacheTest {
 		urls.add("192.168.1.12:50020");
 		interAndUrl.put("UserService", urls);
 
-		UpdateServerLocationRequest request = new UpdateServerLocationRequest();
+		UpdateServersRequest request = new UpdateServersRequest();
 		request.setInterAndUrl(interAndUrl);
 		ServerLocationCache.update(request);
 

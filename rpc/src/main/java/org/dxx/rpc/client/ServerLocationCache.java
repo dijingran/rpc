@@ -13,8 +13,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.dxx.rpc.registry.GetServerLocationResponse;
-import org.dxx.rpc.registry.UpdateServerLocationRequest;
+import org.dxx.rpc.registry.GetServerResponse;
+import org.dxx.rpc.registry.UpdateServersRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class ServerLocationCache {
 	 * 
 	 * @param deactiveUrl 心跳失败的服务端地址
 	 */
-	public static GetServerLocationResponse getServerLocation(String interfaceClass, String deactiveUrl) {
+	public static GetServerResponse getServerLocation(String interfaceClass, String deactiveUrl) {
 		Set<String> urls = interAndUrl.get(interfaceClass);
 		if (urls == null) {
 			logger.debug("Can't find service from local cache for interface : {}", interfaceClass);
@@ -56,7 +56,7 @@ public class ServerLocationCache {
 				firstOptions.add(url);
 			}
 		}
-		GetServerLocationResponse response = new GetServerLocationResponse();
+		GetServerResponse response = new GetServerResponse();
 		String url = firstOptions.size() > 0 ? firstOptions.get(new Random().nextInt(firstOptions.size()))
 				: deactiveUrl;
 		if (url == null) {
@@ -67,7 +67,7 @@ public class ServerLocationCache {
 		return response;
 	}
 
-	public static void update(UpdateServerLocationRequest request) {
+	public static void update(UpdateServersRequest request) {
 		logger.debug("Update ServerLocationCache : {}", request.getInterAndUrl());
 		ServerLocationCache.interAndUrl = request.getInterAndUrl();
 	}

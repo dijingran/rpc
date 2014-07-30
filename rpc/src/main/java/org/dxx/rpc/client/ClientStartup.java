@@ -17,7 +17,7 @@ import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
 import org.dxx.rpc.config.loader.Loader;
 import org.dxx.rpc.exception.RegistryException;
-import org.dxx.rpc.registry.GetServerLocationResponse;
+import org.dxx.rpc.registry.GetServerResponse;
 import org.dxx.rpc.registry.RegistryUtils;
 import org.dxx.rpc.registry.Service;
 import org.slf4j.Logger;
@@ -74,7 +74,7 @@ public class ClientStartup {
 			}
 		}
 
-		GetServerLocationResponse loc = null;
+		GetServerResponse loc = null;
 		// no url
 		if (this.host == null) {
 			try {

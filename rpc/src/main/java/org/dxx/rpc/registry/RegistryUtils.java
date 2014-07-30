@@ -33,7 +33,7 @@ public class RegistryUtils {
 
 	private static Map<Long, CountDownLatch> countDownLatches = new ConcurrentHashMap<Long, CountDownLatch>();
 
-	private static Map<Long, GetServerLocationResponse> locationMap = new ConcurrentHashMap<Long, GetServerLocationResponse>();
+	private static Map<Long, GetServerResponse> locationMap = new ConcurrentHashMap<Long, GetServerResponse>();
 
 	/**
 	 * 和注册中心的连接创建完毕后，向其注册自己所提供的服务。
@@ -71,7 +71,7 @@ public class RegistryUtils {
 	 * @param interfaceClass
 	 * @return
 	 */
-	public static GetServerLocationResponse getServerLocation(String interfaceClass, String deactiveUrl) {
+	public static GetServerResponse getServerLocation(String interfaceClass, String deactiveUrl) {
 		if (channel == null) {
 			throw new RegistryException("尚未连接到注册中心！");
 		}
@@ -86,7 +86,7 @@ public class RegistryUtils {
 			throw new RegistryException("无法连接到注册中心！");
 		}
 
-		GetServerLocationRequest request = new GetServerLocationRequest();
+		GetServerRequest request = new GetServerRequest();
 		request.setId(sequence.incrementAndGet());
 		request.setInterfaceClass(interfaceClass);
 		request.setDeactiveUrl(deactiveUrl);
@@ -105,7 +105,7 @@ public class RegistryUtils {
 			countDownLatches.remove(request.getId());
 		}
 
-		GetServerLocationResponse response = locationMap.get(request.getId());
+		GetServerResponse response = locationMap.get(request.getId());
 		if (response == null) {
 			throw new RegistryException("Invoke Registry for server location timeout : " + RpcConstants.LOCATE_TIME_OUT);
 		}
@@ -116,7 +116,7 @@ public class RegistryUtils {
 		return response;
 	}
 
-	public static void receiveGetServerLocationResponse(GetServerLocationResponse response) {
+	public static void receiveGetServerLocationResponse(GetServerResponse response) {
 		logger.debug("Receive GetServerLocationResponse : {}", response);
 		CountDownLatch latch = countDownLatches.get(response.getId());
 		if (latch != null) {

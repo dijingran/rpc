@@ -14,8 +14,8 @@ import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.monitor.HttpUtils;
 import org.dxx.rpc.registry.Channels;
-import org.dxx.rpc.registry.GetServerLocationRequest;
-import org.dxx.rpc.registry.GetServerLocationResponse;
+import org.dxx.rpc.registry.GetServerRequest;
+import org.dxx.rpc.registry.GetServerResponse;
 import org.dxx.rpc.registry.RegisterRequest;
 import org.dxx.rpc.registry.ServiceRepository;
 import org.dxx.rpc.registry.cmd.AbstractCommand;
@@ -41,9 +41,9 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 		if (msg instanceof HttpRequest) {
 			HttpUtils.handleRequest(ctx, msg);
 
-		} else if (msg instanceof GetServerLocationRequest) {
+		} else if (msg instanceof GetServerRequest) {
 
-			GetServerLocationResponse resp = repository.getServer((GetServerLocationRequest) msg);
+			GetServerResponse resp = repository.getServer((GetServerRequest) msg);
 			ctx.channel().writeAndFlush(resp);
 			logger.debug("Wrote : {}", resp);
 
