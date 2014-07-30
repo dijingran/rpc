@@ -81,7 +81,7 @@ public class ClientStartup {
 				loc = RegistryUtils.getServerLocation(interfaceClass, deactiveUrl);
 			} catch (RegistryException e) {
 				logger.warn("Invoke registry failed, try get server location from local cache." + e.getMessage(), e);
-				loc = ServerLocationCache.getServerLocation(interfaceClass, deactiveUrl);
+				loc = ServerCache.getServerLocation(interfaceClass, deactiveUrl);
 				if (loc == null) {
 					logger.error("Get server location from local cached failed!");
 				}

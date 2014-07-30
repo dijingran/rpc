@@ -36,11 +36,11 @@ public class ServerLocationCacheTest {
 
 		UpdateServersRequest request = new UpdateServersRequest();
 		request.setInterAndUrl(interAndUrl);
-		ServerLocationCache.update(request);
+		ServerCache.update(request);
 
-		assertNotNull(ServerLocationCache.getServerLocation("UserService", null));
+		assertNotNull(ServerCache.getServerLocation("UserService", null));
 
-		assertEquals("192.168.1.12", ServerLocationCache.getServerLocation("UserService", "192.168.1.11:50020")
+		assertEquals("192.168.1.12", ServerCache.getServerLocation("UserService", "192.168.1.11:50020")
 				.getHost());
 	}
 

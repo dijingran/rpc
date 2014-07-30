@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
  * @author   dixingxing
  * @Date	 2014年7月15日
  */
-public class ServerLocationCache {
-	private static final Logger logger = LoggerFactory.getLogger(ServerLocationCache.class);
+public class ServerCache {
+	private static final Logger logger = LoggerFactory.getLogger(ServerCache.class);
 
 	/** interfaceClass, "host:port..." */
 	private static Map<String, Set<String>> interAndUrl = new ConcurrentHashMap<String, Set<String>>();
@@ -69,7 +69,7 @@ public class ServerLocationCache {
 
 	public static void update(UpdateServersRequest request) {
 		logger.debug("Update ServerLocationCache : {}", request.getInterAndUrl());
-		ServerLocationCache.interAndUrl = request.getInterAndUrl();
+		ServerCache.interAndUrl = request.getInterAndUrl();
 	}
 
 }
