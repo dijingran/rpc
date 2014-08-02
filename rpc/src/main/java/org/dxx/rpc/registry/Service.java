@@ -15,9 +15,19 @@ import java.io.Serializable;
  */
 @SuppressWarnings("serial")
 public class Service implements Serializable {
+	private String app;
+
 	private String interfaceClass;
 
 	private String desc;
+
+	public String getApp() {
+		return app;
+	}
+
+	public void setApp(String app) {
+		this.app = app;
+	}
 
 	public String getInterfaceClass() {
 		return interfaceClass;
@@ -35,11 +45,9 @@ public class Service implements Serializable {
 		this.desc = desc;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		return "Service [interfaceClass=" + interfaceClass + ", desc=" + desc + "]";
+		return "Service [app=" + app + ", interfaceClass=" + interfaceClass + ", desc=" + desc + "]";
 	}
+
 }

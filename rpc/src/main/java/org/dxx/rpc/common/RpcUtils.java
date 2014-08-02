@@ -8,8 +8,9 @@ package org.dxx.rpc.common;
 
 import org.dxx.rpc.EchoService;
 import org.dxx.rpc.client.Clients;
-import org.dxx.rpc.config.RpcConfig;
+import org.dxx.rpc.config.RpcServerConfig;
 import org.dxx.rpc.config.loader.Loader;
+import org.dxx.rpc.exception.RpcException;
 import org.dxx.rpc.monitor.HttpUtils;
 import org.dxx.rpc.monitor.ServerController;
 import org.dxx.rpc.server.ServerStartup;
@@ -42,11 +43,16 @@ public class RpcUtils {
 		}
 		running = true;
 		long start = System.currentTimeMillis();
-		RpcConfig conf = Loader.getRpcConfig();
-		Servers.init(conf.getRpcServerConfig().getPackages());
+		RpcServerConfig c = Loader.getRpcConfig().getRpcServerConfig();
+
+		if (c.getApp() == null || c.getApp().trim().isEmpty()) {
+			throw new RpcException("RpcConfig.xml -> \"server\" is not complete : \"app\" attribute is empty!");
+		}
+
+		Servers.init(c.getPackages());
 		Clients.init();
 
-		new ServerStartup(conf.getRpcServerConfig().getPort()).startup();
+		new ServerStartup(c.getPort()).startup();
 		HttpUtils.addMapping("", new ServerController());
 		logger.debug("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
 	}

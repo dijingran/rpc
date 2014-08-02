@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 public class RpcServerConfig {
 	private static final Logger logger = LoggerFactory.getLogger(RpcServerConfig.class);
 	private int port;
+	private String app;
 	private String packages;
 
 	@XmlAttribute
@@ -25,6 +26,15 @@ public class RpcServerConfig {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	@XmlAttribute
+	public String getApp() {
+		return app;
+	}
+
+	public void setApp(String app) {
+		this.app = app;
 	}
 
 	@XmlAttribute

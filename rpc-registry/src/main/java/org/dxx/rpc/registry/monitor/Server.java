@@ -17,6 +17,8 @@ import java.util.List;
 public class Server {
 	private String url;
 
+	private String app;
+
 	private List<ViewService> services = new ArrayList<ViewService>();
 
 	public Server(String url) {
@@ -47,6 +49,14 @@ public class Server {
 			}
 		}
 		return true;
+	}
+
+	public String getApp() {
+		return app;
+	}
+
+	public void setApp(String app) {
+		this.app = app;
 	}
 
 	public String getUrl() {

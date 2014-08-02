@@ -13,8 +13,17 @@ import org.dxx.rpc.AbstractRequest;
  */
 @SuppressWarnings("serial")
 public class RegisterRequest extends AbstractRequest {
+	private String app;
 	private List<Service> services = new ArrayList<Service>();
 	private int port;
+
+	public String getApp() {
+		return app;
+	}
+
+	public void setApp(String app) {
+		this.app = app;
+	}
 
 	public int getPort() {
 		return port;

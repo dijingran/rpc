@@ -9,11 +9,14 @@ package org.dxx.rpc.registry.monitor;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dxx.rpc.monitor.Controller;
 import org.dxx.rpc.monitor.HttpUtils;
@@ -38,7 +41,7 @@ public class RegistryController implements Controller {
 			opState(request);
 			return null;
 		} else {
-			list(model);
+			list(model, HttpUtils.getParam("v", qs));
 			return "vm/registry.html";
 		}
 	}
@@ -75,16 +78,64 @@ public class RegistryController implements Controller {
 	}
 
 	/**
+	 * 测试数据
+	 *
+	 * @throws Exception
+	 */
+	void initTest() throws Exception {
+		ConcurrentHashMap<String, List<Service>> all = new ConcurrentHashMap<String, List<Service>>();
+		Field f = ServiceRepository.class.getDeclaredField("services");
+		f.setAccessible(true);
+		f.set(ServiceRepository.getInstance(), all);
+		f.setAccessible(false);
+
+		Service s1 = new Service();
+		s1.setApp("app1");
+		s1.setInterfaceClass("Service1");
+
+		Service s2 = new Service();
+		s2.setApp("app1");
+		s2.setInterfaceClass("Service2");
+		Service s3 = new Service();
+
+		s3.setApp("app2");
+		s3.setInterfaceClass("Service3");
+
+		for (int i = 0; i < 3; i++) {
+			all.put("192.168.1." + (i + 1), toList(s1, s2));
+		}
+		all.put("192.168.1.252", toList(s3));
+	}
+
+	private List<Service> toList(Service... services) {
+		List<Service> list = new ArrayList<Service>();
+		for (Service s : services) {
+			list.add(s);
+		}
+		return list;
+	}
+
+	/**
 	 * 显示服务列表
 	 * @param model
+	 * @param v 显示表格类型  2表示简洁视图
 	 */
-	private void list(Map<String, Object> model) {
+	void list(Map<String, Object> model, String v) {
+		List<App> apps = new ArrayList<App>();
 		List<Server> servers = new ArrayList<Server>();
+		List<ViewService> services = new ArrayList<ViewService>();
+		//		try {
+		//			initTest();
+		//		} catch (Exception e1) {
+		//			e1.printStackTrace();
+		//		}
 		Map<String, List<Service>> all = repository.getServices();
-
 		for (Entry<String, List<Service>> e : all.entrySet()) {
 			String url = e.getKey();
 			List<Service> list = e.getValue();
+			if (list.isEmpty()) {
+				continue;
+			}
 
 			Server server = new Server(url);
 			int i = servers.indexOf(server);
@@ -94,18 +145,35 @@ public class RegistryController implements Controller {
 				servers.add(server);
 			}
 
+			App app = new App(list.get(0).getApp());
+			int j = apps.indexOf(app);
+			if (j >= 0) {
+				app = apps.get(j);
+			} else {
+				apps.add(app);
+			}
+			app.getServers().add(server);
+
 			for (Service s : list) {
 				boolean pause = ServiceRepository.isPaused(url, s.getInterfaceClass());
-				server.addService(new ViewService(s.getDesc(), s.getInterfaceClass(), pause));
+				ViewService vs = new ViewService(s.getDesc(), s.getInterfaceClass(), pause);
+
+				server.addService(vs);
+				if ("2".equals(v)) {
+					app.addService2(vs);
+					if (!services.contains(vs)) {
+						services.add(vs);
+					}
+				} else {
+					app.addService(vs);
+					services.add(vs);
+				}
 			}
 		}
 
-		List<ViewService> services = new ArrayList<ViewService>();
-		for (Server s : servers) {
-			services.addAll(s.getServices());
-		}
-
+		Collections.sort(services);
 		model.put("services", services);
+		model.put("v", v);
 
 		model.put("projectName", "服务注册中心");
 	}

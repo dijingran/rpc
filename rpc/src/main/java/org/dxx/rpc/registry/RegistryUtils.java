@@ -46,11 +46,13 @@ public class RegistryUtils {
 				logger.debug("Registering rpc services to Registry : {}:{}", registry.getHost(), registry.getPort());
 
 				RegisterRequest request = new RegisterRequest();
+				request.setApp(Loader.getRpcConfig().getRpcServerConfig().getApp());
 				request.setPort(Loader.getRpcConfig().getRpcServerConfig().getPort());
 
 				List<Service> services = new ArrayList<Service>();
 				for (Class<?> interfaceClass : Servers.interAndImpl.keySet()) {
 					Service s = new Service();
+					s.setApp(request.getApp());
 					s.setInterfaceClass(interfaceClass.getName());
 					s.setDesc(Servers.getDef(interfaceClass).getDescription());
 					services.add(s);
