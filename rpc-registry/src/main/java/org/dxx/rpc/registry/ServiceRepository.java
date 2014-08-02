@@ -104,7 +104,7 @@ public class ServiceRepository {
 			}
 
 			logger.warn("Service [{}] not found !! May be paused!", request.getInterfaceClass());
-			return null;
+			return response;
 		} catch (Throwable e) {
 			logger.error(e.getMessage(), e);
 			response.setErrorMessage(e.getMessage());
