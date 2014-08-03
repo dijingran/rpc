@@ -8,6 +8,7 @@
  */
 package org.dxx.rpc.monitor.stat;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version 1.0
  * @date 2013-8-21 下午7:35:23
  */
-public class StatTarget {
+@SuppressWarnings("serial")
+public class StatTarget implements Serializable {
 
 	public static final DecimalFormat DF = new DecimalFormat(",###");
 

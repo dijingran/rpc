@@ -30,6 +30,8 @@ public class RpcUtils {
 
 	private static boolean running = false;
 
+	private static long startTime;
+
 	/**
 	 * 启动RPC
 	 * <p>
@@ -54,6 +56,7 @@ public class RpcUtils {
 
 		new ServerStartup(c.getPort()).startup();
 		HttpUtils.addMapping("", new ServerController());
+		startTime = System.currentTimeMillis();
 		logger.debug("Rpc is running! cost {} ms", System.currentTimeMillis() - start);
 	}
 
@@ -77,6 +80,10 @@ public class RpcUtils {
 	 */
 	public static String echo(Class<?> interfaceClass, String src) {
 		return ((EchoService) get(interfaceClass)).echo$$$(src);
+	}
+
+	public static long getStartTime() {
+		return startTime;
 	}
 
 }

@@ -54,6 +54,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter { // (1)
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
+		ClientChannels.add(ctx.channel());
 	}
 
 	@Override

@@ -7,7 +7,7 @@
 package org.dxx.rpc.registry;
 
 import org.dxx.rpc.monitor.HttpUtils;
-import org.dxx.rpc.registry.monitor.RegistryController;
+import org.dxx.rpc.registry.monitor.Dispatcher;
 import org.dxx.rpc.registry.server.RegistryServerStartup;
 
 /**
@@ -19,7 +19,7 @@ import org.dxx.rpc.registry.server.RegistryServerStartup;
 
 public class RegistryServerMain {
 	public static void main(String[] args) throws Exception {
-		HttpUtils.addMapping("", new RegistryController());
+		HttpUtils.addMapping("", new Dispatcher());
 		new RegistryServerStartup().run();
 	}
 }

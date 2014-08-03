@@ -9,9 +9,9 @@ import java.util.concurrent.ThreadFactory;
 import org.dxx.rpc.Request;
 
 public class RpcChannelHandler {
-	NamedThreadFactory threadFactory = new NamedThreadFactory("rpc-exec-");
+	private static final NamedThreadFactory threadFactory = new NamedThreadFactory("rpc-exec-");
 
-	ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactory() {
+	private static final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactory() {
 		@Override
 		public Thread newThread(Runnable r) {
 			return threadFactory.newThread(r);
@@ -20,6 +20,10 @@ public class RpcChannelHandler {
 
 	public void handle(Channel channel, Request request) {
 		executorService.execute(new RpcRunnable(channel, request));
+	}
+
+	public static ExecutorService getExecutorservice() {
+		return executorService;
 	}
 
 }

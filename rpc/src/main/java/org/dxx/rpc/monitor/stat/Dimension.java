@@ -8,6 +8,7 @@
  */
 package org.dxx.rpc.monitor.stat;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -17,7 +18,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version 1.0
  * @date 2013-8-21 下午8:43:44   
  */
-public class Dimension {
+public class Dimension implements Serializable {
+	private static final long serialVersionUID = -1771187991876024165L;
 	private long from;
 	private long to;
 

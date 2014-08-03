@@ -2,5 +2,5 @@
 <rpc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<registry url="127.0.0.1:50010" />
-	<server app="sample-course-app" port="50059" packages="org.dxx.course" />
+	<server app="sample-course-app" packages="org.dxx.course" />
 </rpc>

@@ -8,8 +8,10 @@
  */
 package org.dxx.rpc.monitor.stat;
 
-import java.util.HashMap;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>
@@ -139,7 +141,7 @@ import java.util.Map;
  * @date 2013-8-21 下午9:59:00
  */
 public final class StatContext {
-	public static final Map<String, StatTarget> map = new HashMap<String, StatTarget>();
+	public static final ConcurrentHashMap<String, StatTarget> map = new ConcurrentHashMap<String, StatTarget>();
 
 	public static final int MAX_DESC_LENGTH = 70;
 
@@ -193,6 +195,23 @@ public final class StatContext {
 	 */
 	public static void trace(Throwable t, String longDesc, long s) {
 		trace(t, longDesc, longDesc, s);
+	}
+
+	public static void main(String[] args) throws SecurityException, NoSuchMethodException {
+		for (Method m : ArrayList.class.getMethods()) {
+
+			System.out.println(m.getDeclaringClass().getSimpleName() + "." + m.getName()
+					+ (m.getParameterTypes().length > 0 ? "(..)" : "()"));
+			System.out.println(m);
+		}
+	}
+
+	public static void trace(Throwable t, Method m, long s) {
+		if (m != null) {
+			String shortDesc = m.getDeclaringClass().getSimpleName() + "." + m.getName()
+					+ (m.getParameterTypes().length > 0 ? "(..)" : "()");
+			trace(t, shortDesc, m.toString(), s);
+		}
 	}
 
 	/**

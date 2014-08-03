@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.monitor.HttpUtils;
+import org.dxx.rpc.monitor.MonitorResponse;
 import org.dxx.rpc.registry.Channels;
 import org.dxx.rpc.registry.GetServerRequest;
 import org.dxx.rpc.registry.GetServerResponse;
@@ -20,6 +21,7 @@ import org.dxx.rpc.registry.RegisterRequest;
 import org.dxx.rpc.registry.ServiceRepository;
 import org.dxx.rpc.registry.cmd.AbstractCommand;
 import org.dxx.rpc.registry.cmd.CommandFactory;
+import org.dxx.rpc.registry.monitor.Invoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,8 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 		if (msg instanceof HttpRequest) {
 			HttpUtils.handleRequest(ctx, msg);
 
+		} else if (msg instanceof MonitorResponse) {
+			Invoker.receive((MonitorResponse) msg);
 		} else if (msg instanceof GetServerRequest) {
 
 			GetServerResponse resp = repository.getServer((GetServerRequest) msg);
@@ -48,10 +52,10 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 			logger.debug("Wrote : {}", resp);
 
 		} else if (msg instanceof RegisterRequest) {
-			Channels.add(ctx.channel());
 			ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).set(true);
 
 			RegisterRequest request = (RegisterRequest) msg;
+			Channels.add(ctx.channel(), request.getPort());
 			String url = remoteUrl(ctx, request);
 
 			channelAndUrl.putIfAbsent(ctx.channel(), url);

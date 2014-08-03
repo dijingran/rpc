@@ -111,7 +111,6 @@ class DexnEncoder extends MessageToByteEncoder<Serializable> {
 			bout.close();
 			return;
 		}
-
 		byte[] bytes = serializer.serialize(msg);
 
 		ByteBufOutputStream bout = new ByteBufOutputStream(out);

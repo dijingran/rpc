@@ -7,9 +7,6 @@
 package org.dxx.rpc.serialization;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import org.dxx.rpc.exception.SerializeException;
 
 import de.ruedigermoeller.serialization.FSTConfiguration;
 import de.ruedigermoeller.serialization.FSTObjectOutput;
@@ -24,26 +21,18 @@ public class FstSerializer implements Serializer {
 	static FSTConfiguration FST = FSTConfiguration.createDefaultConfiguration();
 
 	@Override
-	public byte[] serialize(Object object) {
+	public byte[] serialize(Object object) throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		FSTObjectOutput out = FST.getObjectOutput(baos);
-		try {
-			out.writeObject(object);
-			out.flush();
-			baos.close();
-		} catch (IOException e) {
-			throw new SerializeException(e);
-		}
+		out.writeObject(object);
+		out.flush();
+		baos.close();
 		return baos.toByteArray();
 	}
 
 	@Override
-	public Object deserialize(byte[] bytes) {
-		try {
-			return FST.getObjectInput(bytes).readObject();
-		} catch (Exception e) {
-			throw new SerializeException(e);
-		}
+	public Object deserialize(byte[] bytes) throws Exception {
+		return FST.getObjectInput(bytes).readObject();
 	}
 
 }

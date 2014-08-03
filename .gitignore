@@ -10,6 +10,7 @@ rpc-registry/target
 rpc-registry/.settings
 rpc-registry/.classpath
 rpc-registry/.project
+rpc-registry/velocity.log
 
 
 

@@ -11,6 +11,7 @@ import org.dxx.rpc.Request;
 import org.dxx.rpc.Response;
 import org.dxx.rpc.common.TraceUtils;
 import org.dxx.rpc.exception.RpcException;
+import org.dxx.rpc.monitor.stat.StatContext;
 import org.dxx.rpc.server.Servers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class RpcRunnable implements Runnable {
 	@Override
 	public void run() {
 		logger.trace("Receive : {}", request);
+		long s2 = System.currentTimeMillis();
 		Response r = new Response();
 		r.setId(request.getId());
 
@@ -40,6 +42,7 @@ public class RpcRunnable implements Runnable {
 			return;
 		}
 
+		Method m = null;
 		try {
 			Object service = Servers.getRpcService(request.getInterfaceClass());
 			if (service == null) {
@@ -47,8 +50,8 @@ public class RpcRunnable implements Runnable {
 						+ channel.toString()));
 				logger.warn("Service not found : {}", request.getInterfaceClass());
 			} else {
+				m = service.getClass().getMethod(request.getMethodName(), request.getArgTypes());
 				long start = System.nanoTime();
-				Method m = service.getClass().getMethod(request.getMethodName(), request.getArgTypes());
 				r.setObj(m.invoke(service, request.getArgs()));
 
 				if (logger.isTraceEnabled()) {
@@ -59,7 +62,9 @@ public class RpcRunnable implements Runnable {
 		} catch (Throwable e) {
 			logger.warn(e.getMessage(), e);
 			r.setError(new RpcException("Remote Ex ->" + channel.toString() + " : " + getStackTrace(e)));
+			StatContext.trace(e, m, s2);
 		} finally {
+			StatContext.trace(null, m, s2);
 			channel.writeAndFlush(r);
 			logger.trace("Wrote response.");
 		}

@@ -11,6 +11,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import org.dxx.rpc.HeartbeatRequest;
 import org.dxx.rpc.client.ServerCache;
+import org.dxx.rpc.monitor.MonitorHandler;
+import org.dxx.rpc.monitor.MonitorRequest;
+import org.dxx.rpc.monitor.MonitorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RegistryHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(RegistryHandler.class);
+	private MonitorHandler monitorHandler = new MonitorHandler();
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -34,6 +38,9 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 		RegistryUtils.updateAccessTime(ctx.channel());
 		if (msg instanceof HeartbeatRequest) {
 			// do nothing
+		} else if (msg instanceof MonitorRequest) {
+			MonitorResponse response = monitorHandler.handle((MonitorRequest) msg);
+			ctx.channel().writeAndFlush(response);
 		} else if (msg instanceof RegisterResponse) {
 			RegisterResponse response = (RegisterResponse) msg;
 			if (response.isSuccess()) {
@@ -55,4 +62,11 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 			RegistryUtils.removeChannel();
 		}
 	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		super.exceptionCaught(ctx, cause);
+		logger.error(cause.getMessage(), cause);
+	}
+
 }

@@ -13,8 +13,8 @@ package org.dxx.rpc.serialization;
  */
 public interface Serializer {
 
-	byte[] serialize(Object object);
+	byte[] serialize(Object object) throws Exception;
 
-	Object deserialize(byte[] bytes);
+	Object deserialize(byte[] bytes) throws Exception;
 
 }

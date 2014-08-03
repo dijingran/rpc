@@ -28,8 +28,8 @@
 							#end
 							
     						#if("$!s.server" != "")
-                            <td width="15%" rowspan="$s.server.services.size()">
-    							<a style="margin-left:30px;" href="http://${s.server.url}" class="btn btn-mini" target="_blank">$s.server.url</a>
+                            <td width="20%" rowspan="$s.server.services.size()">
+    							<a style="margin-left:30px;" href="/?server=${s.server.url}" class="btn btn-mini" target="_blank">$s.server.url</a>
     							#if(!$s.server.nonePaused)
     							<a class="btn btn-mini btn-success" onclick="opState('resumeAll', '$s.server.url');">全部恢复</a>
     							#end
@@ -73,7 +73,7 @@
                                 <h4>$s.app.name</h4>
 								#foreach($server in $s.app.servers)
 									<p >
-    								<a style="margin-left:30px;" href="/?url=${s.server.url}" class="btn btn-mini" target="_blank">$server.url</a>
+    								<a style="margin-left:30px;" href="/?server=${s.server.url}" class="btn btn-mini" target="_blank">$server.url</a>
     								#if(!$server.nonePaused)
     								<a class="btn btn-mini btn-success" onclick="opState('resumeAll', '$server.url');">恢复</a>
     								#end

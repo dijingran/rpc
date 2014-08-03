@@ -1,0 +1,103 @@
+<div class="row-fluid">
+    <div class="span12">
+		<div class="well">
+            <p>
+            	启动时间 : ${startTime}
+            	客户端连接数：${ss.clientCount} 
+            </p>
+            <p>
+            	最小线程数配置：${ss.coreSize}
+            	最大线程数配置：${ss.maxSize}
+            	当前线程数：${ss.poolSize}
+            	活动线程数：${ss.activeCount}
+            	历史最大线程数：${ss.largestPoolSize}
+            	任务总数：${ss.taskCount}
+            	已完成任务数：${ss.completedTaskCount}
+            	队列中任务数：${ss.queueSize}
+            	
+            </p>
+        </div>
+		<div class="row-fluid">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th><a sortBy="desc">方法</a></th>
+                        <th><a sortBy="invokeTimes">调用</a>~<a sortBy="exTimes">异常</a></th>
+                        <th>
+							<span class="muted"><a sortBy="average">平均耗时</a></span>
+							(<span class="muted"><a sortBy="costMin">最快</a></span>
+							~<span class="muted"><a sortBy="costMax">最慢</a></span>)
+						</th>
+                        <th>执行时间分布情况
+							<br/>
+							#foreach($d in $commonSt.dimensions)
+    							<span class="muted">
+                                 ${d.desc} &nbsp;
+                                </span>
+							#end
+						</th>
+                    </tr>
+                </thead>
+                <tbody>
+					#foreach($st in $list)
+                        <tr>
+                            <td width="2%">$velocityCount</td>
+                            <td width="25%">
+								<abbr title="${st.longDesc}">
+									<strong>$st.desc</strong>
+								</abbr>
+							</td>
+                            <td width="10%" style="text-align:center">
+								<span class="text-success"><strong>$st.invokeTimes</strong></span>
+								~ <span class="text-error"><strong>$st.exTimes</strong></span>    
+							</td>
+                            <td width="13%" style="text-align:center">
+								 ${st.averageStr} 
+								 (<span class="text-success">${st.costMinStr}</span>~<span class="text-warning">${st.costMaxStr}</span>)
+							</td>
+                            <td width="50%">
+								<ul>
+								#foreach($d in $st.dimensions)
+									
+									<abbr title="${d.desc}">
+										#if($d.major)
+											<strong>$d.times</strong>
+										#else
+											$d.times
+										#end
+									
+									</abbr>&nbsp;
+								#end
+                                </ul>
+							</td>
+                        </tr>
+					#end
+                </tbody>
+            </table>
+			
+        </div>
+    </div>
+    <!--/span-->
+</div>
+<script type="text/javascript">
+function sort(a) {
+	var orderBy = ($(a).parent().find("i.icon-arrow-up").length == 0 ? "asc" : "des");
+	window.location.href="/?server=${server}&sortBy=" + $(a).attr("sortBy") + "&orderBy=" + orderBy;
+}
+
+$(document).ready(function() {
+	// 初始化所有允许排序的列
+	$('a[sortBy]').each(function(i, val){
+		val = $(val);
+		val.attr("href","javascript:void(0);");
+		if("$!{sortBy}" == val.attr("sortBy")) { // 初始化箭头显示
+			val.append("asc" == "$!{orderBy}" ? '<i class="icon-arrow-up"></i>' : '<i class="icon-arrow-down"></i>');
+		}
+		
+		val.click(function(){
+			sort(val);
+		});
+    });
+}); 
+</script>

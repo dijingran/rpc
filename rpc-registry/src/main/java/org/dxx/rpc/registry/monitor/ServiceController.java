@@ -1,6 +1,6 @@
 /**
- * RegistryController.java
- * org.dxx.rpc.registry
+ * OpStateController.java
+ * org.dxx.rpc.registry.monitor
  * Copyright (c) 2014, 北京微课创景教育科技有限公司版权所有.
 */
 
@@ -18,38 +18,24 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.dxx.rpc.monitor.Controller;
 import org.dxx.rpc.monitor.HttpUtils;
 import org.dxx.rpc.registry.Service;
 import org.dxx.rpc.registry.ServiceRepository;
 
 /**
  * 
+ * 
  * @author   dixingxing
- * @Date	 2014-7-26
+ * @Date	 2014年8月3日
  */
-public class RegistryController implements Controller {
+
+public class ServiceController {
 	ServiceRepository repository = ServiceRepository.getInstance();
-
-	@Override
-	public String exec(DefaultFullHttpRequest request, Map<String, Object> model) {
-		model.put("layout", "vm/layout/registry-layout.html");
-
-		QueryStringDecoder qs = new QueryStringDecoder(request.getUri());
-		Map<String, List<String>> params = qs.parameters();
-		if (params.containsKey("op")) {
-			opState(request);
-			return null;
-		} else {
-			list(model, HttpUtils.getParam("v", qs));
-			return "vm/registry.html";
-		}
-	}
 
 	/**
 	 * op : pause, pauseAll, resume, resumeAll.
 	 */
-	private void opState(DefaultFullHttpRequest request) {
+	String opState(DefaultFullHttpRequest request) {
 		QueryStringDecoder qs = new QueryStringDecoder(request.getUri());
 		String op = HttpUtils.getParam("op", qs);
 		String url = HttpUtils.getParam("url", qs);
@@ -75,44 +61,8 @@ public class RegistryController implements Controller {
 			repository.resume(map);
 		}
 
-	}
+		return null;
 
-	/**
-	 * 测试数据
-	 *
-	 * @throws Exception
-	 */
-	void initTest() throws Exception {
-		ConcurrentHashMap<String, List<Service>> all = new ConcurrentHashMap<String, List<Service>>();
-		Field f = ServiceRepository.class.getDeclaredField("services");
-		f.setAccessible(true);
-		f.set(ServiceRepository.getInstance(), all);
-		f.setAccessible(false);
-
-		Service s1 = new Service();
-		s1.setApp("app1");
-		s1.setInterfaceClass("Service1");
-
-		Service s2 = new Service();
-		s2.setApp("app1");
-		s2.setInterfaceClass("Service2");
-		Service s3 = new Service();
-
-		s3.setApp("app2");
-		s3.setInterfaceClass("Service3");
-
-		for (int i = 0; i < 3; i++) {
-			all.put("192.168.1." + (i + 1), toList(s1, s2));
-		}
-		all.put("192.168.1.252", toList(s3));
-	}
-
-	private List<Service> toList(Service... services) {
-		List<Service> list = new ArrayList<Service>();
-		for (Service s : services) {
-			list.add(s);
-		}
-		return list;
 	}
 
 	/**
@@ -120,7 +70,7 @@ public class RegistryController implements Controller {
 	 * @param model
 	 * @param v 显示表格类型  2表示简洁视图
 	 */
-	void list(Map<String, Object> model, String v) {
+	String list(Map<String, Object> model, String v) {
 		List<App> apps = new ArrayList<App>();
 		List<Server> servers = new ArrayList<Server>();
 		List<ViewService> services = new ArrayList<ViewService>();
@@ -175,6 +125,45 @@ public class RegistryController implements Controller {
 		model.put("services", services);
 		model.put("v", v);
 
-		model.put("projectName", "服务注册中心");
+		model.put("app", "服务注册中心");
+		return "vm/registry.html";
+	}
+
+	/**
+	 * 测试数据
+	 *
+	 * @throws Exception
+	 */
+	void initTest() throws Exception {
+		ConcurrentHashMap<String, List<Service>> all = new ConcurrentHashMap<String, List<Service>>();
+		Field f = ServiceRepository.class.getDeclaredField("services");
+		f.setAccessible(true);
+		f.set(ServiceRepository.getInstance(), all);
+		f.setAccessible(false);
+
+		Service s1 = new Service();
+		s1.setApp("app1");
+		s1.setInterfaceClass("Service1");
+
+		Service s2 = new Service();
+		s2.setApp("app1");
+		s2.setInterfaceClass("Service2");
+		Service s3 = new Service();
+
+		s3.setApp("app2");
+		s3.setInterfaceClass("Service3");
+
+		for (int i = 0; i < 3; i++) {
+			all.put("192.168.1." + (i + 1), toList(s1, s2));
+		}
+		all.put("192.168.1.252", toList(s3));
+	}
+
+	private List<Service> toList(Service... services) {
+		List<Service> list = new ArrayList<Service>();
+		for (Service s : services) {
+			list.add(s);
+		}
+		return list;
 	}
 }
