@@ -24,11 +24,10 @@ import org.dxx.rpc.registry.ServiceRepository;
 
 /**
  * 
- * 
+ * 服务列表页面
  * @author   dixingxing
  * @Date	 2014年8月3日
  */
-
 public class ServiceController {
 	ServiceRepository repository = ServiceRepository.getInstance();
 

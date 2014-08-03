@@ -2,17 +2,17 @@
     <div class="span12">
 		<div class="well">
             <p>
-            	启动时间 : ${startTime}
+            	启动时间 : ${startTime} ，
             	客户端连接数：${ss.clientCount} 
             </p>
             <p>
-            	最小线程数配置：${ss.coreSize}
-            	最大线程数配置：${ss.maxSize}
-            	当前线程数：${ss.poolSize}
-            	活动线程数：${ss.activeCount}
-            	历史最大线程数：${ss.largestPoolSize}
-            	任务总数：${ss.taskCount}
-            	已完成任务数：${ss.completedTaskCount}
+            	最小线程数配置：${ss.coreSize} ，
+            	最大线程数配置：${ss.maxSize} ，
+            	当前线程数：${ss.poolSize} ，
+            	活动线程数：${ss.activeCount} ，
+            	历史最大线程数：${ss.largestPoolSize} ，
+            	任务总数：${ss.taskCount} ，
+            	已完成任务数：${ss.completedTaskCount} ，
             	队列中任务数：${ss.queueSize}
             	
             </p>
@@ -29,14 +29,7 @@
 							(<span class="muted"><a sortBy="costMin">最快</a></span>
 							~<span class="muted"><a sortBy="costMax">最慢</a></span>)
 						</th>
-                        <th>执行时间分布情况
-							<br/>
-							#foreach($d in $commonSt.dimensions)
-    							<span class="muted">
-                                 ${d.desc} &nbsp;
-                                </span>
-							#end
-						</th>
+                        <th>执行时间分布</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,7 +42,7 @@
 								</abbr>
 							</td>
                             <td width="10%" style="text-align:center">
-								<span class="text-success"><strong>$st.invokeTimes</strong></span>
+								<span><strong>$st.invokeTimes</strong></span>
 								~ <span class="text-error"><strong>$st.exTimes</strong></span>    
 							</td>
                             <td width="13%" style="text-align:center">
@@ -62,12 +55,20 @@
 									
 									<abbr title="${d.desc}">
 										#if($d.major)
+											#if($velocityCount>6) 
+											<strong class="text-error">$d.times</strong>
+											#elseif($velocityCount>3)
+											<strong class="text-warning">$d.times</strong>
+											#else
 											<strong>$d.times</strong>
+											#end
 										#else
 											$d.times
 										#end
-									
 									</abbr>&nbsp;
+									#if($velocityCount == 6)
+										<1s> 
+									#end
 								#end
                                 </ul>
 							</td>

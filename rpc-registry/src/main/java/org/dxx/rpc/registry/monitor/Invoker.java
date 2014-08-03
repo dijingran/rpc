@@ -26,18 +26,13 @@ import org.slf4j.LoggerFactory;
  * @author   dixingxing
  * @Date	 2014年8月3日
  */
-
 public class Invoker {
 	private static final Logger logger = LoggerFactory.getLogger(Invoker.class);
-
 	private static AtomicLong seq = new AtomicLong(0);
-
 	private static ConcurrentHashMap<Long, Invoker> context = new ConcurrentHashMap<Long, Invoker>();
 
 	private Channel channel;
-
 	private CountDownLatch latch = new CountDownLatch(1);
-
 	private MonitorResponse response;
 
 	public Invoker(Channel channel) {
@@ -53,12 +48,12 @@ public class Invoker {
 	}
 
 	public MonitorResponse invoke(MonitorType type) {
-		MonitorRequest request = new MonitorRequest(type);
-		request.setId(seq.incrementAndGet());
-		context.put(request.getId(), this);
+		MonitorRequest req = new MonitorRequest(type);
+		req.setId(seq.incrementAndGet());
+		context.put(req.getId(), this);
 
-		logger.debug("Send : {}", request);
-		channel.writeAndFlush(request);
+		logger.debug("Send : {}", req);
+		channel.writeAndFlush(req);
 		try {
 			latch.await(2000, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {

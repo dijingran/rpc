@@ -42,9 +42,11 @@ public class StatTarget implements Serializable {
 
 	public StatTarget() {
 		dimensions = new ArrayList<Dimension>();
-		dimensions.add(new Dimension(0, 50));
+		dimensions.add(new Dimension(0, 20));
+		dimensions.add(new Dimension(20, 50));
 		dimensions.add(new Dimension(50, 100));
-		dimensions.add(new Dimension(100, 500));
+		dimensions.add(new Dimension(100, 200));
+		dimensions.add(new Dimension(200, 500));
 		dimensions.add(new Dimension(500, 1000));
 		dimensions.add(new Dimension(1000, 3000));
 		dimensions.add(new Dimension(3000, 5000));
