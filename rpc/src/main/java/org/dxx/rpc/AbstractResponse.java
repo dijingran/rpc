@@ -17,6 +17,16 @@ import java.io.Serializable;
 public abstract class AbstractResponse implements Serializable {
 	protected long id;
 
+	protected String errorMessage;
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
 	public long getId() {
 		return id;
 	}

@@ -4,18 +4,8 @@ import org.dxx.rpc.exception.RpcException;
 
 @SuppressWarnings("serial")
 public class Response extends AbstractResponse {
-
-	private Object obj;
-
+	protected Object obj;
 	private RpcException error;
-
-	public RpcException getError() {
-		return error;
-	}
-
-	public void setError(RpcException error) {
-		this.error = error;
-	}
 
 	public Object getObj() {
 		return obj;
@@ -23,6 +13,14 @@ public class Response extends AbstractResponse {
 
 	public void setObj(Object obj) {
 		this.obj = obj;
+	}
+
+	public RpcException getError() {
+		return error;
+	}
+
+	public void setError(RpcException error) {
+		this.error = error;
 	}
 
 	@Override

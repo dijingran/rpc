@@ -40,4 +40,9 @@ public class MonitorResponse extends AbstractResponse {
 		this.object = object;
 	}
 
+	@Override
+	public String toString() {
+		return "MonitorResponse [object=" + object + ", id=" + id + ", errorMessage=" + errorMessage + "]";
+	}
+
 }

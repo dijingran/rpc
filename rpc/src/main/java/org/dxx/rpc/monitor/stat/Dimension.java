@@ -13,13 +13,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 
- * @project guard
- * @author dixingxing
- * @version 1.0
- * @date 2013-8-21 下午8:43:44   
+ * @author   dixingxing
+ * @Date	 2014年8月3日
  */
+@SuppressWarnings("serial")
 public class Dimension implements Serializable {
-	private static final long serialVersionUID = -1771187991876024165L;
 	private long from;
 	private long to;
 

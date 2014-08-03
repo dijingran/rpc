@@ -52,6 +52,8 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 			RegistryUtils.receiveGetServerLocationResponse((GetServerResponse) msg);
 		} else if (msg instanceof UpdateServersRequest) {
 			ServerCache.update((UpdateServersRequest) msg);
+		} else {
+
 		}
 	}
 

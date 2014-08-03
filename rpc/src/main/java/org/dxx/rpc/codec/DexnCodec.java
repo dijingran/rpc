@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.dxx.rpc.AbstractRequest;
 import org.dxx.rpc.AbstractResponse;
-import org.dxx.rpc.serialization.FstSerializer;
+import org.dxx.rpc.serialization.KryoSerializer;
 import org.dxx.rpc.serialization.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class DexnCodec extends CombinedChannelDuplexHandler<DexnDecoder, DexnEnc
 
 class DexnDecoder extends DexnTelnetDecoder {
 
-	private Serializer serializer = new FstSerializer();
+	private Serializer serializer = new KryoSerializer();
 
 	private enum State {
 		header, body, telnet;
@@ -89,7 +89,7 @@ class DexnEncoder extends MessageToByteEncoder<Serializable> {
 	static final Logger logger = LoggerFactory.getLogger(DexnEncoder.class);
 
 	// TODO extend point
-	private Serializer serializer = new FstSerializer();
+	private Serializer serializer = new KryoSerializer();
 
 	// header length. 
 	static final int HEADER_LENGTH = 16;
@@ -121,5 +121,4 @@ class DexnEncoder extends MessageToByteEncoder<Serializable> {
 		bout.write(bytes);
 		bout.close();
 	}
-
 }
