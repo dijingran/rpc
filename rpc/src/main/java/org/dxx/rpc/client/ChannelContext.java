@@ -74,7 +74,8 @@ public class ChannelContext {
 	 * @return
 	 */
 	private static boolean isActive(Channel c) {
-		return (System.currentTimeMillis() - c.attr(RpcConstants.ATTR_ACCESS_MILLS).get()) <= RpcConstants.INVALID_THRESHOLD;
+		return c.attr(RpcConstants.ATTR_ACCESS_MILLS) == null
+				|| (System.currentTimeMillis() - c.attr(RpcConstants.ATTR_ACCESS_MILLS).get()) <= RpcConstants.INVALID_THRESHOLD;
 	}
 
 	private static void deactive(Channel c) {
