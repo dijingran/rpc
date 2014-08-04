@@ -4,11 +4,10 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import org.dxx.rpc.EventLoops;
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.codec.DexnCodec;
 import org.dxx.rpc.config.Registry;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 public class RegistryStartup implements Runnable {
 	static final Logger logger = LoggerFactory.getLogger(RegistryStartup.class);
 
-	private static EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private String host;
 	private int port;
 
@@ -67,7 +65,7 @@ public class RegistryStartup implements Runnable {
 
 		try {
 			Bootstrap b = new Bootstrap();
-			b.group(workerGroup);
+			b.group(EventLoops.workerGroup);
 			b.channel(NioSocketChannel.class);
 			b.option(ChannelOption.SO_KEEPALIVE, true);
 			b.handler(new ChannelInitializer<SocketChannel>() {

@@ -1,6 +1,7 @@
 package org.dxx.rpc.server;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -13,6 +14,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
 
+import org.dxx.rpc.EventLoops;
 import org.dxx.rpc.RpcConstants;
 import org.dxx.rpc.codec.DexnCodec;
 import org.dxx.rpc.registry.RegistryUtils;
@@ -42,11 +44,12 @@ public class ServerStartup {
 		};
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
-		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
-			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(channelInitializer)
-					.option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
+			b.group(bossGroup, EventLoops.workerGroup).channel(NioServerSocketChannel.class)
+					.childHandler(channelInitializer).option(ChannelOption.SO_BACKLOG, 128);
+			b.childOption(ChannelOption.SO_KEEPALIVE, true);
+			b.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
 			b.bind(port).sync();
 			logger.info("Rpc server is running on port : {}", port);

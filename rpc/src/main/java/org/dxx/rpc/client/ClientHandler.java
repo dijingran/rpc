@@ -1,5 +1,6 @@
 package org.dxx.rpc.client;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -9,6 +10,7 @@ import org.dxx.rpc.ResponseFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Sharable
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
 	Logger logger = LoggerFactory.getLogger(ClientHandler.class);

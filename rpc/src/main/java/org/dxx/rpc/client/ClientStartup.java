@@ -1,17 +1,17 @@
 package org.dxx.rpc.client;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
+import org.dxx.rpc.EventLoops;
 import org.dxx.rpc.codec.DexnCodec;
 import org.dxx.rpc.config.RpcClientConfig;
 import org.dxx.rpc.config.RpcClientConfigs;
@@ -100,13 +100,13 @@ public class ClientStartup {
 		}
 
 		logger.debug("Try create channel : {}:{}, for : {}", new Object[] { host, port, interfaceClass });
-		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 		try {
 			Bootstrap b = new Bootstrap();
-			b.group(workerGroup);
+			b.group(EventLoops.workerGroup);
 			b.channel(NioSocketChannel.class);
 			b.option(ChannelOption.SO_KEEPALIVE, true);
+			b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 			b.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
