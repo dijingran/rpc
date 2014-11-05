@@ -44,7 +44,10 @@ public class ServerCache {
 	 * @param deactiveUrl 心跳失败的服务端地址
 	 */
 	public static GetServerResponse getServerLocation(String interfaceClass, String deactiveUrl) {
-		Set<String> urls = interAndUrl.get(interfaceClass);
+		Set<String> urls = null;
+		synchronized (ServerCache.class) {
+			urls = interAndUrl.get(interfaceClass);
+		}
 		if (urls == null) {
 			logger.debug("Can't find service from local cache for interface : {}", interfaceClass);
 			return null;
@@ -67,7 +70,7 @@ public class ServerCache {
 		return response;
 	}
 
-	public static void update(UpdateServersRequest request) {
+	public static synchronized void update(UpdateServersRequest request) {
 		logger.debug("Update ServerLocationCache : {}", request.getInterAndUrl());
 		ServerCache.interAndUrl = request.getInterAndUrl();
 	}
