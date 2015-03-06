@@ -42,27 +42,21 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		if (msg instanceof HttpRequest) {
 			HttpUtils.handleRequest(ctx, msg);
-
 		} else if (msg instanceof MonitorResponse) {
 			Invoker.receive((MonitorResponse) msg);
 		} else if (msg instanceof GetServerRequest) {
-
 			GetServerResponse resp = repository.getServer((GetServerRequest) msg);
 			ctx.channel().writeAndFlush(resp);
 			logger.debug("Wrote : {}", resp);
-
 		} else if (msg instanceof RegisterRequest) {
 			ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).set(true);
-
 			RegisterRequest request = (RegisterRequest) msg;
 			Channels.add(ctx.channel(), request.getPort());
 			String url = remoteUrl(ctx, request);
 
 			channelAndUrl.putIfAbsent(ctx.channel(), url);
 			urlAndLatestChannel.put(url, ctx.channel());
-
 			ctx.channel().writeAndFlush(repository.register(url, request));
-
 		} else { // String from telnet
 			AbstractCommand c = commandFactory.get(msg.toString());
 			if (c != null) {
@@ -74,8 +68,7 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 
 	private String remoteUrl(ChannelHandlerContext ctx, RegisterRequest request) {
 		InetSocketAddress sa = (InetSocketAddress) ctx.channel().remoteAddress();
-		String url = sa.getAddress().getHostAddress() + ":" + request.getPort();
-		return url;
+		return sa.getAddress().getHostAddress() + ":" + request.getPort();
 	}
 
 	@Override
@@ -84,7 +77,7 @@ public class RegistryServerHandler extends ChannelInboundHandlerAdapter {
 			IdleStateEvent e = (IdleStateEvent) evt;
 			if (e.state() == IdleState.WRITER_IDLE) {
 				Boolean needHeartbeat = ctx.attr(RpcConstants.ATTR_NEED_HEARTBEAT).get();
-				if (needHeartbeat != null && needHeartbeat == true) {
+				if (needHeartbeat != null && needHeartbeat) {
 					ctx.writeAndFlush(new HeartbeatRequest());
 				}
 			}

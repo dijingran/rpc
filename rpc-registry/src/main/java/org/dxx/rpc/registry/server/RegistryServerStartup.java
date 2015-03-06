@@ -3,7 +3,6 @@ package org.dxx.rpc.registry.server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -27,35 +26,24 @@ public class RegistryServerStartup {
 		this.port = RpcConstants.REGISTRY_DEFUALT_PORT;
 	}
 
-	public RegistryServerStartup(int port) {
-		super();
-		this.port = port;
-	}
-
 	public void run() throws Exception {
 		ChannelInitializer<SocketChannel> channelInitializer = new ChannelInitializer<SocketChannel>() { // (4)
 			@Override
 			public void initChannel(SocketChannel ch) throws Exception {
 				ch.pipeline().addLast(new IdleStateHandler(0, RpcConstants.HEAT_BEAT, 0, TimeUnit.MILLISECONDS));
-
 				ch.pipeline().addLast(new DexnCodec());
-
 				ch.pipeline().addLast(new HttpServerCodec());
 				ch.pipeline().addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
 				ch.pipeline().addLast(new RegistryServerHandler());
 			}
 		};
-
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
-
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
-			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(channelInitializer)
-					.option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
-
+			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(channelInitializer);
 			ChannelFuture f = b.bind(port).sync();
-			logger.info("Registy is running on port {}!", port);
+			logger.info("Registry is running on port {}!", port);
 			f.channel().closeFuture().sync();
 		} finally {
 			workerGroup.shutdownGracefully();
