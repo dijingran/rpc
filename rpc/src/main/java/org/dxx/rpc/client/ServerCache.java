@@ -44,7 +44,7 @@ public class ServerCache {
 	 * @param deactiveUrl 心跳失败的服务端地址
 	 */
 	public static GetServerResponse getServerLocation(String interfaceClass, String deactiveUrl) {
-		Set<String> urls = null;
+		Set<String> urls;
 		synchronized (ServerCache.class) {
 			urls = interAndUrl.get(interfaceClass);
 		}

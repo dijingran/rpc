@@ -46,14 +46,8 @@ public class HttpUtils {
     public static void handleRequest(ChannelHandlerContext ctx, Object msg) {
         DecodeHelper.reset();
         DefaultFullHttpRequest request = (DefaultFullHttpRequest) msg;
-        /*
-        if (request.getUri().endsWith("favicon.ico")) {
-            writeBadResponse(ctx);
-            return;
-        }*/
         logger.trace("{} : {}", request.getMethod().name(), request.getUri());
         logger.trace("Received : {}", request);
-
         QueryStringDecoder qsDecoder = new QueryStringDecoder(request.getUri());
         logger.trace("Query params: {}", qsDecoder.parameters());
 
@@ -61,13 +55,11 @@ public class HttpUtils {
             HttpPostRequestDecoder postDecoder = new HttpPostRequestDecoder(request);
             logger.trace("Post params : {}", postDecoder.getBodyHttpDatas());
         }
-
         String responseBody = invokeController(request, qsDecoder);
         if (responseBody == null) {// 没有映射controller
             writeBadResponse(ctx);
             return;
         }
-
         writeResponse(ctx, responseBody);
     }
 
@@ -108,10 +100,11 @@ public class HttpUtils {
     }
 
     private static void writeResponse(ChannelHandlerContext ctx, String html) {
-        byte[] bytes = null;
+        byte[] bytes;
         try {
             bytes = html.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
+            bytes = "".getBytes();
         }
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(bytes));
         response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
@@ -124,11 +117,7 @@ public class HttpUtils {
     }
 
     private static void writeBadResponse(ChannelHandlerContext ctx) {
-        byte[] bytes = null;
-        try {
-            bytes = "".getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-        }
+        byte[] bytes = "".getBytes();
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST, Unpooled.wrappedBuffer(bytes));
         response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());

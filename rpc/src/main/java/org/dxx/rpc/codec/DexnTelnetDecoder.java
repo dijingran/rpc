@@ -63,10 +63,9 @@ public class DexnTelnetDecoder extends ByteToMessageDecoder {
             out.add(text);
         } else {
             if (b == 8) { // backspace
-                boolean doublechar = bytes.length >= 3 && bytes[bytes.length - 3] < 0; // double byte char
+                boolean doubleChar = bytes.length >= 3 && bytes[bytes.length - 3] < 0; // double byte char
                 ctx.channel()
-                        .writeAndFlush(new String(doublechar ? new byte[]{32, 32, 8, 8} : new byte[]{32, 8}));
-                return;
+                        .writeAndFlush(new String(doubleChar ? new byte[]{32, 32, 8, 8} : new byte[]{32, 8}));
             }
         }
 

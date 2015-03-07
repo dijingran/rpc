@@ -26,31 +26,10 @@ public class VelocityUtils {
 	private static boolean cacheView = false;
 
 	/**
-	 * 
-	 * 
-	 * @author dixingxing
-	 * @version 1.0
-	 * @date 2013-8-23 下午9:56:25
-	 * @param template
-	 * @param model
-	 * @return
-	 */
-	public static String render(String template, Map<String, ?> model) {
-		try {
-			VelocityContext velocityContext = new VelocityContext(model);
-			StringWriter result = new StringWriter();
-			Velocity.evaluate(velocityContext, result, "", template);
-			return result.toString();
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Parse template failed.", e);
-		}
-	}
-
-	/**
 	 * 渲染内容.
 	 * 
-	 * @param templatePath
-	 *            模板路径.
+	 * @param templateName
+	 *            模板名称.
 	 * @param model
 	 *            变量Map.
 	 */
@@ -102,7 +81,6 @@ public class VelocityUtils {
 	 * @version 1.0
 	 * @date 2013-8-26 下午5:31:39
 	 * @param buffer
-	 * @param sb
 	 * @return
 	 * @throws IOException
 	 */
@@ -136,7 +114,7 @@ public class VelocityUtils {
 		StringWriter output = new StringWriter();
 		InputStreamReader input = new InputStreamReader(is);
 		char buffer[] = new char[4096];
-		for (int n = 0; -1 != (n = input.read(buffer));) {
+		for (int n; -1 != (n = input.read(buffer));) {
 			output.write(buffer, 0, n);
 		}
 		return output.getBuffer();

@@ -36,9 +36,10 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		RegistryUtils.updateAccessTime(ctx.channel());
-		if (msg instanceof HeartbeatRequest) {
-			// do nothing
-		} else if (msg instanceof MonitorRequest) {
+//		if (msg instanceof HeartbeatRequest) {
+//			// do nothing
+//		} else
+        if (msg instanceof MonitorRequest) {
 			MonitorResponse response = monitorHandler.handle((MonitorRequest) msg);
 			ctx.channel().writeAndFlush(response);
 		} else if (msg instanceof RegisterResponse) {
@@ -52,8 +53,6 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
 			RegistryUtils.receiveGetServerLocationResponse((GetServerResponse) msg);
 		} else if (msg instanceof UpdateServersRequest) {
 			ServerCache.update((UpdateServersRequest) msg);
-		} else {
-
 		}
 	}
 

@@ -1,17 +1,12 @@
 package org.dxx.rpc.registry;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * 管理所有服务
@@ -74,7 +69,7 @@ public class ServiceRepository {
 				response.setErrorMessage("Service [" + request.getInterfaceClass() + "] not found!");
 				return response;
 			}
-			String finalUrl = null;
+			String finalUrl;
 			String secondChance = null;
 			for (String url : urls) {
 				if (isDeactive(request, url)) {
@@ -187,9 +182,7 @@ public class ServiceRepository {
 		Map<String, Set<String>> services = new ConcurrentHashMap<String, Set<String>>();
 		ServiceRepository repository = getInstance();
 		if (repository.pausedInterfaces.size() > 0) {
-			for (Iterator<Entry<String, Set<String>>> iter = repository.interAndUrl.entrySet().iterator(); iter
-					.hasNext();) {
-				Entry<String, Set<String>> e = iter.next();
+            for(Entry<String, Set<String>> e : repository.interAndUrl.entrySet()) {
 				Set<String> urls = new HashSet<String>();
 				String interfaceClass = e.getKey();
 				for (String url : e.getValue()) {

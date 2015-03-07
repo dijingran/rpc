@@ -46,9 +46,6 @@ class DexnDecoder extends DexnTelnetDecoder {
 
 	private int bodyLength;
 
-	/**
-	 * @see org.dxx.serialization.netty.codec.DexnTelnetDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)
-	 */
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 		if (in.readableBytes() <= 0) {

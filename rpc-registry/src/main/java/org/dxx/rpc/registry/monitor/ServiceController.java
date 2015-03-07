@@ -10,11 +10,7 @@ import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -159,10 +155,6 @@ public class ServiceController {
 	}
 
 	private List<Service> toList(Service... services) {
-		List<Service> list = new ArrayList<Service>();
-		for (Service s : services) {
-			list.add(s);
-		}
-		return list;
+        return Arrays.asList(services);
 	}
 }

@@ -152,14 +152,6 @@ public class RegistryUtils {
 		}
 	}
 
-	public static Class<?> getInter(String interfaceClass) {
-		try {
-			return Class.forName(interfaceClass);
-		} catch (ClassNotFoundException e) {
-			throw new RpcException(e.getMessage(), e);
-		}
-	}
-
 	/**
 	 * Synchronized avoid multi channels created !
 	 */
